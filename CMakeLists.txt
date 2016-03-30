@@ -1,0 +1,82 @@
+PROJECT (ExportMaps)
+# A list of source files
+SET(PROJECT_SRCS
+  # IDA functions
+  ./cpp/util/ofsub.cpp
+
+  # DF utility functions
+  ./cpp/df_utils/adjust_coordinates_to_region.cpp
+  ./cpp/df_utils/biome_type.cpp
+  ./cpp/df_utils/df_binary_searches.cpp
+
+  # Calls to native DF functions
+  ./cpp/df_utils/fill_world_region_details.cpp
+  ./cpp/df_utils/init_world_site_realization.cpp
+
+  # Consumers for each different map
+  ./cpp/consumers/biome_consumer.cpp
+  ./cpp/consumers/drainage_consumer.cpp
+  ./cpp/consumers/elevation_consumer.cpp
+  ./cpp/consumers/elevation_water_consumer.cpp
+  ./cpp/consumers/evilness_consumer.cpp
+  ./cpp/consumers/geology_consumer.cpp
+  ./cpp/consumers/hydro_consumer.cpp
+  ./cpp/consumers/rainfall_consumer.cpp
+  ./cpp/consumers/salinity_consumer.cpp
+  ./cpp/consumers/savagery_consumer.cpp
+  ./cpp/consumers/vegetation_consumer.cpp
+  ./cpp/consumers/volcanism_consumer.cpp
+  ./cpp/consumers/temperature_consumer.cpp
+  ./cpp/consumers/trade_consumer.cpp
+  ./cpp/consumers/nobility_consumer.cpp
+  ./cpp/consumers/diplomacy_consumer.cpp
+  ./cpp/consumers/sites_consumer.cpp
+
+  # Plugin code
+  ./cpp/draw_line.cpp
+  ./cpp/Logger.cpp
+  ./cpp/Producer.cpp
+  ./cpp/ExportedMap.cpp
+  ./cpp/MapsExporter.cpp
+  ./cpp/MapsExporter_queues_state.cpp
+  ./cpp/MapsExporter_push_pop.cpp
+  ./cpp/MapsExporter_setup_maps.cpp
+  ./cpp/MapsExporter_threads.cpp
+
+  # JSON support
+  ./cpp/util/jsonxx.cpp
+
+  # PNG support
+  ./cpp/util/lodepng.cpp
+
+  # Plugin interface to DFHack
+  ./cpp/exportmaps.cpp
+)
+# A list of headers
+SET(PROJECT_HDRS
+    ./include/dfhack.h
+)
+SET_SOURCE_FILES_PROPERTIES( ${PROJECT_HDRS} PROPERTIES HEADER_FILE_ONLY TRUE)
+
+# mash them together (headers are marked as headers and nothing will try to compile them)
+LIST(APPEND PROJECT_SRCS ${PROJECT_HDRS})
+
+#linux
+IF(UNIX)
+    add_definitions(-DLINUX_BUILD)
+    SET(PROJECT_LIBS
+        # add any extra linux libs here
+        dfhack-tinythread
+        ${PROJECT_LIBS}
+    )
+# windows
+ELSE(UNIX)
+    SET(PROJECT_LIBS
+        # add any extra windows libs here
+        dfhack-tinythread
+        ${PROJECT_LIBS}
+        $(NOINHERIT)
+    )
+ENDIF(UNIX)
+# this makes sure all the stuff is put in proper places and linked to dfhack
+DFHACK_PLUGIN(exportmaps ${PROJECT_SRCS} LINK_LIBRARIES ${PROJECT_LIBS} COMPILE_FLAGS_GCC "-O0")
