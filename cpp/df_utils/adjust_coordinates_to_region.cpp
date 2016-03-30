@@ -24,6 +24,9 @@
 
 */
 
+// You can always find the latest version of this plugin in Github
+// https://github.com/ragundo/exportmaps  
+
 #include <tuple>
 
 std::pair<int,int> adjust_coordinates_to_region(int x, int y, int delta, int pos_x, int pos_y, int world_width, int world_height)

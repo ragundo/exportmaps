@@ -24,6 +24,9 @@
 
 */
 
+// You can always find the latest version of this plugin in Github
+// https://github.com/ragundo/exportmaps  
+
 #include "../../include/dfhack.h"
 #include "../../include/util/ofsub.h"
 

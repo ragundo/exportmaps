@@ -26,6 +26,8 @@
 
 #include "../../include/ExportMaps.h"
 
+// You can always find the latest version of this plugin in Github
+// https://github.com/ragundo/exportmaps  
 
 /*****************************************************************************
 Local functions forward declaration

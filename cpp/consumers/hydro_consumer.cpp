@@ -24,6 +24,9 @@
 
 */
 
+// You can always find the latest version of this plugin in Github
+// https://github.com/ragundo/exportmaps  
+
 #include <utility>
 #include <BitArray.h>
 #include "../../include/ExportMaps.h"
