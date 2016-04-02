@@ -67,6 +67,8 @@ RGB_color RGB_from_biome_type(int biome_type);
 
 int get_historical_entity_id_from_world_site(df::world_site* site);
 
+void delete_site_realization(df::world_site* world_site);
+
 /*****************************************************************************
 Local functions forward declaration
 *****************************************************************************/
@@ -106,6 +108,8 @@ void process_Tunnel(ExportedMapBase* map, df::world_construction* construction);
 void process_Wall(ExportedMapBase* map, df::world_construction* construction);
 
 void process_Bridge(ExportedMapBase* map, df::world_construction* construction);
+
+bool update_inhabitant_count(df::world_site* world_site, df::world_site_inhabitant* inhabitant_in_building);
 
 /*****************************************************************************
 Module local variables
@@ -282,34 +286,33 @@ bool process_nob_dip_trad_sites_common(ExportedMapBase* map, RegionDetailsElevat
 int draw_sites_map(ExportedMapBase* map)
 {
   int result = 0;
-  df::world_site_realization* ws = nullptr;
   for (int i = df::global::world->world_data->sites.size() - 1; i >= 0; i-- )
   {
     df::world_site* world_site = df::global::world->world_data->sites[i];
     if (world_site == nullptr) continue;
 
-    if (world_site->type == 1) continue;
-    if (world_site->type == 2) continue;
+    //if (world_site->type == 1) continue;
+    //if (world_site->type == 2) continue;
     //if (world_site->type == 3) continue;
-    if (world_site->type == 4) continue;
-    if (world_site->type == 5) continue;
-    if (world_site->type == 6) continue;
-    if (world_site->type == 7) continue;
-    if (world_site->type == 8) continue;
-    if (world_site->type == 9) continue;
-    if (world_site->type == 10) continue;
+    // if (world_site->type == 4) continue;
+    //if (world_site->type == 5) continue;
+    //if (world_site->type == 6) continue;
+    //if (world_site->type == 7) continue;
+    //if (world_site->type == 8) continue;
+    //if (world_site->type == 9) continue;
+    //if (world_site->type == 10) continue;
 
     for (int i = world_site->global_min_x/16; i <= world_site->global_max_x/16; i++)
       for (int j = world_site->global_min_y/16; j <= world_site->global_max_y/16; j++)
+      {
         fill_world_region_details(i,j);
+      }
 
     // Check if the site has a previous realization active
     bool site_has_realization = world_site->realization != nullptr;
 
     // Do DF initalize the site realization as this is a VERY complex task
     init_world_site_realization(world_site);
-
-    if (world_site->realization == nullptr) continue;
 
     // Get the new/updated site realization after DF work
     df::world_site_realization* site_realization = world_site->realization;
@@ -328,9 +331,22 @@ int draw_sites_map(ExportedMapBase* map)
     else
       process_regular_site(world_site, site_has_realization, map);
 
-    // TODO delete site realization
+    delete_site_realization(world_site);
+    //delete world_site->realization;
+
     // TODO delete world region details allocated
-      return result;
+    int vec_elements = df::global::world->world_data->region_details.size();
+    for (int l = 0; l < vec_elements; l++)
+    {
+      df::world_region_details* rd = df::global::world->world_data->region_details[l];
+      if (rd != nullptr)
+        delete rd;
+    }
+    for (int l = 0; l < vec_elements; l++)
+    {
+      // Remove also the entry in the vector
+      df::global::world->world_data->region_details.erase(df::global::world->world_data->region_details.begin());
+    }
   }
   return result;
 }
@@ -359,7 +375,9 @@ void process_regular_site(df::world_site* world_site, bool had_previous_realizat
     if ((site_realiz_building->type == 1) || // castle wall
         (site_realiz_building->type == 2) || // castle tower
         (site_realiz_building->type == 3))   // castle courtyard
-          castle_map[17*site_realiz_building->min_x/48][17*site_realiz_building->min_y/48] = 1;
+    {
+     //     castle_map[17*site_realiz_building->min_x/48][17*site_realiz_building->min_y/48] = 1;
+    }
   }
 
 
@@ -804,71 +822,21 @@ void delete_site_realization(df::world_site* world_site)
     df::world_site_inhabitant* inhabitant_in_building = nullptr;
     for (unsigned int j = 0; j < site_building->inhabitants.size(); j++)
     {
-      df::world_site_inhabitant* site_inhabitant = site_building->inhabitants[j];
-      if (site_inhabitant == nullptr) continue;
+      df::world_site_inhabitant* site_building_inhabitant = site_building->inhabitants[j];
+      if (site_building_inhabitant == nullptr) continue;
 
-      if (site_inhabitant->count > 0)
+      if (site_building_inhabitant->count > 0)
       {
-        inhabitant_in_building = site_inhabitant;
+        inhabitant_in_building = site_building_inhabitant;
         break;
       }
     }
 
     if (inhabitant_in_building == nullptr) continue;
+    update_inhabitant_count(world_site,
+                            inhabitant_in_building);
 
-    if ((inhabitant_in_building->race != -1) &&
-        (inhabitant_in_building->race) < (signed int)df::global::world->raws.creatures.all.size())
-    {
-      df::creature_raw* creature_raw = df::global::world->raws.creatures.all[inhabitant_in_building->race];
-      if (creature_raw == nullptr) continue;
 
-      if (creature_raw->flags.size > 8)
-      {
-        // TODO convert this to the appropiate flag
-        if (*(creature_raw->flags.bits+8) & 0x80)
-        {
-          if ((creature_raw->flags.size <= 14) ||
-              !(*(creature_raw->flags.bits+14) & 0x10))
-          {
-            if (world_site->inhabitants.size() > 0)
-            {
-              bool found_inhabitant = false;
-
-              for (unsigned int k = 0; k < world_site->inhabitants.size(); k++)
-              {
-                df::world_site_inhabitant* site_inhabitant = world_site->inhabitants[k];
-                if (site_inhabitant != nullptr) continue;
-
-                if ((inhabitant_in_building->race == site_inhabitant->race) &&
-                    (inhabitant_in_building->unk_8 == site_inhabitant->unk_8))
-                {
-                  if (((inhabitant_in_building->outcast_id == site_inhabitant->outcast_id) ||
-                       ((inhabitant_in_building->outcast_id == -1) && (site_inhabitant->outcast_id == -1))) &&
-                      (inhabitant_in_building->unk_10 == site_inhabitant->unk_10) &&
-                      (inhabitant_in_building->unk_14 == site_inhabitant->unk_14) &&
-                      (inhabitant_in_building->unk_18 == site_inhabitant->unk_18) &&
-                      (inhabitant_in_building->unk_1c == site_inhabitant->unk_1c) &&
-                      (inhabitant_in_building->unk_20 == site_inhabitant->unk_20) &&
-                      (inhabitant_in_building->unk_24 == site_inhabitant->unk_24))
-                  {
-                    // Update the count
-                    site_inhabitant->count += inhabitant_in_building->count;
-                    found_inhabitant = true;
-                  }
-                }
-              }
-
-              if (!found_inhabitant)
-              {
-                // This should not happen
-                // If happens, a new empty inhabitant must be created
-                exit(23);
-              }
-            }
-          }
-        }
-      }
-    }
 
     if (world_site->animals.size() > 0)
     {
@@ -893,20 +861,92 @@ void delete_site_realization(df::world_site* world_site)
       {
         // This should not happen
         // If happens, a new empty inhabitant must be created
-        exit(24);
+        //exit(24);
       }
     }
-
-
   }
 
 
-
-  if (false) //world_site->realization->vector_to_be_added.size()
+/*
+  if (world_site->realization->unk_wsr_vector.size() > 0)
   {
-
+    for (int i = 0; i < world_site->realization->unk_wsr_vector.size(); i++)
+    {
+      df::world_site_realization::T_unk_wsr_vector* unk_ptr = world_site->realization->unk_wsr_vector[i];
+      if (unk_ptr == nullptr) continue;
+      
+      unsigned int inhabitant_count_update = 0;
+      for (unsigned int j = 0; j < unk_ptr->inhabitants.size(); j++)
+      {
+        df::world_site_inhabitant* inhabitant_in_building = unk_ptr->inhabitants[j];
+        if (inhabitant_in_building != nullptr)
+          if (inhabitant_in_building->count > 0)
+          {
+            inhabitant_count_update = inhabitant_in_building->count;
+            update_inhabitant_count(world_site,
+                                    inhabitant_in_building);
+          }
+      }
+    }
   }
-
+*/
   delete(world_site->realization);
   world_site->realization = nullptr;
+}
+
+
+bool update_inhabitant_count(df::world_site* world_site, df::world_site_inhabitant* inhabitant_in_building)
+{
+  bool found_world_inhabitant = false;
+  if ((inhabitant_in_building->race != -1) &&
+      (inhabitant_in_building->race) < (signed int)df::global::world->raws.creatures.all.size())
+  {
+    df::creature_raw* creature_raw = df::global::world->raws.creatures.all[inhabitant_in_building->race];
+    if (creature_raw != nullptr)
+      if (creature_raw->flags.size > 8)
+      {
+        // TODO convert this to the appropiate flag
+        if (*(creature_raw->flags.bits+8) & 0x80)
+        {
+          if ((creature_raw->flags.size <= 14) ||
+              !(*(creature_raw->flags.bits+14) & 0x10))
+          {
+            if (world_site->inhabitants.size() > 0)
+            {
+              for (unsigned int k = 0; k < world_site->inhabitants.size(); k++)
+              {
+                df::world_site_inhabitant* site_inhabitant = world_site->inhabitants[k];
+                if (site_inhabitant == nullptr) continue;
+
+                if ((inhabitant_in_building->race == site_inhabitant->race) &&
+                    (inhabitant_in_building->unk_8 == site_inhabitant->unk_8))
+                {
+                  if (((inhabitant_in_building->outcast_id == site_inhabitant->outcast_id) ||
+                       ((inhabitant_in_building->outcast_id == -1) && (site_inhabitant->outcast_id == -1))) &&
+                      (inhabitant_in_building->unk_10 == site_inhabitant->unk_10) &&
+                      (inhabitant_in_building->unk_14 == site_inhabitant->unk_14) &&
+                      (inhabitant_in_building->unk_18 == site_inhabitant->unk_18) &&
+                      (inhabitant_in_building->unk_1c == site_inhabitant->unk_1c) &&
+                      (inhabitant_in_building->unk_20 == site_inhabitant->unk_20) &&
+                      (inhabitant_in_building->unk_24 == site_inhabitant->unk_24))
+                  {
+                    // Update the count
+                    site_inhabitant->count += inhabitant_in_building->count;
+                    found_world_inhabitant = true;
+                  }
+                }
+              }
+
+              if (!found_world_inhabitant)
+              {
+                // This should not happen
+                // If happens, a new empty inhabitant must be created
+                //exit(23);
+              }
+            }
+          }
+        }
+      }
+  }
+  return found_world_inhabitant;
 }
