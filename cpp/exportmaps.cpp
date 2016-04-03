@@ -128,7 +128,7 @@ DFhackCExport command_result plugin_init (color_ostream& con,
 {
     // Fill the command list with your commands.
     commands.push_back(PluginCommand("exportmaps",
-                                     "Export world maps to disk while in Fortress Mode",
+                                     "Export world maps to disk in Fortress/Adventure/Legends Mode",
                                      exportmaps /*,
                                      true or false - true means that the command can't be used from non-interactive user interface'*/));
     return CR_OK;

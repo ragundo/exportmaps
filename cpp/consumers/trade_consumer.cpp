@@ -36,53 +36,85 @@ using namespace std;
 /*****************************************************************************
 External functions
 *****************************************************************************/
-extern int                             get_biome_type(int world_coord_x,
-                                                      int world_coord_y);
+extern int get_biome_type(
+             int world_coord_x,
+             int world_coord_y
+           );
 
-extern pair<int,int>                   adjust_coordinates_to_region(int x,
-                                                                    int y,
-                                                                    int delta,
-                                                                    int pos_x,
-                                                                    int pos_y,
-                                                                    int world_width,
-                                                                    int world_height);
+//----------------------------------------------------------------------------//
+extern pair<int,int> adjust_coordinates_to_region(
+                       int x,
+                       int y,
+                       int delta,
+                       int pos_x,
+                       int pos_y,
+                       int world_width,
+                       int world_height
+                     );
 
-extern df::historical_entity*          get_historical_entity_from_world_site(df::world_site* site);
+//----------------------------------------------------------------------------//
+extern df::historical_entity* get_historical_entity_from_world_site(
+                                df::world_site* site
+                              );
 
-extern df::entity_position_assignment* search_entity_positions_assignments(vector<df::entity_position_assignment* >& vec,
-                                                                           int                                       target);
+//----------------------------------------------------------------------------//
+extern df::entity_position_assignment* search_entity_positions_assignments(
+                                         vector<df::entity_position_assignment* >& vec,
+                                         int                                       target
+                                       );
 
-extern df::entity_position*            search_entity_positions(vector<df::entity_position* >& vec,
-                                                               int entity_id);
+//----------------------------------------------------------------------------//
+extern df::entity_position* search_entity_positions(
+                              vector<df::entity_position* >& vec,
+                              int entity_id
+                            );
 
-extern df::world_site*                 search_world_data_sites(int site_id);
+//----------------------------------------------------------------------------//
+extern df::world_site* search_world_data_sites(int site_id);
 
-extern df::world_site*                 search_world_entities(int site_id);
+//----------------------------------------------------------------------------//
+extern df::world_site* search_world_entities(int site_id);
 
-extern void                            draw_thick_color_line(ExportedMapBase* map,
-                                                             int x1, int y1, int x2, int y2,
-                                                             RGB_color& color_center,
-                                                             RGB_color& color_border);
+//----------------------------------------------------------------------------//
+extern void draw_thick_color_line(
+              ExportedMapBase* map,
+              int x1,
+              int y1,
+              int x2,
+              int y2,
+              RGB_color& color_center,
+              RGB_color& color_border
+            );
 
-extern void                            draw_site_rectangle(ExportedMapBase* map,
-                                                           df::world_site*  world_site,
-                                                           int site_population,
-                                                           unsigned char pixel_R,
-                                                           unsigned char pixel_G,
-                                                           unsigned char pixel_B);
+//----------------------------------------------------------------------------//
+extern void draw_site_rectangle(
+              ExportedMapBase* map,
+              df::world_site*  world_site,
+              int              site_population,
+              unsigned char    pixel_R,
+              unsigned char    pixel_G,
+              unsigned char    pixel_B
+            );
 
-extern RGB_color                       RGB_from_elevation_water(RegionDetailsElevationWater&                  rdew,
-                                                                int                                           x,
-                                                                int                                           y,
-                                                                int                                           biome_type,
-                                                                DFHack::BitArray<df::region_map_entry_flags>& flags);
+//----------------------------------------------------------------------------//
+extern RGB_color RGB_from_elevation_water(
+                   RegionDetailsElevationWater&                  rdew,
+                   int                                           x,
+                   int                                           y,
+                   int                                           biome_type,
+                   DFHack::BitArray<df::region_map_entry_flags>& flags
+                 );
 
-extern bool                            process_nob_dip_trad_sites_common(ExportedMapBase* map, 
-                                                                         RegionDetailsElevationWater& rdew,
-                                                                         int x, 
-                                                                         int y);
+//----------------------------------------------------------------------------//
+extern bool process_nob_dip_trad_sites_common(
+              ExportedMapBase*             map,
+              RegionDetailsElevationWater& rdew,
+              int                          x,
+              int                          y
+            );
 
-extern void                            process_nob_dip_trad_common(ExportedMapBase* map);
+//----------------------------------------------------------------------------//
+ extern void process_world_structures(ExportedMapBase* map);
 
 /*****************************************************************************
  Local functions forward declaration
@@ -91,33 +123,41 @@ extern void                            process_nob_dip_trad_common(ExportedMapBa
 bool trading_do_work(MapsExporter* maps_exporter,
                      ExportedMapBase* map);
 
+//----------------------------------------------------------------------------//
 void draw_trade_map(ExportedMapBase* map);
 
+//----------------------------------------------------------------------------//
 void draw_regular_sites(ExportedMapBase* map);
 
+//----------------------------------------------------------------------------//
 void draw_trading_sites(ExportedMapBase* map);
 
+//----------------------------------------------------------------------------//
 void draw_regular_site(ExportedMapBase* map,
                        df::world_site* world_site);       
 
+//----------------------------------------------------------------------------//
 void draw_trading_site(ExportedMapBase* map,
                        df::world_site* world_site);     
 
+//----------------------------------------------------------------------------//
 void process_trading(ExportedMapBase*       map,
                      df::historical_entity* entity,
                      df::world_site*        world_site);
 
+//----------------------------------------------------------------------------//
 void get_no_trading_site_color(int            site_type,
                                unsigned char& pixel_R,
                                unsigned char& pixel_G,
                                unsigned char& pixel_B);
 
-
+//----------------------------------------------------------------------------//
 void get_trading_site_color(int            site_type,
                             unsigned char& pixel_R,
                             unsigned char& pixel_G,
                             unsigned char& pixel_B); 
 
+//----------------------------------------------------------------------------//
 void draw_trade_relationship_line(ExportedMapBase* map, 
                                   df::world_site*  world_site1,
                                   df::world_site*  world_site2,
@@ -125,8 +165,7 @@ void draw_trade_relationship_line(ExportedMapBase* map,
                                   int              site_population2,
                                   int              type);
 
-
-
+//----------------------------------------------------------------------------//
 int get_site_total_population(df::world_site* world_site);
 
 /*****************************************************************************
@@ -176,7 +215,7 @@ bool trading_do_work(MapsExporter* maps_exporter,
   if (rdew.is_end_marker())
   {
     // All the terrain data has been processed.
-    process_nob_dip_trad_common(map);
+    process_world_structures(map);
 
     // Now draw world sites and relationships over this base map
     ExportedMapDF* trade_map = maps_exporter->get_trading_map();
