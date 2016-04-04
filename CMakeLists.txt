@@ -11,7 +11,9 @@ SET(PROJECT_SRCS
 
   # Calls to native DF functions
   ./cpp/df_utils/fill_world_region_details.cpp
+  ./cpp/df_utils/delete_world_region_details.cpp
   ./cpp/df_utils/init_world_site_realization.cpp
+  ./cpp/df_utils/delete_world_site_realization.cpp
 
   # Consumers for each different map
   ./cpp/consumers/biome_consumer.cpp

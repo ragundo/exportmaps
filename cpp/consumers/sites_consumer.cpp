@@ -76,7 +76,13 @@ extern int fill_world_region_details(
            );
 
 //----------------------------------------------------------------------------//
+extern void delete_world_region_details(df::world_region_detais*);
+
+//----------------------------------------------------------------------------//
 extern void init_world_site_realization(df::world_site* world_site);
+
+//----------------------------------------------------------------------------//
+extern void delete_site_realization(df::world_site* world_site);
 
 //----------------------------------------------------------------------------//
 // Return the RGB values for the biome export map given a biome type
@@ -85,8 +91,7 @@ RGB_color RGB_from_biome_type(int biome_type);
 //----------------------------------------------------------------------------//
 int get_historical_entity_id_from_world_site(df::world_site* site);
 
-//----------------------------------------------------------------------------//
-void delete_site_realization(df::world_site* world_site);
+
 
 /*****************************************************************************
 Local functions forward declaration
@@ -346,23 +351,24 @@ int draw_sites_map(ExportedMapBase* map)
 
     // Get the new/updated site realization after DF work
     df::world_site_realization* site_realization = world_site->realization;
-    if (site_realization == nullptr) continue;
-
-    // Check site realization initialization
-    if (site_realization->anon_1 & 1) // bit 0 ON means site unitialized
+    if (site_realization != nullptr)
     {
-      //process_world_site_realization(world_site);
-      site_realization->anon_1 &= 0xFFFFFFFE; // reset bit 0 -> site initialized
+      // Check site realization initialization
+      if (site_realization->anon_1 & 1) // bit 0 ON means site unitialized
+      {
+        //process_world_site_realization(world_site);
+        site_realization->anon_1 &= 0xFFFFFFFE; // reset bit 0 -> site initialized
+      }
+
+      if ((world_site->type == df::enums::world_site_type::world_site_type::Fortress) ||
+          (world_site->type == df::enums::world_site_type::world_site_type::Monument))
+        process_fortress_or_monument(world_site, map);
+      else
+        process_regular_site(world_site, site_has_realization, map);
+
+      delete_site_realization(world_site);
+      //delete world_site->realization;
     }
-
-    if ((world_site->type == df::enums::world_site_type::world_site_type::Fortress) ||
-        (world_site->type == df::enums::world_site_type::world_site_type::Monument))
-      process_fortress_or_monument(world_site, map);
-    else
-      process_regular_site(world_site, site_has_realization, map);
-
-    delete_site_realization(world_site);
-    //delete world_site->realization;
 
     // TODO delete world region details allocated
     int vec_elements = df::global::world->world_data->region_details.size();
@@ -370,13 +376,13 @@ int draw_sites_map(ExportedMapBase* map)
     {
       df::world_region_details* rd = df::global::world->world_data->region_details[l];
       if (rd != nullptr)
-        delete rd;
+      {
+        delete_world_region_details(rd);
+      }
     }
-    for (int l = 0; l < vec_elements; l++)
-    {
-      // Remove also the entry in the vector
-      df::global::world->world_data->region_details.erase(df::global::world->world_data->region_details.begin());
-    }
+
+    // Remove also the entry in the vector
+    df::global::world->world_data->region_details.erase(df::global::world->world_data->region_details.begin());
   }
   return result;
 }

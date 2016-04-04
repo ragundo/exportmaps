@@ -29,14 +29,16 @@
 
 #include "../../include/dfhack.h"
 
+
 /**************************************************************************
 Forward declarations
 **************************************************************************/
 
 void delete_world_region_details_Windows(df::world_region_details* ptr_world_region_details);
 void delete_world_region_details_Linux(df::world_region_details* ptr_world_region_details);
-void delete_world_region_details_features_Linux(df::world_region_details* ptr_world_region_details);
 
+
+unsigned int address_DF_sub_Linux = 0x8087F30; // For 42.04 Linux
 
 /**************************************************************************
  Main function
@@ -94,36 +96,24 @@ void delete_world_region_details_Linux(df::world_region_details* ptr_world_regio
 {
 #ifdef LINUX_BUILD
 
-    // Delete the features field in world_region_details
-    delete_world_region_details_features_Linux(ptr_world_region_details);
 
-    // Delete the world_region_detail
-    delete ptr_world_region_details;
+  asm volatile ("movl %0    ,%%eax;    "         /* address_DF_sub to eax                                 */
+                "movl %1    ,%%ecx;    "         /* address of world.world_data.region_details to ecx     */
+                "sub  $0x10 ,%%esp;    "         /* make space in the heap for the parameters             */
+                "mov  %%ecx ,(%%esp);  "         /* store param 1                                         */
+                "call *%%eax;          "         /* call the DF subroutine                                */
+                "add  $0x10  ,%%esp;   "         /* release the space used in the heap for the parameters */
+                :                                /* no output parameters                                  */
+                : "m" (address_DF_sub_Linux),    /* input parameter                                       */
+                  "m" (ptr_world_region_details) /* input parameter                                       */
+                : "eax", "ecx"                   /* used registers                                        */
+              );
+
+  // Delete the world_region_detail
+  delete ptr_world_region_details;
 
 #endif
 }
 
 
-/**************************************************************************
- Local function
- Clean the resources allocated, as the vector don't call the class destructor
- because it stores a raw pointer
-**************************************************************************/
-void delete_world_region_details_features_Linux(df::world_region_details* ptr_world_region_details)
-{
-  // TODO load the address from a .INI file
-  void *pv = (void *) ptr_world_region_details;
-  unsigned int address_DF_sub = 0x8087F30; // For 42.04 Linux
 
-  asm volatile ("movl %0    ,%%eax;    " /* address_DF_sub to eax                                 */
-                "movl %1    ,%%ecx;    " /* address of world.world_data.region_details to ecx     */
-                "sub  $0x4  ,%%esp;    " /* make space in the heap for the parameters             */
-                "mov  %%ecx ,(%%esp);  " /* store param 1                                         */
-                "call *%%eax;          " /* call the DF subroutine                                */
-                "add  $0x4  ,%%esp;    " /* release the space used in the heap for the parameters */
-                :                        /* no output parameters                                  */
-                : "m" (address_DF_sub),  /* input parameter                                       */
-                  "m" (pv)               /* input parameter                                       */
-                : "eax", "ecx"           /* used registers                                        */
-              );
-}
