@@ -76,13 +76,13 @@ extern int fill_world_region_details(
            );
 
 //----------------------------------------------------------------------------//
-extern void delete_world_region_details(df::world_region_detais*);
+extern void delete_world_region_details(df::world_region_details*);
 
 //----------------------------------------------------------------------------//
 extern void init_world_site_realization(df::world_site* world_site);
 
 //----------------------------------------------------------------------------//
-extern void delete_site_realization(df::world_site* world_site);
+extern void delete_world_site_realization(df::world_site* world_site);
 
 //----------------------------------------------------------------------------//
 // Return the RGB values for the biome export map given a biome type
@@ -146,6 +146,9 @@ void process_Bridge(ExportedMapBase* map, df::world_construction* construction);
 
 //----------------------------------------------------------------------------//
 bool update_inhabitant_count(df::world_site* world_site, df::world_site_inhabitant* inhabitant_in_building);
+
+//----------------------------------------------------------------------------//
+void delete_site_realization(df::world_site* world_site);
 
 /*****************************************************************************
 Module local variables
@@ -337,17 +340,43 @@ int draw_sites_map(ExportedMapBase* map)
     df::world_site* world_site = df::global::world->world_data->sites[i];
     if (world_site == nullptr) continue;
 
-    for (int i = world_site->global_min_x/16; i <= world_site->global_max_x/16; i++)
-      for (int j = world_site->global_min_y/16; j <= world_site->global_max_y/16; j++)
-      {
-        fill_world_region_details(i,j);
-      }
+    if (world_site->type == 6) continue;
+    if (world_site->type == 7) continue;
+    if (world_site->type == 9) continue;
 
     // Check if the site has a previous realization active
     bool site_has_realization = world_site->realization != nullptr;
 
+    int vec_elements2 = df::global::world->world_data->region_details.size();
+    if (vec_elements2 > 0)
+    {
+      for (int l = vec_elements2 -1; l>= 0 ; l--)
+      {
+        df::world_region_details* rd = df::global::world->world_data->region_details[l];
+        if (rd != nullptr)
+        {
+          //delete_world_region_details(rd);
+          result = rd->anon_1;
+        }
+      }
+    }
+
     // Do DF initalize the site realization as this is a VERY complex task
     init_world_site_realization(world_site);
+
+    int vec_elements3 = df::global::world->world_data->region_details.size();
+    if (vec_elements3 > 0)
+    {
+      for (int l = vec_elements3 -1; l>= 0 ; l--)
+      {
+        df::world_region_details* rd = df::global::world->world_data->region_details[l];
+        if (rd != nullptr)
+        {
+          //delete_world_region_details(rd);
+          result = rd->anon_2;
+        }
+      }
+    }
 
     // Get the new/updated site realization after DF work
     df::world_site_realization* site_realization = world_site->realization;
@@ -362,27 +391,36 @@ int draw_sites_map(ExportedMapBase* map)
 
       if ((world_site->type == df::enums::world_site_type::world_site_type::Fortress) ||
           (world_site->type == df::enums::world_site_type::world_site_type::Monument))
-        process_fortress_or_monument(world_site, map);
+      {
+        //process_fortress_or_monument(world_site, map);
+      }
       else
+      {
         process_regular_site(world_site, site_has_realization, map);
+      }
 
-      delete_site_realization(world_site);
+      delete_world_site_realization(world_site);
       //delete world_site->realization;
     }
 
     // TODO delete world region details allocated
     int vec_elements = df::global::world->world_data->region_details.size();
-    for (int l = 0; l < vec_elements; l++)
+    if (vec_elements > 0)
     {
-      df::world_region_details* rd = df::global::world->world_data->region_details[l];
-      if (rd != nullptr)
+      for (int l = vec_elements -1; l>= 0 ; l--)
       {
-        delete_world_region_details(rd);
+        df::world_region_details* rd = df::global::world->world_data->region_details[l];
+        if (rd != nullptr)
+        {
+          delete_world_region_details(rd);
+          //delete rd;
+        }
       }
-    }
 
-    // Remove also the entry in the vector
-    df::global::world->world_data->region_details.erase(df::global::world->world_data->region_details.begin());
+      // Remove also the entry in the vector
+      df::global::world->world_data->region_details.erase(df::global::world->world_data->region_details.begin(),
+                                                          df::global::world->world_data->region_details.end());
+    }
   }
   return result;
 }
@@ -560,6 +598,12 @@ void process_fortress_or_monument(df::world_site*  world_site,
   if (global_min_y > global_max_y) return;
 
   // TODO optimize this code as is not efficient
+
+  for (int i = world_site->global_min_x/16; i <= world_site->global_max_x/16; i++)
+    for (int j = world_site->global_min_y/16; j <= world_site->global_max_y/16; j++)
+    {
+      fill_world_region_details(i,j);
+    }
 
   for (int pos_x_iterator = global_min_x; pos_x_iterator <= global_max_x; pos_x_iterator++)
     for (int pos_y_iterator = global_min_y; pos_y_iterator <= global_max_y; pos_y_iterator++)

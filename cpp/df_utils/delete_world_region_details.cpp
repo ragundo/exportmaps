@@ -30,6 +30,13 @@
 #include "../../include/dfhack.h"
 
 
+using namespace std;
+
+static unsigned int address_Windows = 0x0; // Default for DF42.06
+static unsigned int address_Linux   = 0x08087AD0; // Default for DF42.06
+static unsigned int address_Mac     = 0x0;         // Default for DF42.06
+
+
 /**************************************************************************
 Forward declarations
 **************************************************************************/
@@ -37,8 +44,6 @@ Forward declarations
 void delete_world_region_details_Windows(df::world_region_details* ptr_world_region_details);
 void delete_world_region_details_Linux(df::world_region_details* ptr_world_region_details);
 
-
-unsigned int address_DF_sub_Linux = 0x8087F30; // For 42.04 Linux
 
 /**************************************************************************
  Main function
@@ -104,13 +109,13 @@ void delete_world_region_details_Linux(df::world_region_details* ptr_world_regio
                 "call *%%eax;          "         /* call the DF subroutine                                */
                 "add  $0x10  ,%%esp;   "         /* release the space used in the heap for the parameters */
                 :                                /* no output parameters                                  */
-                : "m" (address_DF_sub_Linux),    /* input parameter                                       */
+                : "m" (address_Linux),           /* input parameter                                       */
                   "m" (ptr_world_region_details) /* input parameter                                       */
                 : "eax", "ecx"                   /* used registers                                        */
               );
 
   // Delete the world_region_detail
-  delete ptr_world_region_details;
+  //delete ptr_world_region_details;
 
 #endif
 }
