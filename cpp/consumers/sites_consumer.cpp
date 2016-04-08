@@ -410,7 +410,9 @@ void process_regular_site(df::world_site*  world_site,
         (site_realiz_building->type == 2) || // castle tower
         (site_realiz_building->type == 3))   // castle courtyard
     {
-     //     castle_map[17*site_realiz_building->min_x/48][17*site_realiz_building->min_y/48] = 1;
+      int cx = site_realiz_building->min_x/48;
+      int cy = site_realiz_building->min_y/48;
+      castle_map[cx][cy] = 1;
     }
   }
 
