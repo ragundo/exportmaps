@@ -4,9 +4,9 @@
 
 using namespace std;
 
-static unsigned int address_Windows = 0x0; // Default for DF42.06
+static unsigned int address_Windows = 0x00CC4F60; // Default for DF42.06
 static unsigned int address_Linux   = 0x090406F0; // Default for DF42.06
-static unsigned int address_Mac     = 0x0;         // Default for DF42.06
+static unsigned int address_Mac     = 0x0;        // Default for DF42.06
 
 
 
@@ -67,7 +67,7 @@ void delete_world_site_realization(df::world_site* world_site)
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
   delete_world_site_realization_Windows(address_DF_sub,
-                                      world_site);
+                                        world_site);
 #endif // WINDOWS
 
 }
@@ -109,15 +109,13 @@ void delete_world_site_realization_Windows(unsigned int address_DF_sub,
   // doesn't have to be the same every time DF is running.
   // DFHack solves this for us
   unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
-  unsigned int address_DF_sub_Win = address_DF_sub + delta; // Corrected subroutine address
+  unsigned int address_DF_sub_Win = address_Windows + delta; // Corrected subroutine address
 
   #if defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
 
-  __asm xor  eax, eax                          /* eax = 0                                       */
-  __asm push eax                               /* 2nd parameter to the stack = 0                */
   __asm push world_site                        /* 1st parameter to the stack = df_world_site*   */
-  __asm mov  eax, address_DF_sub_Win               /* eax = address DF subroutine                   */
-  __asm call address_DF_sub_Win                    /* call DF subroutine                            */
+  __asm mov  eax, address_DF_sub_Win           /* eax = address DF subroutine                   */
+  __asm call address_DF_sub_Win                /* call DF subroutine                            */
 
 //    __asm xor  eax, eax                          /* eax = 0                       */
 //    __asm push eax                               /* 5th parameter to the stack    */

@@ -25,14 +25,14 @@
 */
 
 // You can always find the latest version of this plugin in Github
-// https://github.com/ragundo/exportmaps  
+// https://github.com/ragundo/exportmaps
 
 #include "../../include/dfhack.h"
 
 
 using namespace std;
 
-static unsigned int address_Windows = 0x0; // Default for DF42.06
+static unsigned int address_Windows = 0x004433D0; // Default for DF42.06
 static unsigned int address_Linux   = 0x08087AD0; // Default for DF42.06
 static unsigned int address_Mac     = 0x0;         // Default for DF42.06
 
@@ -68,13 +68,14 @@ void delete_world_region_details_Linux(df::world_region_details* ptr_world_regio
 void delete_world_region_details(df::world_region_details* ptr_world_region_details)
 {
   #if defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
-  delete_world_region_details_Windows(ptr_region_details);
+  delete_world_region_details_Windows(ptr_world_region_details);
   #endif // Windows
 
   #ifdef LINUX_BUILD
   delete_world_region_details_Linux(ptr_world_region_details);
   #endif // Linux
 }
+
 
 /**************************************************************************
  Local function
@@ -85,14 +86,15 @@ void delete_world_region_details_Windows(df::world_region_details* ptr_world_reg
 
   // Adjust the real address
   unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
-  unsigned int address_DF_sub = 0 + delta;
+  unsigned int address_DF_sub = address_Windows + delta;
 
   // Call DF function
-  __asm mov  ebx, ptr_vector_world_region_details
+  __asm mov  eax, ptr_world_region_details
   __asm call address_DF_sub                    /* call the DF subroutine */
 
 #endif
 }
+
 
 /**************************************************************************
  Local function
