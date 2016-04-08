@@ -122,7 +122,6 @@ void process_fortress_or_monument(df::world_site* world_site,
 
 //----------------------------------------------------------------------------//
 void process_regular_site(df::world_site* world_site,
-                          bool had_previous_realization,
                           ExportedMapBase* map);
 //----------------------------------------------------------------------------//
 void write_map_pixel(int pos_x,
@@ -369,7 +368,7 @@ int draw_sites_map(ExportedMapBase* map)
       }
       else
       {
-        process_regular_site(world_site, site_has_realization, map);
+        process_regular_site(world_site, map);
       }
 
       if (!site_has_realization && (world_site->realization != nullptr))
@@ -385,7 +384,6 @@ int draw_sites_map(ExportedMapBase* map)
 
 *****************************************************************************/
 void process_regular_site(df::world_site*  world_site,
-                          bool             had_previous_realization,
                           ExportedMapBase* map
                          )
 {
