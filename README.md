@@ -3,6 +3,7 @@ A DFHack plugin for exporting world maps while in game.
 
 ## What do it does?
 It exports all the legends mode world maps while in game. There's no need to enter Legends mode.
+
 The following maps can be generated:
 * Elevations including lake and ocean floors
 * Elevation respecting water level
@@ -84,13 +85,13 @@ The availble options are the following:
 
 ## Is it multiplatform?
 
-Unfortunately no. This plugin is Linux and Windows only because it requires some trickery to get the data natively from DF. As I don't have access to a Mac computer, MacOs is not supported.
+Unfortunately no. This plugin is Linux and Windows only because it requires some trickery to get the data natively from DF. As I don't have access to a Mac computer, MacOS is not supported.
 
 ## What's next?
 For next releases, this is what I want to do:
 
 #### Raw maps
-Export maps as a raw data files. Ideal for using with external tools that could import world elevation data with biome and vegetation layers.
+Export maps as a raw data files. Ideal for using with external tools that could import world elevation data with biome and vegetation layers, for example, and render the world in 3D.
 
 #### RPC interface
 For generating maps on demand without needing to use the DFHack console. Just connect to DF and request the map using Google's protocol buffers.

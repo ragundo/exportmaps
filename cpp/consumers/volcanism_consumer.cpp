@@ -41,8 +41,7 @@ Local functions forward declaration
 RGB_color RGB_from_volcanism(int volcanism);
 
 //----------------------------------------------------------------------------//
-bool volcanism_do_work(MapsExporter* maps_exporter, // The coordinator object
-                       ExportedMapBase* map         // The map where we'll draw
+bool volcanism_do_work(MapsExporter* maps_exporter // The coordinator object
                        );
 
 
@@ -57,9 +56,6 @@ void consumer_volcanism(void* arg)
 
   if (arg != nullptr)
   {
-    // The map where we will write to
-    ExportedMapBase* volcanism_map = maps_exporter->get_volcanism_map();
-
     while(!finish)
     {
       if (maps_exporter->is_volcanism_queue_empty())
@@ -67,7 +63,7 @@ void consumer_volcanism(void* arg)
         tthread::this_thread::yield();
 
       else // There's data in the queue
-        finish = volcanism_do_work(maps_exporter, volcanism_map);
+        finish = volcanism_do_work(maps_exporter);
     }
   }
   // Function finish -> Thread finish
@@ -80,8 +76,7 @@ void consumer_volcanism(void* arg)
 // If is the end marker, the queue is empty and no more work needs to be done, return
 // If it's actual data process it and update the corresponding map
 //----------------------------------------------------------------------------//
-bool volcanism_do_work(MapsExporter* maps_exporter, // The coordinator object
-                       ExportedMapBase* map         // The map where we'll draw
+bool volcanism_do_work(MapsExporter* maps_exporter // The coordinator object
                        )
 {
   // Get the data from the queue
@@ -106,7 +101,8 @@ bool volcanism_do_work(MapsExporter* maps_exporter, // The coordinator object
                                                                                   rdg.get_pos_x(),
                                                                                   rdg.get_pos_y(),
                                                                                   df::global::world->world_data->world_width,
-                                                                                  df::global::world->world_data->world_height);
+                                                                                  df::global::world->world_data->world_height
+                                                                                  );
       // Get the proper df::region_entry
       df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first][adjusted_tile_coordinates.second];
 
@@ -119,7 +115,8 @@ bool volcanism_do_work(MapsExporter* maps_exporter, // The coordinator object
                                        rdg.get_pos_y(),
                                        x,
                                        y,
-                                       rgb_pixel_color);
+                                       rgb_pixel_color
+                                       );
     }
   return false; // Continue working
 }
