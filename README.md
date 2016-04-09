@@ -52,4 +52,8 @@ will generate only the biome map. You can also chain options, so
 
 `exportmaps -biome -vegetation`
 
+<<<<<<< HEAD
 will generate the biome and the vegetation maps.
+=======
+will generate the biome and the vegetation maps.
+>>>>>>> 3276ee372508a49ec8b5ec334aaae2055a6948f5
