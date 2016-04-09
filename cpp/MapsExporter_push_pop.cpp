@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,10 +14,6 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
@@ -36,139 +28,152 @@
 
 using namespace exportmaps_plugin;
 
-/*****************************************************************************
-Push methods
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Push the end mark in the different queues to signal that there's no
+// more data to be processed
+//----------------------------------------------------------------------------//
 
 void MapsExporter::push_end()
 {
-    if (maps_to_generate & MapType::TEMPERATURE)
-        temperature_producer->produce_end(*this);
+  if (maps_to_generate & MapType::TEMPERATURE)
+    temperature_producer->produce_end(*this);
 
-    if (maps_to_generate & MapType::RAINFALL)
-        rainfall_producer->produce_end(*this);
+  if (maps_to_generate & MapType::RAINFALL)
+    rainfall_producer->produce_end(*this);
 
-    if (maps_to_generate & MapType::DRAINAGE)
-        drainage_producer->produce_end(*this);
+  if (maps_to_generate & MapType::DRAINAGE)
+    drainage_producer->produce_end(*this);
 
-    if (maps_to_generate & MapType::SAVAGERY)
-        savagery_producer->produce_end(*this);
+  if (maps_to_generate & MapType::SAVAGERY)
+    savagery_producer->produce_end(*this);
 
-    if (maps_to_generate & MapType::VOLCANISM)
-        volcanism_producer->produce_end(*this);
+  if (maps_to_generate & MapType::VOLCANISM)
+    volcanism_producer->produce_end(*this);
 
-    if (maps_to_generate & MapType::VEGETATION)
-        vegetation_producer->produce_end(*this);
+  if (maps_to_generate & MapType::VEGETATION)
+    vegetation_producer->produce_end(*this);
 
-    if (maps_to_generate & MapType::EVILNESS)
-        evilness_producer->produce_end(*this);
+  if (maps_to_generate & MapType::EVILNESS)
+    evilness_producer->produce_end(*this);
 
-    if (maps_to_generate & MapType::SALINITY)
-        salinity_producer->produce_end(*this);
+  if (maps_to_generate & MapType::SALINITY)
+    salinity_producer->produce_end(*this);
 
-    if (maps_to_generate & MapType::HYDROSPHERE)
-        hydro_producer->produce_end(*this);
+  if (maps_to_generate & MapType::HYDROSPHERE)
+    hydro_producer->produce_end(*this);
 
-    if (maps_to_generate & MapType::ELEVATION)
-        elevation_producer->produce_end(*this);
+  if (maps_to_generate & MapType::ELEVATION)
+    elevation_producer->produce_end(*this);
 
-    if (maps_to_generate & MapType::ELEVATION_WATER)
-        elevation_water_producer->produce_end(*this);
+  if (maps_to_generate & MapType::ELEVATION_WATER)
+    elevation_water_producer->produce_end(*this);
 
-    if (maps_to_generate & MapType::BIOME)
-        biome_producer->produce_end(*this);
+  if (maps_to_generate & MapType::BIOME)
+    biome_producer->produce_end(*this);
 
 //    if (maps_to_generate & MapType::GEOLOGY)
 //        geology_producer->produce_end(*this);
 
-    if (maps_to_generate & MapType::TRADING)
-        trading_producer->produce_end(*this);
+  if (maps_to_generate & MapType::TRADING)
+    trading_producer->produce_end(*this);
 
-    if (maps_to_generate & MapType::NOBILITY)
-        nobility_producer->produce_end(*this);    
+  if (maps_to_generate & MapType::NOBILITY)
+    nobility_producer->produce_end(*this);
 
-    if (maps_to_generate & MapType::DIPLOMACY)
-        diplomacy_producer->produce_end(*this);
+  if (maps_to_generate & MapType::DIPLOMACY)
+    diplomacy_producer->produce_end(*this);
 
-    if (maps_to_generate & MapType::SITES)
-        sites_producer->produce_end(*this);
-
-
+  if (maps_to_generate & MapType::SITES)
+    sites_producer->produce_end(*this);
 }
 
-void MapsExporter::push_data(df::world_region_details* ptr_rd, int x, int y)
+//----------------------------------------------------------------------------//
+// Push the world_region_details for this world cooridinate in
+// the different queues so each one can process it
+//----------------------------------------------------------------------------//
+void MapsExporter::push_data(df::world_region_details* ptr_rd, // df::world_region_details data
+                             int x,                            // world coordinate x
+                             int y                             // world coordinate y
+                             )
 {
-    // Push data for the temperature map
-    if (maps_to_generate & MapType::TEMPERATURE)
-        temperature_producer->produce_data(*this,x,y,ptr_rd);
+  // Each map has a different producer that generates different info from the data
+  // that df::world_region_details contains
 
-    // Push data for the rainfall map
-    if (maps_to_generate & MapType::RAINFALL)
-        rainfall_producer->produce_data(*this,x,y,ptr_rd);
+  // Push data for the temperature map
+  if (maps_to_generate & MapType::TEMPERATURE)
+    temperature_producer->produce_data(*this,x,y,ptr_rd);
 
-    // Push data for the drainage map
-    if (maps_to_generate & MapType::DRAINAGE)
-        drainage_producer->produce_data(*this,x,y,ptr_rd);
+  // Push data for the rainfall map
+  if (maps_to_generate & MapType::RAINFALL)
+    rainfall_producer->produce_data(*this,x,y,ptr_rd);
 
-    // Push data for the savagery map
-    if (maps_to_generate & MapType::SAVAGERY)
-        savagery_producer->produce_data(*this,x,y,ptr_rd);
+  // Push data for the drainage map
+  if (maps_to_generate & MapType::DRAINAGE)
+    drainage_producer->produce_data(*this,x,y,ptr_rd);
 
-    // Push data for the volcanism map
-    if (maps_to_generate & MapType::VOLCANISM)
-        volcanism_producer->produce_data(*this,x,y,ptr_rd);
+  // Push data for the savagery map
+  if (maps_to_generate & MapType::SAVAGERY)
+    savagery_producer->produce_data(*this,x,y,ptr_rd);
 
-    // Push data for the vegetation map
-    if (maps_to_generate & MapType::VEGETATION)
-        vegetation_producer->produce_data(*this,x,y,ptr_rd);
+  // Push data for the volcanism map
+  if (maps_to_generate & MapType::VOLCANISM)
+    volcanism_producer->produce_data(*this,x,y,ptr_rd);
 
-    // Push data for the evilness map
-    if (maps_to_generate & MapType::EVILNESS)
-        evilness_producer->produce_data(*this,x,y,ptr_rd);
+  // Push data for the vegetation map
+  if (maps_to_generate & MapType::VEGETATION)
+    vegetation_producer->produce_data(*this,x,y,ptr_rd);
 
-    // Push data for the salinity map
-    if (maps_to_generate & MapType::SALINITY)
-        salinity_producer->produce_data(*this,x,y,ptr_rd);
+  // Push data for the evilness map
+  if (maps_to_generate & MapType::EVILNESS)
+    evilness_producer->produce_data(*this,x,y,ptr_rd);
 
-    // Push data for the hydrosphere map
-    if (maps_to_generate & MapType::HYDROSPHERE)
-        hydro_producer->produce_data(*this,x,y,ptr_rd);
+  // Push data for the salinity map
+  if (maps_to_generate & MapType::SALINITY)
+    salinity_producer->produce_data(*this,x,y,ptr_rd);
 
-    // Push data for the Elevation map
-    if (maps_to_generate & MapType::ELEVATION)
-        elevation_producer->produce_data(*this,x,y,ptr_rd);
+  // Push data for the hydrosphere map
+  if (maps_to_generate & MapType::HYDROSPHERE)
+    hydro_producer->produce_data(*this,x,y,ptr_rd);
 
-    // Push data for the Elevation respecting water map
-    if (maps_to_generate & MapType::ELEVATION_WATER)
-        elevation_water_producer->produce_data(*this,x,y,ptr_rd);
+  // Push data for the Elevation map
+  if (maps_to_generate & MapType::ELEVATION)
+    elevation_producer->produce_data(*this,x,y,ptr_rd);
 
-    // Push data for Biome map
-    if (maps_to_generate & MapType::BIOME)
-        biome_producer->produce_data(*this,x,y,ptr_rd);
+  // Push data for the Elevation respecting water map
+  if (maps_to_generate & MapType::ELEVATION_WATER)
+    elevation_water_producer->produce_data(*this,x,y,ptr_rd);
 
-    // Push data for geology map
+  // Push data for Biome map
+  if (maps_to_generate & MapType::BIOME)
+    biome_producer->produce_data(*this,x,y,ptr_rd);
+
+  // Push data for geology map
 //    if (maps_to_generate & MapType::GEOLOGY)
 //        geology_producer->produce_data(*this,x,y,ptr_rd);
 
-    // Push data for trading map
-    if (maps_to_generate & MapType::TRADING)
-        trading_producer->produce_data(*this,x,y,ptr_rd);    
+  // Push data for trading map
+  if (maps_to_generate & MapType::TRADING)
+    trading_producer->produce_data(*this,x,y,ptr_rd);
 
-    // Push data for nobility map
-    if (maps_to_generate & MapType::NOBILITY)
-        nobility_producer->produce_data(*this,x,y,ptr_rd);        
+  // Push data for nobility map
+  if (maps_to_generate & MapType::NOBILITY)
+    nobility_producer->produce_data(*this,x,y,ptr_rd);
 
-    // Push data for diplomacy map
-    if (maps_to_generate & MapType::DIPLOMACY)
-        diplomacy_producer->produce_data(*this,x,y,ptr_rd);
+  // Push data for diplomacy map
+  if (maps_to_generate & MapType::DIPLOMACY)
+    diplomacy_producer->produce_data(*this,x,y,ptr_rd);
 
-    // Push data for sites map
-    if (maps_to_generate & MapType::SITES)
-        sites_producer->produce_data(*this,x,y,ptr_rd);
+  // Push data for sites map
+  if (maps_to_generate & MapType::SITES)
+    sites_producer->produce_data(*this,x,y,ptr_rd);
 }
 
 
-
+//----------------------------------------------------------------------------//
+// Push the data generated by each producer in its respective queue.
+// As the producer and the consumer run in different threads, we must
+// synchronize them to avoid a race condition
+//----------------------------------------------------------------------------//
 void MapsExporter::push_temperature(RegionDetailsBiome& rdb)
 {
     mtx.lock();
@@ -290,9 +295,11 @@ void MapsExporter::push_sites(RegionDetailsElevationWater& rdb)
 }
 
 
-/*****************************************************************************
-Pop methods
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Pop data from each queue.
+// As the producer and the consumer run in different threads, we must
+// synchronize them to avoid a race condition
+//----------------------------------------------------------------------------//
 
 RegionDetailsBiome MapsExporter::pop_temperature()
 {

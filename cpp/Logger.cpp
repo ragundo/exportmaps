@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,10 +14,6 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
@@ -30,34 +22,55 @@
 #include <iomanip>
 #include "../include/Logger.h"
 
-
+//----------------------------------------------------------------------------//
+// Constructor
+// Store a reference to the DFHack console
+//----------------------------------------------------------------------------//
 Logger::Logger(DFHack::color_ostream& out) : _out(out) {};
 
+//----------------------------------------------------------------------------//
+// Logs a string to the DFHack console without adding a newline
+//----------------------------------------------------------------------------//
 void Logger::log(std::string st)
 {
   _out << st;
 }
 
+//----------------------------------------------------------------------------//
+// Logs a string to the DFHack console adding a newline
+//----------------------------------------------------------------------------//
 void Logger::log_line(std::string st)
 {
   _out << st << std::endl;
 }
 
+//----------------------------------------------------------------------------//
+// Logs a newline to the DFHack console
+//----------------------------------------------------------------------------//
 void Logger::log_endl()
 {
   _out << std::endl;
 }
 
+//----------------------------------------------------------------------------//
+// Logs a carriage return to the DFHack console
+//----------------------------------------------------------------------------//
 void Logger::log_cr()
 {
   _out << "\r" << std::flush;
 }
 
+//----------------------------------------------------------------------------//
+// Logs a integer number to the DFHack console
+//----------------------------------------------------------------------------//
 void Logger::log_number(unsigned int i)
 {
   _out << i;
 }
 
+//----------------------------------------------------------------------------//
+// Logs a integer number to the console using a maximum width
+//----------------------------------------------------------------------------//
 void Logger::log_number(unsigned int i, unsigned int width)
 {
   _out << std::setw(width) << i;

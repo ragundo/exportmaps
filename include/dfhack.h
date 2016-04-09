@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,11 +14,11 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
+
+// You can always find the latest version of this plugin in Github
+// https://github.com/ragundo/exportmaps
+
 
 #ifndef DFHACK_H
 #define DFHACK_H

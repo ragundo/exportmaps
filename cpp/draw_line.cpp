@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,10 +14,6 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
@@ -36,11 +28,16 @@ using namespace std;
 using namespace DFHack;
 using namespace exportmaps_plugin;
 
-
-vector<df::coord2d> line_algorithm(int site1_center_x,
-                                   int site1_center_y,
-                                   int site2_center_x,
-                                   int site2_center_y)
+//----------------------------------------------------------------------------//
+// Bresenham algorithm to draw a line between 2 points
+//
+// Returns a vector with all the point coordinates of the line
+//----------------------------------------------------------------------------//
+vector<df::coord2d> line_algorithm(int site1_center_x, // Point 1 x
+                                   int site1_center_y, // Point 1 y
+                                   int site2_center_x, // Point 2 x
+                                   int site2_center_y  // Point 2 y
+                                   )
 {
   vector<df::coord2d> result;
   int x, y, dx, dy, p, incE, incNE, stepx, stepy;
@@ -112,66 +109,88 @@ vector<df::coord2d> line_algorithm(int site1_center_x,
 }
 
 
-/*****************************************************************************
-*****************************************************************************/
-void draw_thick_color_line(ExportedMapBase* map,
-                           int x1, int y1, int x2, int y2,
-                           RGB_color& color_center,
-                           RGB_color& color_border)
+//----------------------------------------------------------------------------//
+// Draws a "thick" line in the map between point1 and point2.
+// A thick line is 3 pixels wide, with a center pixel and 2 border pixels
+//----------------------------------------------------------------------------//
+void draw_thick_color_line(ExportedMapBase* map,    // The map where we are drawing
+                           int x1,                  // Point 1 x coordinate
+                           int y1,                  // Point 1 y coordinate
+                           int x2,                  // Point 2 x coordinate
+                           int y2,                  // Point 2 y coordinate
+                           RGB_color& color_center, // Color of the center line
+                           RGB_color& color_border  // Color of the border line
+                           )
 {
-    vector<df::coord2d> buffer = line_algorithm(x1, y1, x2, y2);
+  // Get a "thin" line
+  vector<df::coord2d> buffer = line_algorithm(x1, y1, x2, y2);
 
-    // Project the buffer over the map, applying color to render it
-    for (unsigned int i = 0; i < buffer.size(); ++i)
-    {
-      df::coord2d pos = buffer[i];
-      map->write_thick_line_point(pos.x,
-                                  pos.y,
-                                  color_center,
-                                  color_border);
-    } 
+  // Project the buffer over the map, applying color to render it
+  for (unsigned int i = 0; i < buffer.size(); ++i)
+  {
+    df::coord2d pos = buffer[i];
+    map->write_thick_line_point(pos.x,
+                                pos.y,
+                                color_center,
+                                color_border);
+  }
 }
 
 
-/*****************************************************************************
-*****************************************************************************/
-void draw_thick_color_line_2_colors(ExportedMapBase* map,
-                                    int x1, int y1, int x2, int y2,
-                                    RGB_color& color_center1,
-                                    RGB_color& color_border1,
-                                    RGB_color& color_center2,
-                                    RGB_color& color_border2)
+
+//----------------------------------------------------------------------------//
+// Draws a "thick" line in the map between point1 and point2 using 2 colors.
+// A thick line is 3 pixels wide, with a center pixel and 2 border pixels
+// Also, half of the line is painted with some colors and the other half
+// is painted with different colors
+//----------------------------------------------------------------------------//
+void draw_thick_color_line_2_colors(ExportedMapBase* map,     // The map where we are drawing
+                                    int x1,                   // Point 1 x coordinate
+                                    int y1,                   // Point 1 x coordinate
+                                    int x2,                   // Point 1 x coordinate
+                                    int y2,                   // Point 1 x coordinate
+                                    RGB_color& color_center1, // Half line1 center color
+                                    RGB_color& color_border1, // Half line1 border color
+                                    RGB_color& color_center2, // Half line2 center color
+                                    RGB_color& color_border2  // Half line2 border color
+                                    )
 {
-    vector<df::coord2d> buffer = line_algorithm(x1, y1, x2, y2);
+  // Get a thin line
+  vector<df::coord2d> buffer = line_algorithm(x1, y1, x2, y2);
 
-    // Project the buffer over the map, applying color to render it
-    for (unsigned int i = 0; i < buffer.size(); ++i)
-    {
-      df::coord2d pos = buffer[i];
+  // Project the buffer over the map, applying color to render it
+  for (unsigned int i = 0; i < buffer.size(); ++i)
+  {
+    df::coord2d pos = buffer[i];
 
-      if (i <= (buffer.size() >> 1))
-        map->write_thick_line_point(pos.x,
+    if (i <= (buffer.size() >> 1))
+      map->write_thick_line_point(pos.x,
                                   pos.y,
                                   color_center2,
                                   color_border2);
-      else
-        map->write_thick_line_point(pos.x,
+
+    else // Second half is in different colors
+      map->write_thick_line_point(pos.x,
                                   pos.y,
                                   color_center1,
                                   color_border1);
-    }
+  }
 }
 
-/*****************************************************************************
-*****************************************************************************/
 
 
-void draw_site_rectangle(ExportedMapBase* map,
-                         df::world_site*  world_site,
-                         int              site_population,
-                         unsigned char    pixel_R,
+//----------------------------------------------------------------------------//
+// Draws a site rectangle in the map
+// A site rectangle is a solid one that spans over the site limits
+// If the site has population (not empty) or not is reflecte
+//----------------------------------------------------------------------------//
+void draw_site_rectangle(ExportedMapBase* map,             // The map where we draw
+                         df::world_site*  world_site,      // The site to be draw
+                         int              site_population, // Site population
+                         unsigned char    pixel_R,         // Pixel color
                          unsigned char    pixel_G,
-                         unsigned char    pixel_B)
+                         unsigned char    pixel_B
+                         )
 {
   // Get the site boundary in world tiles
   int site_global_min_x = world_site->global_min_x;
@@ -233,18 +252,22 @@ void draw_site_rectangle(ExportedMapBase* map,
 
         map->write_embark_pixel(x_it,                         // Embark coordinate x (0..15)
                                 y_it,                         // Embark coordinate y (0..15)
-                                rgb_pixel_color_site_empty);  // Pixel color
+                                rgb_pixel_color_site_empty);  // Color to be used
 
       }
 }
 
 
-void draw_site_rectangle_offseted(ExportedMapBase* map,
-                                  df::world_site*  world_site,
-                                  unsigned char    pixel_R,
+//----------------------------------------------------------------------------//
+// Draws a rectangle with a interior offset respect the world site boundaries
+//----------------------------------------------------------------------------//
+void draw_site_rectangle_offseted(ExportedMapBase* map,        // The map where we draw
+                                  df::world_site*  world_site, // The site to be draw
+                                  unsigned char    pixel_R,    // Color to be used
                                   unsigned char    pixel_G,
                                   unsigned char    pixel_B,
-                                  int              offset)
+                                  int              offset      // in pixels respect the site border
+                                  )
 {
   // Get the site boundary in world tiles
   int site_global_min_x = world_site->global_min_x;
@@ -259,6 +282,7 @@ void draw_site_rectangle_offseted(ExportedMapBase* map,
   int site_global_min_yo = std::min(site_global_min_y + offset, site_global_max_y - offset);
   int site_global_max_yo = std::max(site_global_min_y + offset, site_global_max_y - offset);  
 
+  // Check limits
   if (site_global_min_xo > site_global_max_xo)
     site_global_min_xo = site_global_max_xo;
   if (site_global_max_xo < site_global_min_xo)
@@ -270,9 +294,9 @@ void draw_site_rectangle_offseted(ExportedMapBase* map,
 
   //Iterate over the site coordinates
 
-    tuple<unsigned char,unsigned char,unsigned char> rgb_pixel_color(pixel_R,
-                                                                     pixel_G,
-                                                                     pixel_B);
+  tuple<unsigned char,unsigned char,unsigned char> rgb_pixel_color(pixel_R,
+                                                                   pixel_G,
+                                                                   pixel_B);
 
   for (int y_it = site_global_max_yo;    y_it >= site_global_min_yo;  --y_it)
     for (int x_it = site_global_min_xo;  x_it <= site_global_max_xo;  ++x_it)
@@ -288,12 +312,17 @@ void draw_site_rectangle_offseted(ExportedMapBase* map,
       }
 }
 
-void draw_site_rectangle_filled_offseted(ExportedMapBase* map,
-                                         df::world_site*  world_site,
-                                         unsigned char    pixel_R,
+
+//----------------------------------------------------------------------------//
+//
+//----------------------------------------------------------------------------//
+void draw_site_rectangle_filled_offseted(ExportedMapBase* map,        // The map where we draw
+                                         df::world_site*  world_site, // The site to be draw
+                                         unsigned char    pixel_R,    // Color to be used
                                          unsigned char    pixel_G,
                                          unsigned char    pixel_B,
-                                         int              offset)
+                                         int              offset      // in pixels respect to the site border
+                                         )
 {
   // Get the site boundary in world tiles
   int site_global_min_x = world_site->global_min_x;
@@ -308,6 +337,7 @@ void draw_site_rectangle_filled_offseted(ExportedMapBase* map,
   int site_global_min_yo = std::min(site_global_min_y + offset, site_global_max_y - offset);
   int site_global_max_yo = std::max(site_global_min_y + offset, site_global_max_y - offset);
 
+  // Check limits
   if (site_global_min_xo > site_global_max_xo)
     site_global_min_xo = site_global_max_xo;
   if (site_global_max_xo < site_global_min_xo)
@@ -319,9 +349,9 @@ void draw_site_rectangle_filled_offseted(ExportedMapBase* map,
 
   //Iterate over the site coordinates
 
-    tuple<unsigned char,unsigned char,unsigned char> rgb_pixel_color(pixel_R,
-                                                                     pixel_G,
-                                                                     pixel_B);
+  tuple<unsigned char,unsigned char,unsigned char> rgb_pixel_color(pixel_R,
+                                                                   pixel_G,
+                                                                   pixel_B);
 
   for (int y_it = site_global_max_yo;    y_it >= site_global_min_yo;  --y_it)
     for (int x_it = site_global_min_xo;  x_it <= site_global_max_xo;  ++x_it)

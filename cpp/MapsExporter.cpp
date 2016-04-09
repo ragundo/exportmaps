@@ -60,103 +60,103 @@ using namespace DFHack;
 *****************************************************************************/
 bool MapsExporter::generate_maps(Logger& logger)
 {
-    if ((maps_to_generate == 0) && (maps_to_generate_extended == 0))
-        return false;   // There's nothing to generate
+  if ((maps_to_generate == 0) && (maps_to_generate_extended == 0))
+      return false;   // There's nothing to generate
 
-    logger.log_line("Starting threads");
+  logger.log_line("Starting threads");
 
-    // start the threads, one for each map to generate
-    this->setup_threads();
+  // start the threads, one for each map to generate
+  this->setup_threads();
 
-    // Store the world coordinates of the current region, as the region_details are already generated
-    std::set<int> current_region_x_coords;
-    std::set<int> current_region_y_coords;
-    for (unsigned int u = 0; u < df::global::world->world_data->region_details.size(); ++u)
+  // Store the world coordinates of the current region, as the region_details are already generated
+  std::set<int> current_region_x_coords;
+  std::set<int> current_region_y_coords;
+  for (unsigned int u = 0; u < df::global::world->world_data->region_details.size(); ++u)
+  {
+      current_region_x_coords.insert(df::global::world->world_data->region_details[u]->pos.x);
+      current_region_y_coords.insert(df::global::world->world_data->region_details[u]->pos.y);
+  }
+
+  // No error
+  bool exit_by_error = false;
+
+  // Iterate over the whole world
+  for (int y = 0; y < df::global::world->world_data->world_height; ++y)
+    for (int x = 0; x < df::global::world->world_data->world_width; ++x)
     {
-        current_region_x_coords.insert(df::global::world->world_data->region_details[u]->pos.x);
-        current_region_y_coords.insert(df::global::world->world_data->region_details[u]->pos.y);
-    }
+      logger.log("Processing world coordinates:[");logger.log_number(x,3);logger.log(",");logger.log_number(y,3);
+      logger.log("]");logger.log_cr();
 
-    // No error
-    bool exit_by_error = false;
+      df::world_region_details* ptr_rd;
+      bool delete_region = true; // New generated region must be deleted after processing it
 
-    // Iterate over the whole world
-    for (int y = 0; y < df::global::world->world_data->world_height; ++y)
-        for (int x = 0; x < df::global::world->world_data->world_width; ++x)
+      // Check if this world coordinate is one from the currente embark
+      if (current_region_x_coords.count(x))
+      {
+        if (current_region_y_coords.count(y))
         {
-            logger.log("Processing world coordinates:[");logger.log_number(x,3);logger.log(",");logger.log_number(y,3);
-            logger.log("]");logger.log_cr();
-
-            df::world_region_details* ptr_rd;
-            bool delete_region = true; // New generated region must be deleted after processing it
-
-            // Check if this world coordinate is one from the currente embark
-            if (current_region_x_coords.count(x))
-            {
-                if (current_region_y_coords.count(y))
-                {
-                    for (unsigned int k = 0;
-                         k < df::global::world->world_data->region_details.size();
-                         ++k)
-                            if (df::global::world->world_data->region_details[k]->pos.x == x)
-                                if (df::global::world->world_data->region_details[k]->pos.y == y)
-                                {
-                                    // For the current embark, the region_details are already present
-                                    // in world.world_data.region_details vector, so there's no need
-                                    // to generate nor destroy them
-                                    ptr_rd = df::global::world->world_data->region_details[k];
-                                    delete_region = false;
-                                    break;
-                                }
-                }
-            }
-
-            if (delete_region) // for on-demand generated ones
-            {
-                // size before inserting the new element
-                int previous = df::global::world->world_data->region_details.size();
-
-                // generate a new region details a push in the vector
-                fill_world_region_details(x,y);
-
-                // Check the new size of the vector
-                int new_size = df::global::world->world_data->region_details.size();
-
-                // The new size must be the original + 1. If not there was an error
-                if ((new_size == 0) || (new_size == previous))
-                {
-                    delete_region = false; // don't delete anything
-                    exit_by_error = true;  // finish the plugin execution as there were problems
-                }
-                else // Everything ok. Use the new generated region details
-                    ptr_rd = df::global::world->world_data->region_details[new_size-1];
-
-            }
-
-            // Push the data into the different queues
-            if (!exit_by_error)
-                push_data(ptr_rd, x, y);
-
-            // Remove the generated region details
-            if (delete_region)
-            {
-                // delete_world_region_details(ptr_rd);
-                delete ptr_rd;
-                // Remove also the entry in the vector
-                df::global::world->world_data->region_details.erase(df::global::world->world_data->region_details.begin() +
-                                                                    df::global::world->world_data->region_details.size()-1);
-            }
+          for (unsigned int k = 0;
+               k < df::global::world->world_data->region_details.size();
+               ++k)
+                    if (df::global::world->world_data->region_details[k]->pos.x == x)
+                      if (df::global::world->world_data->region_details[k]->pos.y == y)
+                      {
+                        // For the current embark, the region_details are already present
+                        // in world.world_data.region_details vector, so there's no need
+                        // to generate nor destroy them
+                        ptr_rd = df::global::world->world_data->region_details[k];
+                        delete_region = false;
+                        break;
+                      }
         }
+      }
+
+      if (delete_region) // for on-demand generated ones
+      {
+        // size before inserting the new element
+        int previous = df::global::world->world_data->region_details.size();
+
+        // generate a new region details a push in the vector
+        fill_world_region_details(x,y);
+
+        // Check the new size of the vector
+        int new_size = df::global::world->world_data->region_details.size();
+
+        // The new size must be the original + 1. If not there was an error
+        if ((new_size == 0) || (new_size == previous))
+        {
+          delete_region = false; // don't delete anything
+          exit_by_error = true;  // finish the plugin execution as there were problems
+        }
+        else // Everything ok. Use the new generated region details
+          ptr_rd = df::global::world->world_data->region_details[new_size-1];
+      }
+
+      // Push the data into the different queues
+      if (!exit_by_error)
+        this->push_data(ptr_rd, x, y);
+
+      // Remove the generated region details
+      if (delete_region)
+      {
+        // delete_world_region_details(ptr_rd);
+        delete ptr_rd;
+
+        // Remove also the entry in the vector
+        df::global::world->world_data->region_details.erase(df::global::world->world_data->region_details.begin() +
+                                                            df::global::world->world_data->region_details.size()-1);
+      }
+    }
 
     // The whole world has been swept
     // Signal no more data to the consumer (threads) to finish their execution
     if (!exit_by_error)
     {
-        logger.log_endl();
-        logger.log_line("World map visited");
+      logger.log_endl();
+      logger.log_line("World map visited");
     }
 
-    push_end();
+    this->push_end();
 
     // Wait for the consumers to finish
     logger.log_line("Waiting for threads to finish");
@@ -165,87 +165,86 @@ bool MapsExporter::generate_maps(Logger& logger)
     // Write the generated maps to disk
     if (!exit_by_error)
     {
-        logger.log_line("Writing maps to disk");
-        this->write_maps_to_disk();
+      logger.log_line("Writing maps to disk");
+      this->write_maps_to_disk();
     }
 
     // Free resources
     logger.log_line("Clean up resources");
-    cleanup();
+    this->cleanup();
 
     if (!exit_by_error)
     {
-        logger.log_line("Done.");
+      logger.log_line("Done.");
     }
     else
-        logger.log_line("ERROR generating maps");
+      logger.log_line("ERROR generating maps");
 
     return !exit_by_error;
 }
 
-
-
-
-
+//----------------------------------------------------------------------------//
+// Write the generated maps to disk
+//----------------------------------------------------------------------------//
 void MapsExporter::write_maps_to_disk()
 {
+  if (maps_to_generate & MapType::TEMPERATURE)
+    temperature_map.get()->write_to_disk();
 
-    if (maps_to_generate & MapType::TEMPERATURE)
-        temperature_map.get()->write_to_disk();
+  if (maps_to_generate & MapType::RAINFALL)
+    rainfall_map.get()->write_to_disk();
 
-    if (maps_to_generate & MapType::RAINFALL)
-        rainfall_map.get()->write_to_disk();
+  if (maps_to_generate & MapType::DRAINAGE)
+    drainage_map.get()->write_to_disk();
 
-    if (maps_to_generate & MapType::DRAINAGE)
-        drainage_map.get()->write_to_disk();
+  if (maps_to_generate & MapType::SAVAGERY)
+    savagery_map.get()->write_to_disk();
 
-    if (maps_to_generate & MapType::SAVAGERY)
-        savagery_map.get()->write_to_disk();
+  if (maps_to_generate & MapType::VOLCANISM)
+    volcanism_map.get()->write_to_disk();
 
-    if (maps_to_generate & MapType::VOLCANISM)
-        volcanism_map.get()->write_to_disk();
+  if (maps_to_generate & MapType::VEGETATION)
+    vegetation_map.get()->write_to_disk();
 
-    if (maps_to_generate & MapType::VEGETATION)
-        vegetation_map.get()->write_to_disk();
+  if (maps_to_generate & MapType::EVILNESS)
+    evilness_map.get()->write_to_disk();
 
-    if (maps_to_generate & MapType::EVILNESS)
-        evilness_map.get()->write_to_disk();
+  if (maps_to_generate & MapType::SALINITY)
+    salinity_map.get()->write_to_disk();
 
-    if (maps_to_generate & MapType::SALINITY)
-        salinity_map.get()->write_to_disk();
+  if (maps_to_generate & MapType::HYDROSPHERE)
+    hydro_map.get()->write_to_disk();
 
-    if (maps_to_generate & MapType::HYDROSPHERE)
-        hydro_map.get()->write_to_disk();
+  if (maps_to_generate & MapType::ELEVATION)
+    elevation_map.get()->write_to_disk();
 
-    if (maps_to_generate & MapType::ELEVATION)
-        elevation_map.get()->write_to_disk();
+  if (maps_to_generate & MapType::ELEVATION_WATER)
+    elevation_water_map.get()->write_to_disk();
 
-    if (maps_to_generate & MapType::ELEVATION_WATER)
-        elevation_water_map.get()->write_to_disk();
-
-    if (maps_to_generate & MapType::BIOME)
-        biome_map.get()->write_to_disk();
+  if (maps_to_generate & MapType::BIOME)
+    biome_map.get()->write_to_disk();
 
 //    if (maps_to_generate & MapType::GEOLOGY)
 //        geology_map.get()->write_to_disk();
 
-    if (maps_to_generate & MapType::TRADING)
-        trading_map.get()->write_to_disk();    
+  if (maps_to_generate & MapType::TRADING)
+    trading_map.get()->write_to_disk();
 
-    if (maps_to_generate & MapType::NOBILITY)
-        nobility_map.get()->write_to_disk();    
+  if (maps_to_generate & MapType::NOBILITY)
+    nobility_map.get()->write_to_disk();
 
-    if (maps_to_generate & MapType::DIPLOMACY)
-        diplomacy_map.get()->write_to_disk();
+  if (maps_to_generate & MapType::DIPLOMACY)
+    diplomacy_map.get()->write_to_disk();
 
-    if (maps_to_generate & MapType::SITES)
-        sites_map.get()->write_to_disk();
+  if (maps_to_generate & MapType::SITES)
+    sites_map.get()->write_to_disk();
 }
 
 
 
-////////////////////////////////////////
-
+//----------------------------------------------------------------------------//
+// Methods to return the different maps from its smart pointer
+//----------------------------------------------------------------------------//
 ExportedMapDF* MapsExporter::get_temperature_map()
 {
     return temperature_map.get();
@@ -332,7 +331,9 @@ ExportedMapDF* MapsExporter::get_sites_map()
 }
 
 
-///////////////////////////////////////
+//----------------------------------------------------------------------------//
+// Clean the resources used
+//----------------------------------------------------------------------------//
 
 void MapsExporter::cleanup()
 {
@@ -393,6 +394,3 @@ void MapsExporter::cleanup()
     diplomacy_producer.reset();
     sites_producer.reset();
 }
-
-/////////////////////////////////
-

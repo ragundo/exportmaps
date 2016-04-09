@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,10 +14,6 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
@@ -38,7 +30,7 @@ using namespace exportmaps_plugin;
 
 /*****************************************************************************
  External functions declaration
- Here comes all the threads functions
+ Here comes all the threads functions for the different maps.
 *****************************************************************************/
 extern void consumer_temperature    (void* arg);
 extern void consumer_rainfall       (void* arg);
@@ -61,88 +53,92 @@ extern void consumer_sites          (void* arg);
 /*****************************************************************************
 *****************************************************************************/
 
-
+//----------------------------------------------------------------------------//
+// Return the mutex object used to synchronize the producer with the
+// different threads
+//----------------------------------------------------------------------------//
 tthread::mutex& MapsExporter::get_mutex()
 {
     return mtx;
 }
 
-
+//----------------------------------------------------------------------------//
+// For each map that needs to be generated, a thread is created to do that.
+// The MapsExporter object is passed to each thread so it can call its methods
+//----------------------------------------------------------------------------//
 void MapsExporter::setup_threads()
 {
-    // Start a thread for each map type and put in a list
-    // in order to wait later for finishing them
-    if (maps_to_generate & MapType::TEMPERATURE)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_temperature,(void*)this);
-        consumer_threads.push_back(pthread);
-    }
+  if (maps_to_generate & MapType::TEMPERATURE)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_temperature,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 
-    if (maps_to_generate & MapType::RAINFALL)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_rainfall,(void*)this);
-        consumer_threads.push_back(pthread);
-    }
+  if (maps_to_generate & MapType::RAINFALL)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_rainfall,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 
-    if (maps_to_generate & MapType::DRAINAGE)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_drainage,(void*)this);
-        consumer_threads.push_back(pthread);
-    }
+  if (maps_to_generate & MapType::DRAINAGE)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_drainage,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 
-    if (maps_to_generate & MapType::SAVAGERY)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_savagery,(void*)this);
-        consumer_threads.push_back(pthread);
-    }
+  if (maps_to_generate & MapType::SAVAGERY)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_savagery,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 
-    if (maps_to_generate & MapType::VOLCANISM)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_volcanism,(void*)this);
-        consumer_threads.push_back(pthread);
-    }
+  if (maps_to_generate & MapType::VOLCANISM)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_volcanism,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 
-    if (maps_to_generate & MapType::VEGETATION)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_vegetation,(void*)this);
-        consumer_threads.push_back(pthread);
-    }
+  if (maps_to_generate & MapType::VEGETATION)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_vegetation,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 
-    if (maps_to_generate & MapType::EVILNESS)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_evilness,(void*)this);
-        consumer_threads.push_back(pthread);
-    }
+  if (maps_to_generate & MapType::EVILNESS)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_evilness,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 
-    if (maps_to_generate & MapType::SALINITY)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_salinity,(void*)this);
-        consumer_threads.push_back(pthread);
-    }
+  if (maps_to_generate & MapType::SALINITY)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_salinity,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 
-    if (maps_to_generate & MapType::HYDROSPHERE)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_hydro,(void*)this);
-        consumer_threads.push_back(pthread);
-    }
+  if (maps_to_generate & MapType::HYDROSPHERE)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_hydro,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 
-    if (maps_to_generate & MapType::ELEVATION)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_elevation,(void*)this);
-        consumer_threads.push_back(pthread);
-    }
+  if (maps_to_generate & MapType::ELEVATION)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_elevation,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 
-    if (maps_to_generate & MapType::ELEVATION_WATER)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_elevation_water,(void*)this);
-        consumer_threads.push_back(pthread);
-    }
+  if (maps_to_generate & MapType::ELEVATION_WATER)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_elevation_water,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 
-    if (maps_to_generate & MapType::BIOME)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_biome,(void*)this);
-        consumer_threads.push_back(pthread);
-    }
+  if (maps_to_generate & MapType::BIOME)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_biome,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 
 /*
     if (maps_to_generate & MapType::GEOLOGY)
@@ -152,47 +148,48 @@ void MapsExporter::setup_threads()
     }
 */
 
-    if (maps_to_generate & MapType::TRADING)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_trading,(void*)this);
-        consumer_threads.push_back(pthread);
-    }    
+  if (maps_to_generate & MapType::TRADING)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_trading,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 
-    if (maps_to_generate & MapType::NOBILITY)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_nobility,(void*)this);
-        consumer_threads.push_back(pthread);
-    }        
+  if (maps_to_generate & MapType::NOBILITY)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_nobility,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 
-    if (maps_to_generate & MapType::DIPLOMACY)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_diplomacy,(void*)this);
-        consumer_threads.push_back(pthread);
-    }
+  if (maps_to_generate & MapType::DIPLOMACY)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_diplomacy,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 
-    if (maps_to_generate & MapType::SITES)
-    {
-        tthread::thread* pthread =  new tthread::thread(consumer_sites,(void*)this);
-        consumer_threads.push_back(pthread);
-    }
-
+  if (maps_to_generate & MapType::SITES)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_sites,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
 }
 
-/*****************************************************************************
-*****************************************************************************/
 
+//----------------------------------------------------------------------------//
+// Wait for all consumer threads to finish
+//----------------------------------------------------------------------------//
 void MapsExporter::wait_for_threads()
 {
-    for(std::list<tthread::thread *>::iterator i = consumer_threads.begin(); i != consumer_threads.end(); ++i)
+  for(std::list<tthread::thread *>::iterator i = consumer_threads.begin(); i != consumer_threads.end(); ++i)
+  {
+    tthread::thread* t = *i;
+    if (t!= nullptr)
     {
-      tthread::thread* t = *i;
-      if (t!= nullptr)
-      {
-          // Wait for the thread to finish
-          t->join();
-          delete t;
-          // No need to check this thread anymore
-          *i = nullptr;
-      }
+      // Wait for the thread to finish
+      t->join();
+      // Destroy this thread
+      delete t;
+      // No need to check this thread anymore
+      *i = nullptr;
     }
+  }
 }

@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,12 +14,8 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
-  
+
 // You can always find the latest version of this plugin in Github
 // https://github.com/ragundo/exportmaps  
 
@@ -35,7 +27,6 @@
 using namespace std;
 using namespace DFHack;
 
-//using df::global::ui;
 using df::global::world;
 
 DFHACK_PLUGIN("exportmaps");
@@ -61,9 +52,9 @@ the bottom
 *****************************************************************************/
 
 
-/*****************************************************************************
-[Optional] Called when the user enables or disables out plugin
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// [Optional] Called when the user enables or disables out plugin
+//----------------------------------------------------------------------------//
 DFhackCExport command_result plugin_enable(color_ostream &out, bool enable)
 {
     s_enabled = enable;
@@ -71,16 +62,15 @@ DFhackCExport command_result plugin_enable(color_ostream &out, bool enable)
     return CR_OK;
 }
 
-/*****************************************************************************
-This is called right before the plugin library is removed from memory.
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// This is called right before the plugin library is removed from memory.
+//----------------------------------------------------------------------------//
 DFhackCExport command_result plugin_shutdown (color_ostream& con)
 {
     return CR_OK;
 }
 
-/*****************************************************************************
-*****************************************************************************/
+//----------------------------------------------------------------------------//
 DFhackCExport command_result plugin_onupdate ( color_ostream& out )
 {
     return CR_OK;
@@ -90,8 +80,9 @@ DFhackCExport command_result plugin_onupdate ( color_ostream& out )
 /*****************************************************************************
 Plugin main function
 *****************************************************************************/
-DFhackCExport command_result exportmaps (color_ostream& con,
-                             std::vector <std::string>& parameters)
+DFhackCExport command_result exportmaps (color_ostream& con,                   // DFHack console
+                                         std::vector <std::string>& parameters // Parameters received by the console
+                                        )
 {
   // Init the loger object
   Logger logger(con);
@@ -117,20 +108,25 @@ DFhackCExport command_result exportmaps (color_ostream& con,
 
   // Begin generating data for the threads(consumers)
   maps_exporter.generate_maps(logger);
+
+  // Done
   return CR_OK;
 }
 
 /*****************************************************************************
 [Mandatory] init function. If you have some global state, create it here.
 *****************************************************************************/
-DFhackCExport command_result plugin_init (color_ostream& con,
-                            std::vector <PluginCommand>& commands)
+DFhackCExport command_result plugin_init (color_ostream& con,                   // DFHack console
+                                          std::vector <PluginCommand>& commands // Parameters received by the console
+                                         )
 {
     // Fill the command list with your commands.
-    commands.push_back(PluginCommand("exportmaps",
-                                     "Export world maps to disk in Fortress/Adventure/Legends Mode",
-                                     exportmaps /*,
-                                     true or false - true means that the command can't be used from non-interactive user interface'*/));
+    commands.push_back(PluginCommand("exportmaps",                                                   // Plugin name
+                                     "Export world maps to disk in Fortress/Adventure/Legends Mode", // Plugin brief description
+                                     exportmaps                                                      // Subroutine to be executed when the plugin is called
+                                     /*,
+                                     true or false - true means that the command can't be used from non-interactive user interface'*/
+                                     ));
     return CR_OK;
 }
 
@@ -146,16 +142,19 @@ std::pair<unsigned int, std::vector<int> > process_command_line(std::vector <std
   unsigned int     maps_to_generate = 0;
   std::vector<int> errors(options.size());
 
+  // Iterate over all the command line options received
   for ( unsigned int argv_iterator = 0; argv_iterator < options.size(); ++argv_iterator)
   {
     // Get a command line option
     std::string option = options[argv_iterator];
+
     // Convert to lowercase
     std::transform(option.begin(), option.end(), option.begin(), ::tolower);
 
     // No error in argument until now
     errors[argv_iterator] = -1;
 
+    // Check command line
     if (option == "-all")                                          // All maps
       return std::pair<unsigned int, std::vector<int> >(-1, errors);
     if (option == "-temperature")                                  // map DF style
