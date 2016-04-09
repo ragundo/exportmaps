@@ -27,6 +27,8 @@ Only enhanced biome map is not generated, as I consider it confusing and useless
 Very,very fast. Exportmaps uses a thread for each map to be generated, so it uses all the cores of your computer for generating them.
 In contrast, DF only allows you to generate one map each time.
 
+Sites/Structures/Roads is, by far, the slowest map to generate as a full realization of each world site needs to be generated, added to the map and destroyed.
+
 ## But there's already a exportlegends script, isn't?
 Yes. You can use `exportlegends maps` to generate the maps, but:
 
@@ -87,8 +89,11 @@ Unfortunately no. This plugin is Linux and Windows only because it requires some
 ## What's next?
 For next releases, this is what I want to do:
 
-### Raw maps
+#### Raw maps
 Export maps as a raw data files. Ideal for using with external tools that could import world elevation data with biome and vegetation layers.
 
-### RPC interface
-For generating maps on demand without needing to use the DFHack console. Just connect to DF and request the map.
+#### RPC interface
+For generating maps on demand without needing to use the DFHack console. Just connect to DF and request the map using Google's protocol buffers.
+
+#### Site exporting
+Similar to DF export site. Get a detailed PNG of a world site.
