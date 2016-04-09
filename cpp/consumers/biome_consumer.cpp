@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,10 +14,6 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
@@ -34,21 +26,41 @@ using namespace exportmaps_plugin;
 /*****************************************************************************
 External functions
 *****************************************************************************/
-extern int                get_biome_type(int world_coord_x, int world_coord_y);
-extern std::pair<int,int> adjust_coordinates_to_region(int x, int y, int delta, int pos_x, int pos_y, int world_width, int world_height);
+extern int                get_biome_type(int world_coord_x,
+                                         int world_coord_y);
+
+extern std::pair<int,int> adjust_coordinates_to_region(int x,
+                                                       int y,
+                                                       int delta,
+                                                       int pos_x,
+                                                       int pos_y,
+                                                       int world_width,
+                                                       int world_height);
 
 /*****************************************************************************
 Local functions forward declaration
 *****************************************************************************/
-// Return the RGB values for the biome export map given a biome type
 RGB_color RGB_from_biome_type(int biome_type);
 
-// Do the work when there's data present in the queue
-bool biome_do_work(MapsExporter* maps_exporter, ExportedMapBase* map);
+//----------------------------------------------------------------------------//
+bool biome_do_work(MapsExporter* maps_exporter,
+                   ExportedMapBase* map);
 
-void process_DF_biome_map (ExportedMapBase* map, int biome_type, int pos_x, int pos_y, int px, int py);
-void process_Raw_biome_map(ExportedMapBase* map, int biome_type, int pos_x, int pos_y, int px, int py);
+//----------------------------------------------------------------------------//
+void process_DF_biome_map (ExportedMapBase* map,
+                           int biome_type,
+                           int pos_x,
+                           int pos_y,
+                           int px,
+                           int py);
 
+//----------------------------------------------------------------------------//
+void process_Raw_biome_map(ExportedMapBase* map,
+                           int biome_type,
+                           int pos_x,
+                           int pos_y,
+                           int px,
+                           int py);
 
 /*****************************************************************************
 Module main function.
@@ -77,21 +89,23 @@ void consumer_biome(void* arg)
   // Function finish -> Thread finish
 }
 
-/*****************************************************************************
-Utility function
-
-Get the data from the queue.
-If is the end marker, the queue is empty and no more work needs to be done.Return
-If it's actual data process it and update the corresponding map
-*****************************************************************************/
-bool biome_do_work(MapsExporter* maps_exporter, ExportedMapBase* map)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+// Get the data from the queue.
+// If is the end marker, the queue is empty and no more work needs to be done, return
+// If it's actual data process it and update the corresponding map
+//----------------------------------------------------------------------------//
+bool biome_do_work(MapsExporter* maps_exporter, // The coordinator object
+                   ExportedMapBase* map         // The map where we'll draw
+                   )
 {
   // Get the data from the queue
   RegionDetailsBiome rdb = maps_exporter->pop_biome();
 
   // Check if is the marker for no more data from the producer
   if (rdb.is_end_marker())
-    // All the data has been processed. Finish this thread execution
+    // All the data has been processed. Done
     return true;
 
   // There's data to be processed
@@ -141,15 +155,21 @@ bool biome_do_work(MapsExporter* maps_exporter, ExportedMapBase* map)
 }
 
 
-/*****************************************************************************
-Utility function
-Process one embark tyle of a DF style map (.PNG)
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+// Process one embark tyle of a DF style map (.PNG)
+//----------------------------------------------------------------------------//
 
-void process_DF_biome_map(ExportedMapBase* map, int biome_type, int pos_x, int pos_y, int px, int py)
+void process_DF_biome_map(ExportedMapBase* map,
+                          int biome_type,
+                          int pos_x,
+                          int pos_y,
+                          int px,
+                          int py
+                          )
 {
   // Get the RGB values associated to this biome type
-  std::tuple<unsigned char,unsigned char,unsigned char> rgb_pixel_color = RGB_from_biome_type(biome_type);
+  RGB_color rgb_pixel_color = RGB_from_biome_type(biome_type);
           
   // Write pixels to the bitmap
   map->write_world_pixel(pos_x,
@@ -159,11 +179,17 @@ void process_DF_biome_map(ExportedMapBase* map, int biome_type, int pos_x, int p
                          rgb_pixel_color);
 }
 
-/*****************************************************************************
-Utility function
-Process one embark tyle of a raw style map
-*****************************************************************************/
-void process_Raw_biome_map(ExportedMapBase* map, int biome_type, int pos_x, int pos_y, int px, int py)
+//----------------------------------------------------------------------------//
+// Utility function
+// Process one embark tyle of a raw style map
+//----------------------------------------------------------------------------//*****************************************************************************/
+void process_Raw_biome_map(ExportedMapBase* map,
+                           int biome_type,
+                           int pos_x,
+                           int pos_y,
+                           int px,
+                           int py
+                           )
 {
   // Write data to the buffer
   map->write_data(pos_x,
@@ -174,13 +200,13 @@ void process_Raw_biome_map(ExportedMapBase* map, int biome_type, int pos_x, int 
 }
 
 
-/*****************************************************************************
-Utility function
-Return the RGB values for the biome export map given a biome type.
-It mimics the content of the file biome_color_key.txt generated automatically
-by DF when a biome export map is selected in Legends mode.
-Reverse engineered from DF code.
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+//Utility function
+//Return the RGB values for the biome export map given a biome type.
+//It mimics the content of the file biome_color_key.txt generated automatically
+//by DF when a biome export map is selected in Legends mode.
+//Reverse engineered from DF code.
+//----------------------------------------------------------------------------//
 RGB_color RGB_from_biome_type(int biome_type)
 {
   unsigned char r = -1;

@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,10 +14,6 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
@@ -34,13 +26,24 @@ using namespace exportmaps_plugin;
 /*****************************************************************************
 External functions
 *****************************************************************************/
-extern std::pair<int,int> adjust_coordinates_to_region(int x, int y, int delta, int pos_x, int pos_y, int world_width, int world_height);
+extern std::pair<int,int> adjust_coordinates_to_region(int x,
+                                                       int y,
+                                                       int delta,
+                                                       int pos_x,
+                                                       int pos_y,
+                                                       int world_width,
+                                                       int world_height);
 
 
 /*****************************************************************************
 Local functions forward declaration
 *****************************************************************************/
 RGB_color RGB_from_volcanism(int volcanism);
+
+//----------------------------------------------------------------------------//
+bool volcanism_do_work(MapsExporter* maps_exporter, // The coordinator object
+                       ExportedMapBase* map         // The map where we'll draw
+                       );
 
 
 /*****************************************************************************
@@ -49,64 +52,82 @@ This is the function that the thread executes
 *****************************************************************************/
 void consumer_volcanism(void* arg)
 {
+  bool                finish  = false;
   MapsExporter* maps_exporter = (MapsExporter*)arg;
 
-  while(arg != nullptr)
+  if (arg != nullptr)
   {
-    if (maps_exporter->is_volcanism_queue_empty())
+    // The map where we will write to
+    ExportedMapBase* volcanism_map = maps_exporter->get_volcanism_map();
+
+    while(!finish)
     {
-        // No data on the queue. Sleep 100 ms and try again
+      if (maps_exporter->is_volcanism_queue_empty())
+        // No data on the queue. Try again later
         tthread::this_thread::yield();
-    }
-    else // There's data in the queue
-    {
-        // Get the data from the queue
-        RegionDetailsBiome rdg = maps_exporter->pop_volcanism();
 
-        // Check if is the marker for no more data from the producer
-        if (rdg.is_end_marker())
-        {
-          // All the data has been processed. Finish this thread execution
-          break;
-        }
-        else // There's data to be processed
-        {
-            // Iterate over the 16 subtiles (x) and (y) that a world tile has
-            for (auto x=0; x<16; ++x)
-                for (auto y=0; y<16; ++y)
-                {
-                    // Each position of the array is a value that tells us if the local tile
-                    // belongs to the NW,N,NE,W,center,E,SW,S,SE world region.
-                    // Returns a world coordinate adjusted from the original one
-                    std::pair<int,int> adjusted_tile_coordinates = adjust_coordinates_to_region(x,
-                                                                                                y,
-                                                                                                rdg.get_biome_index(x,y),
-                                                                                                rdg.get_pos_x(),
-                                                                                                rdg.get_pos_y(),
-                                                                                                df::global::world->world_data->world_width,
-                                                                                                df::global::world->world_data->world_height);
-                    df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first][adjusted_tile_coordinates.second];
-
-                    // Get the RGB values associated to this volcanism
-                    RGB_color rgb_pixel_color = RGB_from_volcanism(rme.volcanism);
-
-                    // Write pixels to the bitmap
-                    ExportedMapDF* volcanism_map = maps_exporter->get_volcanism_map();
-                    volcanism_map->write_world_pixel(rdg.get_pos_x(),
-                                                     rdg.get_pos_y(),
-                                                     x,
-                                                     y,
-                                                     rgb_pixel_color);
-            }
-        }
+      else // There's data in the queue
+        finish = volcanism_do_work(maps_exporter, volcanism_map);
     }
   }
+  // Function finish -> Thread finish
 }
 
-/*****************************************************************************
-Utility function
-Return the RGB values for the elevation export map given a volcanism value.
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+// Get the data from the queue.
+// If is the end marker, the queue is empty and no more work needs to be done, return
+// If it's actual data process it and update the corresponding map
+//----------------------------------------------------------------------------//
+bool volcanism_do_work(MapsExporter* maps_exporter, // The coordinator object
+                       ExportedMapBase* map         // The map where we'll draw
+                       )
+{
+  // Get the data from the queue
+  RegionDetailsBiome rdg = maps_exporter->pop_volcanism();
+
+  // Check if is the marker for no more data from the producer
+  if (rdg.is_end_marker())
+    // All the data has been processed. Done
+    return true;
+
+  // There's data to be processed
+  // Iterate over the 16 subtiles (x) and (y) that a world tile has
+  for (auto x=0; x<16; ++x)
+    for (auto y=0; y<16; ++y)
+    {
+      // Each position of the array is a value that tells us if the local tile
+      // belongs to the NW,N,NE,W,center,E,SW,S,SE world region.
+      // Returns a world coordinate adjusted from the original one
+      std::pair<int,int> adjusted_tile_coordinates = adjust_coordinates_to_region(x,
+                                                                                  y,
+                                                                                  rdg.get_biome_index(x,y),
+                                                                                  rdg.get_pos_x(),
+                                                                                  rdg.get_pos_y(),
+                                                                                  df::global::world->world_data->world_width,
+                                                                                  df::global::world->world_data->world_height);
+      // Get the proper df::region_entry
+      df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first][adjusted_tile_coordinates.second];
+
+      // Get the RGB values associated to this volcanism
+      RGB_color rgb_pixel_color = RGB_from_volcanism(rme.volcanism);
+
+      // Write pixels to the bitmap
+      ExportedMapDF* volcanism_map = maps_exporter->get_volcanism_map();
+      volcanism_map->write_world_pixel(rdg.get_pos_x(),
+                                       rdg.get_pos_y(),
+                                       x,
+                                       y,
+                                       rgb_pixel_color);
+    }
+  return false; // Continue working
+}
+
+//----------------------------------------------------------------------------//
+// Utility function
+// Return the RGB values for the elevation export map given a volcanism value.
+//----------------------------------------------------------------------------//
 RGB_color RGB_from_volcanism(int volcanism)
 {
   unsigned char p =(unsigned char)((((350469331425 * volcanism) >> 32) >> 5));
