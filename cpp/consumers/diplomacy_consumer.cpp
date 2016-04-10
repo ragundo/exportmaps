@@ -270,6 +270,7 @@ void draw_diplomacy_map(MapsExporter* map_exporter)
   draw_nobility_holdings_sites(map_exporter->get_diplomacy_map());
   //draw_capital_sites(map);
 
+  // Map generated. Warn the main thread
   map_exporter->set_percentage_diplomacy(-1);
 
 }
@@ -440,6 +441,7 @@ void diplomacy_1st_pass(MapsExporter* map_exporter)
       }
     }
 
+    // Compute the % of map processing
     float a = i*100;
     float b = df::global::world->entities.all.size() + 2 * df::global::world->world_data->sites.size();
     map_exporter->set_percentage_sites((int)(a/b));
@@ -620,6 +622,7 @@ void diplomacy_2nd_pass(MapsExporter* map_exporter)
      }
     }
 
+    // Compute the % of map processing
     float a = (i + df::global::world->world_data->sites.size()) * 100;
     float b = df::global::world->entities.all.size() + 2 * df::global::world->world_data->sites.size();
     map_exporter->set_percentage_sites((int)(a/b));
@@ -817,6 +820,7 @@ int a,b;
       }
     }
 
+    // Compute the % of map processing
     float a = (p + 2 * df::global::world->world_data->sites.size())*100;
     float b = df::global::world->entities.all.size() + 2 * df::global::world->world_data->sites.size();
     map_exporter->set_percentage_diplomacy((int)a/b);

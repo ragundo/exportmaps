@@ -2,7 +2,7 @@
 A DFHack plugin for exporting world maps while in game.
 
 ## What do it does?
-It exports all the legends mode world maps while in game. There's no need to enter Legends mode.
+It exports all the world maps while in game. There's no need to enter Legends mode.
 
 The following maps can be generated:
 * Elevations including lake and ocean floors
@@ -26,9 +26,15 @@ Only enhanced biome map is not generated, as I consider it confusing and useless
 
 ## Is it fast?
 Very,very fast. Exportmaps uses a thread for each map to be generated, so it uses all the cores of your computer for generating them.
-In contrast, DF only allows you to generate one map each time.
+In contrast, DF only allows you to generate them one map each time.
 
 Sites/Structures/Roads is, by far, the slowest map to generate as a full realization of each world site needs to be generated, added to the map and destroyed.
+
+## Is it multiplatform?
+
+Unfortunately no. This plugin requires some trickery to get the data natively from DF. As I don't have access to a Mac computer, MacOS is not supported.
+The plugin is Linux and Windows only.
+
 
 ## But there's already a exportlegends script, isn't?
 Yes. You can use `exportlegends maps` to generate the maps, but:
@@ -70,11 +76,11 @@ The availble options are the following:
 | -drainage        | DRAINAGE |
 | -savagery        | SAVAGERY |
 | -volcanism       | VOLCANISM |                           
-| -vegetation      |VEGETATION |
+| -vegetation      | VEGETATION |
 | -evilness        | EVILNESS |
 | -salinity        | SALINITY |
 | -hydrosphere     | HYDROSPHERE |
-| -elevation       |   ELEVATION |
+| -elevation       | ELEVATION |
 | -elevation-water | ELEVATION RESPECTING WATER |
 | -biome           | BIOME |
 | -trading         | TRADING |                  
@@ -83,15 +89,13 @@ The availble options are the following:
 | -sites           | SITES / STRUCTURES / ROADS |
 
 
-## Is it multiplatform?
-
-Unfortunately no. This plugin is Linux and Windows only because it requires some trickery to get the data natively from DF. As I don't have access to a Mac computer, MacOS is not supported.
 
 ## What's next?
-For next releases, this is what I want to do:
+For next releases, this is what's planned:
 
 #### Raw maps
-Export maps as a raw data files. Ideal for using with external tools that could import world elevation data with biome and vegetation layers, for example, and render the world in 3D.
+Export maps as a raw data files. Ideal for using with external tools that could import world elevation data
+with biome and vegetation as layers and render the world in 3D.
 
 #### RPC interface
 For generating maps on demand without needing to use the DFHack console. Just connect to DF and request the map using Google's protocol buffers.

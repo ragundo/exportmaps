@@ -319,6 +319,8 @@ void draw_nobility_map(MapsExporter* map_exporter)
                             world_site
                             );
     }
+
+    // Compute the % of map processing
     float a = l*100;
     float b = df::global::world->entities.all.size();
     map_exporter->set_percentage_sites((int)(a/b));
@@ -327,6 +329,7 @@ void draw_nobility_map(MapsExporter* map_exporter)
   // Draw rectangles ONLY over each noble holdings
   draw_nobility_holdings_sites(map);
 
+  // Map generated. Warn the main thread
   map_exporter->set_percentage_nobility(-1);
 }
 

@@ -273,6 +273,7 @@ void draw_trade_map(MapsExporter* map_exporter)
       }
     }
 
+    // Compute the % of map processing
     float a = l*100;
     float b = df::global::world->entities.all.size();
     map_exporter->set_percentage_trade((int)a/b);
@@ -281,6 +282,7 @@ void draw_trade_map(MapsExporter* map_exporter)
   // Draw sites with trading relationships over the trading lines
   draw_trading_sites(map);
 
+  // Map generated. Warn the main thread
   map_exporter->set_percentage_trade(-1);
 }
 

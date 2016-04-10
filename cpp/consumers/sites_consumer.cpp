@@ -370,11 +370,14 @@ int draw_sites_map(MapsExporter* map_exporter)
 
     delete_world_region_details_vector();
 
+    // Compute the % of map processing
     float a = i*100;
     float b = df::global::world->world_data->sites.size();
     map_exporter->set_percentage_sites(100-(int)(a/b));
   }
+  // Map generated. Warn the main thread
   map_exporter->set_percentage_sites(-1);
+
   return result;
 }
 
