@@ -102,3 +102,13 @@ For generating maps on demand without needing to use the DFHack console. Just co
 
 #### Site exporting
 Similar to DF export site. Get a detailed PNG of a world site.
+
+## Support
+You can use Github's Issues to get support about the plugins. Also you can contact me in #dfhack on IRC freenode.
+
+## Support
+You can use Github's Issues to get support about the plugins. Also you can contact me in #dfhack on IRC freenode.
+
+## Thanks to
+Warmist, Lethosor, Japa, Q, Angavrilov and all the wonderful people of #dfhack in freenode.
+Without its support, this plugin could not have been developed!!!.
