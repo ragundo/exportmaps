@@ -441,9 +441,10 @@ void MapsExporter::display_progress_special_maps(Logger* logger)
       (maps_to_generate & MapType::SITES)
      )
   {
-    while (((this->percentage_trade    != -1) && (maps_to_generate & MapType::TRADING)) ||
-           ((this->percentage_sites    != -1) && (maps_to_generate & MapType::SITES))   ||
-           ((this->percentage_nobility != -1) && (maps_to_generate & MapType::NOBILITY))
+    while (((this->percentage_trade     != -1) && (maps_to_generate & MapType::TRADING))   ||
+           ((this->percentage_sites     != -1) && (maps_to_generate & MapType::SITES))     ||
+           ((this->percentage_diplomacy != -1) && (maps_to_generate & MapType::DIPLOMACY)) ||
+           ((this->percentage_nobility  != -1) && (maps_to_generate & MapType::NOBILITY))
           )
     {
       if (maps_to_generate & MapType::TRADING)
