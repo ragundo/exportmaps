@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,10 +14,6 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
@@ -40,21 +32,23 @@ static unsigned int address_Mac     = 0 ;          // Default for DF42.06
 
 
 
-/**************************************************************************
- Forward declarations
-**************************************************************************/
+/*****************************************************************************
+Local functions forward declaration
+*****************************************************************************/
 
 int init_linux();
 
 void fill_region_details_Linux_OSX(unsigned int address_DF_sub,
                                    void* addres_world_region_details,
                                    int world_pos_x,
-                                   int world_pos_y);
+                                   int world_pos_y
+                                   );
 
 void fill_region_details_Windows(unsigned int address_DF_sub,
                                  void* addres_world_region_details,
                                  int world_pos_x,
-                                 int world_pos_y);
+                                 int world_pos_y
+                                 );
 
 /**************************************************************************
  Main function
@@ -67,7 +61,8 @@ void fill_region_details_Windows(unsigned int address_DF_sub,
 **************************************************************************/
 
 int fill_world_region_details(int world_pos_x,
-                              int world_pos_y)
+                              int world_pos_y
+                              )
 {
 
   // Below is the address of DF42.04 fill_region_details for different OSs
@@ -96,28 +91,31 @@ int fill_world_region_details(int world_pos_x,
   fill_region_details_Linux_OSX(address_DF_sub,
                                 pv,
                                 world_pos_x,
-                                world_pos_y);
+                                world_pos_y
+                                );
 #endif // Linux & Mac
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
   fill_region_details_Windows(address_DF_sub,
                               pv,
                               world_pos_x,
-                              world_pos_y);
+                              world_pos_y
+                              );
 #endif // WINDOWS
 
   return result;
 }
 
 
-/**************************************************************************
- Local function
-
-**************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void fill_region_details_Linux_OSX(unsigned int address_DF_sub,
                                    void*        address_world_region_details,
                                    int          world_pos_x,
-                                   int          world_pos_y)
+                                   int          world_pos_y
+                                   )
 {
     #if defined(_LINUX) || defined(_DARWIN)
 
@@ -150,13 +148,15 @@ void fill_region_details_Linux_OSX(unsigned int address_DF_sub,
     #endif
 }
 
-/**************************************************************************
- Local function
-**************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void fill_region_details_Windows(unsigned int address_DF_sub,
                                  void*        address_world_region_details,
                                  int          world_pos_x,
-                                 int          world_pos_y)
+                                 int          world_pos_y
+                                 )
 {
   // Windows DF has Address Space Randomization active, so the virtual address
   // doesn't have to be the same every time DF is running.

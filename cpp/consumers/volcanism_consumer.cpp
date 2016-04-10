@@ -39,10 +39,7 @@ extern std::pair<int,int> adjust_coordinates_to_region(int x,
 Local functions forward declaration
 *****************************************************************************/
 RGB_color RGB_from_volcanism(int volcanism);
-
-//----------------------------------------------------------------------------//
-bool volcanism_do_work(MapsExporter* maps_exporter // The coordinator object
-                       );
+bool      volcanism_do_work(MapsExporter* maps_exporter);
 
 
 /*****************************************************************************
@@ -76,8 +73,7 @@ void consumer_volcanism(void* arg)
 // If is the end marker, the queue is empty and no more work needs to be done, return
 // If it's actual data process it and update the corresponding map
 //----------------------------------------------------------------------------//
-bool volcanism_do_work(MapsExporter* maps_exporter // The coordinator object
-                       )
+bool volcanism_do_work(MapsExporter* maps_exporter)
 {
   // Get the data from the queue
   RegionDetailsBiome rdg = maps_exporter->pop_volcanism();
@@ -123,7 +119,7 @@ bool volcanism_do_work(MapsExporter* maps_exporter // The coordinator object
 
 //----------------------------------------------------------------------------//
 // Utility function
-// Return the RGB values for the elevation export map given a volcanism value.
+// Return the RGB values for the volcanism export map given a volcanism value.
 //----------------------------------------------------------------------------//
 RGB_color RGB_from_volcanism(int volcanism)
 {

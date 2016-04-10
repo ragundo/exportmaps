@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,10 +14,6 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
@@ -29,44 +21,55 @@
 
 #include <tuple>
 
-std::pair<int,int> adjust_coordinates_to_region(int x, int y, int delta, int pos_x, int pos_y, int world_width, int world_height)
+std::pair<int,int> adjust_coordinates_to_region(int x,
+                                                int y,
+                                                int delta,
+                                                int pos_x,
+                                                int pos_y,
+                                                int world_width,
+                                                int world_height
+                                                )
 {
-    if ((x < 0) || (y < 0) || (x > 16) || (y > 16))
-        return std::pair<int,int>(-1,-1); // invalid coordinates
+  if ((x < 0) || (y < 0) || (x > 16) || (y > 16))
+    return std::pair<int,int>(-1,-1); // invalid coordinates
 
-    int adjusted_x = pos_x;
-    int adjusted_y = pos_y;
+  int adjusted_x = pos_x;
+  int adjusted_y = pos_y;
 
-    switch (delta)
-    {
-        case 1: // SW
-                --adjusted_x; ++adjusted_y; break;
-        case 2: // S
-                              ++adjusted_y; break;
-        case 3: // SE
-                ++adjusted_x; ++adjusted_y; break;
-        case 4: // W
-                --adjusted_x;               break;
-        case 5: // Center
-                                            break;
-        case 6: // E
-                ++adjusted_x;               break;
-        case 7: // NW
-                --adjusted_x; --adjusted_y; break;
-        case 8: // N
-                              --adjusted_y; break;
-        case 9: // NE
-                ++adjusted_x; --adjusted_y; break;
-    }
+  switch (delta)
+  {
+      case 1: // SW
+              --adjusted_x; ++adjusted_y; break;
+      case 2: // S
+                            ++adjusted_y; break;
+      case 3: // SE
+              ++adjusted_x; ++adjusted_y; break;
+      case 4: // W
+              --adjusted_x;               break;
+      case 5: // Center
+                                          break;
+      case 6: // E
+              ++adjusted_x;               break;
+      case 7: // NW
+              --adjusted_x; --adjusted_y; break;
+      case 8: // N
+                            --adjusted_y; break;
+      case 9: // NE
+              ++adjusted_x; --adjusted_y; break;
+  }
 
-    // Check if it's out ot bounds
-    if (adjusted_x < 0)
-        adjusted_x = 0;
-    if (adjusted_x >= world_width)
-        adjusted_x = world_width - 1;
-    if (adjusted_y < 0)
-        adjusted_y = 0;
-    if (adjusted_y >= world_height)
-        adjusted_y = world_height - 1;
-    return std::pair<int,int>(adjusted_x,adjusted_y);
+  // Check if it's out ot bounds
+  if (adjusted_x < 0)
+    adjusted_x = 0;
+
+  if (adjusted_x >= world_width)
+    adjusted_x = world_width - 1;
+
+  if (adjusted_y < 0)
+    adjusted_y = 0;
+
+  if (adjusted_y >= world_height)
+    adjusted_y = world_height - 1;
+
+  return std::pair<int,int>(adjusted_x,adjusted_y);
 }

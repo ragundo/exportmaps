@@ -27,62 +27,46 @@ using namespace exportmaps_plugin;
 /*****************************************************************************
 External functions
 *****************************************************************************/
-extern int get_biome_type(
-             int world_coord_x,
-             int world_coord_y
-           );
+extern int                get_biome_type(int world_coord_x,
+                                         int world_coord_y
+                                         );
 
-//----------------------------------------------------------------------------//
-extern std::pair<int,int> adjust_coordinates_to_region(
-                            int x,
-                            int y,
-                            int delta,
-                            int pos_x,
-                            int pos_y,
-                            int world_width,
-                            int world_height
-                          );
+extern std::pair<int,int> adjust_coordinates_to_region(int x,
+                                                       int y,
+                                                       int delta,
+                                                       int pos_x,
+                                                       int pos_y,
+                                                       int world_width,
+                                                       int world_height
+                                                       );
 
-//----------------------------------------------------------------------------//
-extern RGB_color no_river_color(int biome_type,
-                                int elevation);
+extern RGB_color          no_river_color(int biome_type,
+                                         int elevation
+                                         );
 
-//----------------------------------------------------------------------------//
-df::world_construction* find_construction_square_id_in_world_data_constructions(
-                          df::world_data::T_constructions& constructions,
-                          int                              start,
-                          int                              end,
-                          int                              target
-                        );
+df::world_construction*   find_construction_square_id_in_world_data_constructions(df::world_data::T_constructions& constructions,
+                                                                                  int start,
+                                                                                  int end,
+                                                                                  int target
+                                                                                  );
 
-//----------------------------------------------------------------------------//
-extern df::world_site_realization::T_areas* search_world_site_realization_areas(
-                                              int target,
-                                              df::world_site_realization* wsr
-                                            );
+extern df::world_site_realization::T_areas* search_world_site_realization_areas(int target,
+                                                                                df::world_site_realization* wsr
+                                                                                );
 
-//----------------------------------------------------------------------------//
-extern int fill_world_region_details(
-             int world_pos_x,
-             int world_pos_y
-           );
+extern int fill_world_region_details(int world_pos_x,
+                                     int world_pos_y
+                                     );
 
-//----------------------------------------------------------------------------//
 extern void delete_world_region_details_vector();
 
-//----------------------------------------------------------------------------//
 extern void init_world_site_realization(df::world_site* world_site);
 
-//----------------------------------------------------------------------------//
 extern void delete_world_site_realization(df::world_site* world_site);
 
-//----------------------------------------------------------------------------//
-// Return the RGB values for the biome export map given a biome type
 RGB_color RGB_from_biome_type(int biome_type);
 
-//----------------------------------------------------------------------------//
 int get_historical_entity_id_from_world_site(df::world_site* site);
-
 
 
 /*****************************************************************************
@@ -90,55 +74,58 @@ Local functions forward declaration
 *****************************************************************************/
 int draw_sites_map(ExportedMapBase* map);
 
-//----------------------------------------------------------------------------//
-bool sites_do_work(MapsExporter* maps_exporter, ExportedMapBase* map);
+bool sites_do_work(MapsExporter* maps_exporter);
 
-//----------------------------------------------------------------------------//
 void process_nob_dip_trad_common(ExportedMapBase* map, 
                                  RegionDetailsElevationWater& rdew,
                                  int x, 
-                                 int y);
+                                 int y
+                                 );
 
-//----------------------------------------------------------------------------//
 bool process_nob_dip_trad_sites_common(ExportedMapBase* map,
                                        RegionDetailsElevationWater& rdew,
                                        int x,
-                                       int y);
+                                       int y
+                                       );
 
-//----------------------------------------------------------------------------//
 void process_world_structures(ExportedMapBase* map);
 
-//----------------------------------------------------------------------------//
 void process_fortress_or_monument(df::world_site* world_site,
-                                  ExportedMapBase* map);
+                                  ExportedMapBase* map
+                                  );
 
-//----------------------------------------------------------------------------//
 void process_regular_site(df::world_site* world_site,
-                          ExportedMapBase* map);
-//----------------------------------------------------------------------------//
+                          ExportedMapBase* map
+                          );
+
 void write_map_pixel(int pos_x,
                      int pos_y,
                      bool is_castle,
                      bool is_village,
                      int area_type,
-                     ExportedMapBase* map);
+                     ExportedMapBase* map
+                     );
 
-//----------------------------------------------------------------------------//
-void process_Road(ExportedMapBase* map, df::world_construction* construction);
+void process_Road(ExportedMapBase* map,
+                  df::world_construction* construction
+                  );
 
-//----------------------------------------------------------------------------//
-void process_Tunnel(ExportedMapBase* map, df::world_construction* construction);
+void process_Tunnel(ExportedMapBase* map,
+                    df::world_construction* construction
+                    );
 
-//----------------------------------------------------------------------------//
-void process_Wall(ExportedMapBase* map, df::world_construction* construction);
+void process_Wall(ExportedMapBase* map,
+                  df::world_construction* construction
+                  );
 
-//----------------------------------------------------------------------------//
-void process_Bridge(ExportedMapBase* map, df::world_construction* construction);
+void process_Bridge(ExportedMapBase* map,
+                    df::world_construction* construction
+                    );
 
-//----------------------------------------------------------------------------//
-bool update_inhabitant_count(df::world_site* world_site, df::world_site_inhabitant* inhabitant_in_building);
+bool update_inhabitant_count(df::world_site* world_site,
+                             df::world_site_inhabitant* inhabitant_in_building
+                             );
 
-//----------------------------------------------------------------------------//
 void delete_site_realization(df::world_site* world_site);
 
 /*****************************************************************************
@@ -169,9 +156,6 @@ void consumer_sites(void* arg)
 
   if (arg != nullptr)
   {
-    // The map where we will write to
-    ExportedMapBase* sites_map = maps_exporter->get_sites_map();
-
     while(!finish)
     {
       if (maps_exporter->is_sites_queue_empty())
@@ -179,7 +163,7 @@ void consumer_sites(void* arg)
         tthread::this_thread::yield();
 
       else // There's data in the queue
-        finish = sites_do_work(maps_exporter, sites_map);
+        finish = sites_do_work(maps_exporter);
     }
   }
   // Function finish -> Thread finish
@@ -192,20 +176,19 @@ Get the data from the queue.
 If is the end marker, the queue is empty and no more work needs to be done.Return
 If it's actual data process it and update the corresponding map
 *****************************************************************************/
-bool sites_do_work(MapsExporter*    maps_exporter,
-                   ExportedMapBase* map
-                  )
+bool sites_do_work(MapsExporter*    maps_exporter)
 {
   // Get the data from the queue
   RegionDetailsElevationWater rdew = maps_exporter->pop_sites();
+  // The map where we will write to
+  ExportedMapBase* sites_map = maps_exporter->get_sites_map();
 
   // Check if is the marker for no more data from the producer
   if (rdew.is_end_marker())
   {
     // All the terrain data has been processed.
     // Now draw world sites over this base map
-    ExportedMapDF* sites_map = maps_exporter->get_sites_map();
-    process_world_structures(map);
+    process_world_structures(sites_map);
     draw_sites_map(sites_map);
 
     return true;
@@ -216,19 +199,24 @@ bool sites_do_work(MapsExporter*    maps_exporter,
     // Iterate over the 16 subtiles (x) and (y) that a world tile has
     for (auto x=0; x<16; ++x)
       for (auto y=0; y<16; ++y)
-        process_nob_dip_trad_sites_common(map, rdew, x, y);
+        process_nob_dip_trad_sites_common(sites_map,
+                                          rdew,
+                                          x,
+                                          y
+                                          );
   }
   return false; // Continue working
 }
 
-/*****************************************************************************
-
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 bool process_nob_dip_trad_sites_common(ExportedMapBase*             map,
                                        RegionDetailsElevationWater& rdew,
                                        int                          x,
                                        int                          y
-                                      )
+                                       )
 {
   // Each position of the array is a value that tells us if the local tile
   // belongs to the NW,N,NE,W,center,E,SW,S,SE world region.
@@ -239,10 +227,12 @@ bool process_nob_dip_trad_sites_common(ExportedMapBase*             map,
                                                                               rdew.get_pos_x(),
                                                                               rdew.get_pos_y(),
                                                                               df::global::world->world_data->world_width,
-                                                                              df::global::world->world_data->world_height);
+                                                                              df::global::world->world_data->world_height
+                                                                              );
   // Get the biome type for this world position
   int biome_type = get_biome_type(adjusted_tile_coordinates.first,
-                                  adjusted_tile_coordinates.second);
+                                  adjusted_tile_coordinates.second
+                                  );
 
 
   int elevation                      = rdew.get_elevation(x,y);
@@ -259,7 +249,8 @@ bool process_nob_dip_trad_sites_common(ExportedMapBase*             map,
                                rdew.get_pos_y(),
                                x,
                                y,
-                               pixel_color);
+                               pixel_color
+                               );
 
         return false;
       }
@@ -282,12 +273,15 @@ bool process_nob_dip_trad_sites_common(ExportedMapBase*             map,
                   (biome_type > 29) ||
                   (elevation  < 99))
               {
-                RGB_color pixel_color = no_river_color(biome_type, rdew.get_elevation(x,y));
+                RGB_color pixel_color = no_river_color(biome_type,
+                                                       rdew.get_elevation(x,y)
+                                                       );
                 map->write_world_pixel(rdew.get_pos_x(),
                                        rdew.get_pos_y(),
                                        x,
                                        y,
-                                       pixel_color);
+                                       pixel_color
+                                       );
                 return false;
               }
              break;
@@ -308,7 +302,8 @@ bool process_nob_dip_trad_sites_common(ExportedMapBase*             map,
                            rdew.get_pos_y(),
                            x,
                            y,
-                           river_pixel_color);
+                           river_pixel_color
+                           );
     return false;
   }
 
@@ -317,16 +312,17 @@ bool process_nob_dip_trad_sites_common(ExportedMapBase*             map,
                          rdew.get_pos_y(),
                          x,
                          y,
-                         pixel_color);
+                         pixel_color
+                         );
 
   return false;
 
 }
 
-/*****************************************************************************
-
-*****************************************************************************/
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 int draw_sites_map(ExportedMapBase* map)
 {
   int result = 0;
@@ -356,11 +352,15 @@ int draw_sites_map(ExportedMapBase* map)
       if ((world_site->type == df::enums::world_site_type::world_site_type::Fortress) ||
           (world_site->type == df::enums::world_site_type::world_site_type::Monument))
       {
-        process_fortress_or_monument(world_site, map);
+        process_fortress_or_monument(world_site,
+                                     map
+                                     );
       }
       else
       {
-        process_regular_site(world_site, map);
+        process_regular_site(world_site,
+                             map
+                             );
       }
 
       if (!site_has_realization && (world_site->realization != nullptr))
@@ -372,12 +372,13 @@ int draw_sites_map(ExportedMapBase* map)
   return result;
 }
 
-/*****************************************************************************
-
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void process_regular_site(df::world_site*  world_site,
                           ExportedMapBase* map
-                         )
+                          )
 {
   // Not fortress nor monument
 
@@ -507,7 +508,9 @@ void process_regular_site(df::world_site*  world_site,
             if (area_map_index != -1)
             {
               // Locate the T_area using its id
-              df::world_site_realization::T_areas* area = search_world_site_realization_areas(area_map_index,world_site->realization);
+              df::world_site_realization::T_areas* area = search_world_site_realization_areas(area_map_index,
+                                                                                              world_site->realization
+                                                                                              );
 
               if (area != nullptr)
                 area_type = area->type; // area located, get the its type
@@ -516,18 +519,25 @@ void process_regular_site(df::world_site*  world_site,
         }
 
       // Write the pixel in the map, accdording to its type
-      write_map_pixel(pos_x_iterator, pos_y_iterator, is_castle, is_village, area_type, map);
+      write_map_pixel(pos_x_iterator,
+                      pos_y_iterator,
+                      is_castle,
+                      is_village,
+                      area_type,
+                      map
+                      );
 
     }
   }
 }
 
-/*****************************************************************************
-
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void process_fortress_or_monument(df::world_site*  world_site,
                                   ExportedMapBase* map
-                                 )
+                                  )
 {
   if (world_site == nullptr) return;
 
@@ -564,26 +574,29 @@ void process_fortress_or_monument(df::world_site*  world_site,
       }
 }
 
-/*****************************************************************************
-
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void write_map_pixel(int              pos_x,
                      int              pos_y,
                      bool             is_castle,
                      bool             is_village,
                      int              area_type,
                      ExportedMapBase* map
-                    )
+                     )
 {
   // According to the building type, draw it in a different color
   if (is_castle)
     map->write_embark_pixel(pos_x,
                             pos_y,
-                            castle_color);
+                            castle_color
+                            );
   else if (is_village)
     map->write_embark_pixel(pos_x,
                             pos_y,
-                            village_color);
+                            village_color
+                            );
   else // Draw the site neighborhood
   {
     switch (area_type)
@@ -591,48 +604,56 @@ void write_map_pixel(int              pos_x,
       case 0:   // Crops1
                 map->write_embark_pixel(pos_x,
                                         pos_y,
-                                        crops1_color);
+                                        crops1_color
+                                        );
                 break;
 
       case 1:   // Crops2
                 map->write_embark_pixel(pos_x,
                                         pos_y,
-                                        crops2_color);
+                                        crops2_color
+                                        );
                 break;
 
       case 2:   // Crops3
                 map->write_embark_pixel(pos_x,
                                         pos_y,
-                                        crops3_color);
+                                        crops3_color
+                                        );
                 break;
 
       case 3:   // Pasture
                 map->write_embark_pixel(pos_x,
                                         pos_y,
-                                        pasture_color);
+                                        pasture_color
+                                        );
                 break;
 
       case 4:   // Meadows
                 map->write_embark_pixel(pos_x,
                                         pos_y,
-                                        meadows_color);
+                                        meadows_color
+                                        );
                 break;
 
       case 5:   // Woodland
                 map->write_embark_pixel(pos_x,
                                         pos_y,
-                                        woodland_color);
+                                        woodland_color
+                                        );
                 break;
 
       case 6:   // Orchard
                 map->write_embark_pixel(pos_x,
                                         pos_y,
-                                        orchard_color);
+                                        orchard_color
+                                        );
                 break;
       case 7:   // Waste
                 map->write_embark_pixel(pos_x,
                                         pos_y,
-                                        waste_color);
+                                        waste_color
+                                        );
                 break;
 
       default:  break;
@@ -640,9 +661,10 @@ void write_map_pixel(int              pos_x,
   }
 }
 
-/*****************************************************************************
-
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void process_world_structures(ExportedMapBase* map)
 {
   for (unsigned int i = 0; i < df::global::world->world_data->constructions.list.size(); i++)
@@ -653,28 +675,37 @@ void process_world_structures(ExportedMapBase* map)
     switch (construction->getType())
     {
       case 0: // Road
-              process_Road(map, construction);
+              process_Road(map,
+                           construction
+                           );
               break;
       case 1: // Tunnel
-              process_Tunnel(map, construction);
+              process_Tunnel(map,
+                             construction
+                             );
               break;
       case 3: // Wall
-              process_Wall(map, construction);
+              process_Wall(map,
+                           construction
+                           );
               break;
       case 2: // Bridge
-              process_Bridge(map, construction);
+              process_Bridge(map,
+                             construction
+                             );
               break;
     default:  break;
     }
   }
 }
 
-/*****************************************************************************
-
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void process_Road(ExportedMapBase* map,
                   df::world_construction* construction
-                 )
+                  )
 {
   for (unsigned int j = 0; j < construction->square_obj.size(); j++)
   {
@@ -718,17 +749,19 @@ void process_Road(ExportedMapBase* map,
                              pos_y,
                              embark_x,
                              embark_y,
-                             pixel_color);
+                             pixel_color
+                             );
     }
   }
 }
 
-/*****************************************************************************
-
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void process_Tunnel(ExportedMapBase* map,
                     df::world_construction* construction
-                   )
+                    )
 {
   for (unsigned int j = 0; j < construction->square_obj.size(); j++)
   {
@@ -752,19 +785,21 @@ void process_Tunnel(ExportedMapBase* map,
                              pos_y,
                              embark_x,
                              embark_y,
-                             pixel_color);
+                             pixel_color
+                             );
 
 
     }
   }
 }
 
-/*****************************************************************************
-
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void process_Wall(ExportedMapBase* map,
                   df::world_construction* construction
-                 )
+                  )
 {
   for (unsigned int j = 0; j < construction->square_obj.size(); j++)
   {
@@ -808,17 +843,19 @@ void process_Wall(ExportedMapBase* map,
                              pos_y,
                              embark_x,
                              embark_y,
-                             pixel_color);
+                             pixel_color
+                             );
     }
   }
 }
 
-/*****************************************************************************
-
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void process_Bridge(ExportedMapBase* map,
                     df::world_construction* construction
-                   )
+                    )
 {
   int pos_x = construction->square_pos.x[0];
   int pos_y = construction->square_pos.y[0];
@@ -867,15 +904,17 @@ void process_Bridge(ExportedMapBase* map,
                              pos_y,
                              embark_x,
                              embark_y,
-                             pixel_color);
+                             pixel_color
+                             );
     }
     return;
   }
 }
 
-/*****************************************************************************
-
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void delete_site_realization(df::world_site* world_site)
 {
   if (world_site->realization == nullptr) return;
@@ -901,7 +940,8 @@ void delete_site_realization(df::world_site* world_site)
 
     if (inhabitant_in_building == nullptr) continue;
     update_inhabitant_count(world_site,
-                            inhabitant_in_building);
+                            inhabitant_in_building
+                            );
 
 
 
@@ -961,12 +1001,13 @@ void delete_site_realization(df::world_site* world_site)
   world_site->realization = nullptr;
 }
 
-/*****************************************************************************
-
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 bool update_inhabitant_count(df::world_site* world_site,
                              df::world_site_inhabitant* inhabitant_in_building
-                            )
+                             )
 {
   bool found_world_inhabitant = false;
   if ((inhabitant_in_building->race != -1) &&

@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,10 +14,6 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
@@ -30,90 +22,101 @@
 #include "../../include/dfhack.h"
 #include "../../include/util/ofsub.h"
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// Function prototypes
-//
-//////////////////////////////////////////////////////////////////////////////
 
-
+/*****************************************************************************
+ Local functions forward declaration
+*****************************************************************************/
 std::pair<bool,bool> check_tropicality                       (df::region_map_entry& region,
-                                                              int a1);
+                                                              int a1
+                                                              );
 
 int                  get_lake_biome                          (df::region_map_entry& region,
-                                                              bool is_possible_tropical_area_by_latitude);
+                                                              bool is_possible_tropical_area_by_latitude
+                                                              );
 
 int                  get_ocean_biome                         (df::region_map_entry& region,
-                                                              bool is_tropical_area_by_latitude);
+                                                              bool is_tropical_area_by_latitude
+                                                              );
 
 int                  get_desert_biome                        (df::region_map_entry& region);
 
 int                  get_biome_grassland                     (bool is_possible_tropical_area_by_latitude,
                                                               bool is_tropical_area_by_latitude,
                                                               int y,
-                                                              int x);
+                                                              int x
+                                                              );
 
 int                  get_biome_savanna                       (bool is_possible_tropical_area_by_latitude,
                                                               bool is_tropical_area_by_latitude,
                                                               int y,
-                                                              int x);
+                                                              int x
+                                                              );
 
 int                  get_biome_shrubland                     (bool is_possible_tropical_area_by_latitude,
                                                               bool is_tropical_area_by_latitude,
                                                               int y,
-                                                              int x);
+                                                              int x
+                                                              );
 
 int                  get_biome_marsh                         (df::region_map_entry& region,
                                                               bool is_possible_tropical_area_by_latitude,
                                                               bool is_tropical_area_by_latitude,
                                                               int y,
-                                                              int x);
+                                                              int x
+                                                              );
 
 int                  get_biome_forest                        (df::region_map_entry& region,
                                                               bool is_possible_tropical_area_by_latitude,
                                                               bool is_tropical_area_by_latitude,
                                                               int y,
-                                                              int x);
+                                                              int x
+                                                              );
 
 int                  get_biome_swamp                         (df::region_map_entry& region,
                                                               bool is_possible_tropical_area_by_latitude,
                                                               bool is_tropical_area_by_latitude,
                                                               int y,
-                                                              int x);
+                                                              int x
+                                                              );
 
 int                  get_biome_desert_or_grassland_or_savanna (df::region_map_entry& region,
                                                                bool is_possible_tropical_area_by_latitude,
                                                                bool is_tropical_area_by_latitude,
                                                                int y,
-                                                               int x);
+                                                               int x
+                                                               );
 
 int                  get_biome_shrubland_or_marsh            (df::region_map_entry& region,
                                                               bool is_possible_tropical_area_by_latitude,
                                                               bool is_tropical_area_by_latitude,
                                                               int y,
-                                                              int x);
+                                                              int x
+                                                              );
 
+/*****************************************************************************
+ Module main function.
 
-/*
-********************************************************************************************
-* Main function
-********************************************************************************************
-*/
-
-// Return the biome type, given a position coordinate expressed in world_tiles
-int get_biome_type(int world_coord_x, int world_coord_y)
+ Return the biome type, given a position coordinate expressed in world_tiles
+*****************************************************************************/
+int get_biome_type(int world_coord_x,
+                   int world_coord_y
+                   )
 {
     // Biome is per region, so get the region where this biome exists
     df::region_map_entry& region = df::global::world->world_data->region_map[world_coord_x][world_coord_y];
 
     // Check if the y position coordinate belongs to a tropical area
-    std::pair<bool,bool> p                     = check_tropicality(region, world_coord_y);
+    std::pair<bool,bool> p                     = check_tropicality(region,
+                                                                   world_coord_y
+                                                                   );
     bool is_possible_tropical_area_by_latitude = p.first;
     bool is_tropical_area_by_latitude          = p.second;
 
     // Begin the discrimination
     if (region.flags.is_set(df::region_map_entry_flags::is_lake)) // is it a lake?
-        return get_lake_biome(region, is_possible_tropical_area_by_latitude);
+        return get_lake_biome(region,
+                              is_possible_tropical_area_by_latitude
+                              );
 
     // Not a lake. Check elevation
     // Elevation greater then 149 means a mountain biome
@@ -124,7 +127,9 @@ int get_biome_type(int world_coord_x, int world_coord_y)
         return df::enums::biome_type::biome_type::MOUNTAIN; // 0
 
     if (region.elevation < 100) // is it a ocean?
-        return get_ocean_biome(region, is_possible_tropical_area_by_latitude);
+        return get_ocean_biome(region,
+                               is_possible_tropical_area_by_latitude
+                               );
 
     // land biome. Elevation between 100 and 149
     if (region.temperature <= -5)
@@ -140,30 +145,49 @@ int get_biome_type(int world_coord_x, int world_coord_y)
     if ( region.vegetation < 66)
     {
         if (region.vegetation < 33)
-            return get_biome_desert_or_grassland_or_savanna(region, is_possible_tropical_area_by_latitude, is_tropical_area_by_latitude, world_coord_y, world_coord_x);
+            return get_biome_desert_or_grassland_or_savanna(region,
+                                                            is_possible_tropical_area_by_latitude,
+                                                            is_tropical_area_by_latitude,
+                                                            world_coord_y,
+                                                            world_coord_x
+                                                            );
         else // vegetation between 33 and 65
-            return get_biome_shrubland_or_marsh(region, is_possible_tropical_area_by_latitude, is_tropical_area_by_latitude, world_coord_y, world_coord_x);
+            return get_biome_shrubland_or_marsh(region,
+                                                is_possible_tropical_area_by_latitude,
+                                                is_tropical_area_by_latitude,
+                                                world_coord_y,
+                                                world_coord_x
+                                                );
     }
 
     // Not a lake, mountain, ocean, glacier, tundra, desert, grassland or savanna
     // vegetation >= 66
     if (region.drainage >= 33)
-        return get_biome_forest(region, is_possible_tropical_area_by_latitude, is_tropical_area_by_latitude, world_coord_y, world_coord_x);
+        return get_biome_forest(region,
+                                is_possible_tropical_area_by_latitude,
+                                is_tropical_area_by_latitude,
+                                world_coord_y,
+                                world_coord_x
+                                );
 
     // Not a lake, mountain, ocean, glacier, tundra, desert, grassland, savanna or forest
     // vegetation >= 66, drainage < 33
-    return get_biome_swamp (region, is_possible_tropical_area_by_latitude, is_tropical_area_by_latitude, world_coord_y, world_coord_x);
+    return get_biome_swamp (region,
+                            is_possible_tropical_area_by_latitude,
+                            is_tropical_area_by_latitude,
+                            world_coord_y,
+                            world_coord_x);
 }
 
 
 
-// ////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------//
+// Utility function
 //
-// Utility functions implementation
-//
-// ////////////////////////////////////////////////////////////////////////////
-
-std::pair<bool,bool> check_tropicality_no_poles_world(df::region_map_entry& region, int y_pos)
+//----------------------------------------------------------------------------//
+std::pair<bool,bool> check_tropicality_no_poles_world(df::region_map_entry& region,
+                                                      int y_pos
+                                                      )
 {
     int is_possible_tropical_area_by_latitude = 0;
     int is_tropical_area_by_latitude = 0;
@@ -176,11 +200,18 @@ std::pair<bool,bool> check_tropicality_no_poles_world(df::region_map_entry& regi
     if (!(v8 ^ v9))
         is_tropical_area_by_latitude = true;
 
-    return std::pair<bool,bool>(is_possible_tropical_area_by_latitude,is_tropical_area_by_latitude);
+    return std::pair<bool,bool>(is_possible_tropical_area_by_latitude,
+                                is_tropical_area_by_latitude
+                                );
 }
 
-
-std::pair<bool,bool> check_tropicality_north_pole_only_world(df::region_map_entry& region, int y_pos)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+std::pair<bool,bool> check_tropicality_north_pole_only_world(df::region_map_entry& region,
+                                                             int y_pos
+                                                             )
 {
     int v6;
     int is_possible_tropical_area_by_latitude = 0;
@@ -205,10 +236,18 @@ std::pair<bool,bool> check_tropicality_north_pole_only_world(df::region_map_entr
     if (!(v8 ^ v9))
         is_tropical_area_by_latitude = true;
 
-    return std::pair<bool,bool>(is_possible_tropical_area_by_latitude,is_tropical_area_by_latitude);
+    return std::pair<bool,bool>(is_possible_tropical_area_by_latitude,
+                                is_tropical_area_by_latitude
+                                );
 }
 
-std::pair<bool,bool> check_tropicality_south_pole_only_world(df::region_map_entry& region, int y_pos)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+std::pair<bool,bool> check_tropicality_south_pole_only_world(df::region_map_entry& region,
+                                                             int y_pos
+                                                             )
 {
     int v6 = df::global::world->world_data->world_height - y_pos - 1;
     int is_possible_tropical_area_by_latitude = 0;
@@ -234,10 +273,18 @@ std::pair<bool,bool> check_tropicality_south_pole_only_world(df::region_map_entr
 //    if ((v6 > 170) && (v6 < 200))
 //        is_tropical_area_by_latitude = true;
 
-    return std::pair<bool,bool>(is_possible_tropical_area_by_latitude,is_tropical_area_by_latitude);
+    return std::pair<bool,bool>(is_possible_tropical_area_by_latitude,
+                                is_tropical_area_by_latitude
+                                );
 }
 
-std::pair<bool,bool> check_tropicality_both_poles_world(df::region_map_entry& region, int y_pos)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+std::pair<bool,bool> check_tropicality_both_poles_world(df::region_map_entry& region,
+                                                        int y_pos
+                                                        )
 {
     int v6;
     int is_possible_tropical_area_by_latitude = 0;
@@ -272,34 +319,53 @@ std::pair<bool,bool> check_tropicality_both_poles_world(df::region_map_entry& re
     if (!(v8 ^ v9))
         is_tropical_area_by_latitude = true;
 
-    return std::pair<bool,bool>(is_possible_tropical_area_by_latitude,is_tropical_area_by_latitude);
+    return std::pair<bool,bool>(is_possible_tropical_area_by_latitude,
+                                is_tropical_area_by_latitude
+                                );
 }
 
-std::pair<bool,bool> check_tropicality(df::region_map_entry& region, int y_pos)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+std::pair<bool,bool> check_tropicality(df::region_map_entry& region,
+                                       int y_pos
+                                       )
 {
     int flip_latitude = df::global::world->world_data->flip_latitude;
 
     if (flip_latitude == -1)  // NO POLES
         return check_tropicality_no_poles_world(region,
-                                          y_pos);
+                                                y_pos
+                                                );
 
     else if (flip_latitude == 0) // NORTH POLE ONLY
         return check_tropicality_north_pole_only_world(region,
-                                                 y_pos);
+                                                       y_pos
+                                                       );
 
     else if (flip_latitude == 1) // SOUTH_POLE ONLY
         return check_tropicality_south_pole_only_world(region,
-                                                 y_pos);
+                                                       y_pos
+                                                       );
 
     else if (flip_latitude == 2) // BOTH POLES
         return check_tropicality_both_poles_world(region,
-                                            y_pos);
+                                                  y_pos
+                                                  );
 
      return std::pair<bool,bool>(false,false);
 }
 
-
-int get_parameter_percentage(int flip_latitude,int y_pos, int rainfall, int world_height)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int get_parameter_percentage(int flip_latitude,
+                             int y_pos,
+                             int rainfall,
+                             int world_height
+                             )
 {
     int result;
     int ypos = y_pos;
@@ -368,8 +434,15 @@ int get_parameter_percentage(int flip_latitude,int y_pos, int rainfall, int worl
     return result;
 }
 
+//----------------------------------------------------------------------------//
+// Utility function
+//
 // return some unknow parameter as a percentage
-int get_region_parameter(int y, int x, char a4)
+//----------------------------------------------------------------------------//
+int get_region_parameter(int y,
+                         int x,
+                         char a4
+                         )
 {
     int result = 100;
 
@@ -380,13 +453,23 @@ int get_region_parameter(int y, int x, char a4)
         {
             // access to region 2D array
             df::region_map_entry& region = df::global::world->world_data->region_map[x][y];
-            return get_parameter_percentage(df::global::world->world_data->flip_latitude, y, region.rainfall, world_height);
+            return get_parameter_percentage(df::global::world->world_data->flip_latitude,
+                                            y,
+                                            region.rainfall,
+                                            world_height
+                                            );
         }
     }
     return result;
 }
 
-int get_lake_biome(df::region_map_entry& region, bool is_possible_tropical_area_by_latitude)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int get_lake_biome(df::region_map_entry& region,
+                   bool is_possible_tropical_area_by_latitude
+                   )
 {
     // salinity values tell us the lake type
     // greater than 66 is a salt water lake
@@ -414,7 +497,13 @@ int get_lake_biome(df::region_map_entry& region, bool is_possible_tropical_area_
     }
 }
 
-int get_ocean_biome(df::region_map_entry& region, bool is_tropical_area_by_latitude)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int get_ocean_biome(df::region_map_entry& region,
+                    bool is_tropical_area_by_latitude
+                    )
 {
     if (is_tropical_area_by_latitude)
         return df::enums::biome_type::biome_type::OCEAN_TROPICAL; // 27
@@ -425,6 +514,10 @@ int get_ocean_biome(df::region_map_entry& region, bool is_tropical_area_by_latit
             return df::enums::biome_type::biome_type::OCEAN_TEMPERATE; // 28
 }
 
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 int get_desert_biome(df::region_map_entry& region)
 {
     if (region.drainage < 66)
@@ -438,7 +531,15 @@ int get_desert_biome(df::region_map_entry& region)
     return df::enums::biome_type::biome_type::DESERT_BADLAND; // 24
 }
 
-int get_biome_grassland(bool is_possible_tropical_area_by_latitude, bool is_tropical_area_by_latitude,int y, int x)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int get_biome_grassland(bool is_possible_tropical_area_by_latitude,
+                        bool is_tropical_area_by_latitude,
+                        int y,
+                        int x
+                        )
 {
     if ((is_possible_tropical_area_by_latitude && (get_region_parameter(y, x, 0) < 66)) || is_tropical_area_by_latitude)
         return df::enums::biome_type::biome_type::GRASSLAND_TROPICAL; // 21
@@ -446,7 +547,15 @@ int get_biome_grassland(bool is_possible_tropical_area_by_latitude, bool is_trop
         return df::enums::biome_type::biome_type::GRASSLAND_TEMPERATE; //18;
 }
 
-int get_biome_savanna(bool is_possible_tropical_area_by_latitude,  bool is_tropical_area_by_latitude,int y, int x)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int get_biome_savanna(bool is_possible_tropical_area_by_latitude,
+                      bool is_tropical_area_by_latitude,
+                      int y,
+                      int x
+                      )
 {
     if ((is_possible_tropical_area_by_latitude && (get_region_parameter(y, x, 0) <= 6)) || is_tropical_area_by_latitude)
         return df::enums::biome_type::biome_type::SAVANNA_TROPICAL; // 22
@@ -455,7 +564,16 @@ int get_biome_savanna(bool is_possible_tropical_area_by_latitude,  bool is_tropi
 
 }
 
-int get_biome_desert_or_grassland_or_savanna(df::region_map_entry& region, bool is_possible_tropical_area_by_latitude, bool is_tropical_area_by_latitude, int y, int x)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int get_biome_desert_or_grassland_or_savanna(df::region_map_entry& region,
+                                             bool is_possible_tropical_area_by_latitude,
+                                             bool is_tropical_area_by_latitude,
+                                             int y,
+                                             int x
+                                             )
 {
     if (region.vegetation < 20)
     {
@@ -468,7 +586,15 @@ int get_biome_desert_or_grassland_or_savanna(df::region_map_entry& region, bool 
     return get_biome_savanna(is_possible_tropical_area_by_latitude, is_tropical_area_by_latitude, y, x);
 }
 
-int get_biome_shrubland(bool is_possible_tropical_area_by_latitude, bool is_tropical_area_by_latitude, int y, int x)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int get_biome_shrubland(bool is_possible_tropical_area_by_latitude,
+                        bool is_tropical_area_by_latitude,
+                        int y,
+                        int x
+                        )
 {
     if (is_possible_tropical_area_by_latitude && (get_region_parameter(y, x, 0) < 66 || is_tropical_area_by_latitude))
         return df::enums::biome_type::biome_type::SHRUBLAND_TROPICAL; // 23
@@ -476,7 +602,16 @@ int get_biome_shrubland(bool is_possible_tropical_area_by_latitude, bool is_trop
         return df::enums::biome_type::biome_type::SHRUBLAND_TEMPERATE; // 20
 }
 
-int get_biome_marsh(df::region_map_entry& region, bool is_possible_tropical_area_by_latitude, bool is_tropical_area_by_latitude, int y, int x)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int get_biome_marsh(df::region_map_entry& region,
+                    bool is_possible_tropical_area_by_latitude,
+                    bool is_tropical_area_by_latitude,
+                    int y,
+                    int x
+                    )
 {
     if (region.salinity < 66)
     {
@@ -494,15 +629,43 @@ int get_biome_marsh(df::region_map_entry& region, bool is_possible_tropical_area
     }
 }
 
-int get_biome_shrubland_or_marsh(df::region_map_entry& region, bool is_possible_tropical_area_by_latitude, bool is_tropical_area_by_latitude, int y, int x)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int get_biome_shrubland_or_marsh(df::region_map_entry& region,
+                                 bool is_possible_tropical_area_by_latitude,
+                                 bool is_tropical_area_by_latitude,
+                                 int y,
+                                 int x
+                                 )
 {
     if (region.drainage >= 33)
-        return get_biome_shrubland(is_possible_tropical_area_by_latitude, is_tropical_area_by_latitude, y, x);
+        return get_biome_shrubland(is_possible_tropical_area_by_latitude,
+                                   is_tropical_area_by_latitude,
+                                   y,
+                                   x
+                                   );
     // drainage < 33
-    return get_biome_marsh(region, is_possible_tropical_area_by_latitude, is_tropical_area_by_latitude, y, x);
+    return get_biome_marsh(region,
+                           is_possible_tropical_area_by_latitude,
+                           is_tropical_area_by_latitude,
+                           y,
+                           x
+                           );
 }
 
-int get_biome_forest(df::region_map_entry& region, bool is_possible_tropical_area_by_latitude, bool is_tropical_area_by_latitude, int y, int x)
+
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int get_biome_forest(df::region_map_entry& region,
+                     bool is_possible_tropical_area_by_latitude,
+                     bool is_tropical_area_by_latitude,
+                     int y,
+                     int x
+                     )
 {
     int parameter = get_region_parameter(y, x, 0);
 
@@ -542,7 +705,16 @@ int get_biome_forest(df::region_map_entry& region, bool is_possible_tropical_are
     }
 }
 
-int get_biome_swamp(df::region_map_entry& region, bool is_possible_tropical_area_by_latitude, bool is_tropical_area_by_latitude, int y, int x)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int get_biome_swamp(df::region_map_entry& region,
+                    bool is_possible_tropical_area_by_latitude,
+                    bool is_tropical_area_by_latitude,
+                    int y,
+                    int x
+                    )
 {
     int parameter = get_region_parameter(y, x, 0);
 

@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,10 +14,6 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
@@ -38,153 +30,157 @@ using namespace std;
 External functions
 *****************************************************************************/
 extern int                             get_biome_type(int world_coord_x,
-                                                      int world_coord_y);
+                                                      int world_coord_y
+                                                      );
 
-//----------------------------------------------------------------------------//
 extern pair<int,int>                   adjust_coordinates_to_region(int x,
                                                                     int y,
                                                                     int delta,
                                                                     int pos_x,
                                                                     int pos_y,
                                                                     int world_width,
-                                                                    int world_height);
+                                                                    int world_height
+                                                                    );
 
-//----------------------------------------------------------------------------//
 extern df::historical_entity*          get_historical_entity_from_world_site(df::world_site* site);
 
-//----------------------------------------------------------------------------//
 extern int                             get_historical_entity_id_from_world_site(df::world_site* site);
 
-//----------------------------------------------------------------------------//
+
 extern df::entity_position_assignment* search_entity_positions_assignments(vector<df::entity_position_assignment* >& vec,
-                                                                           int                                       target);
+                                                                           int target
+                                                                           );
 
-//----------------------------------------------------------------------------//
 extern df::entity_position*            search_entity_positions_own(vector<df::entity_position* >& vec,
-                                                                   int                            target);
+                                                                   int target
+                                                                   );
 
-//----------------------------------------------------------------------------//
+
 extern df::entity_position*            search_entity_positions(vector<df::entity_position* >& vec,
-                                                               int                            entity_id);
+                                                               int entity_id
+                                                               );
 
-//----------------------------------------------------------------------------//
 extern df::world_site*                 search_world_data_sites(int site_id);
 
-//----------------------------------------------------------------------------//
 extern df::historical_entity*          search_world_entities(int site_id);
 
-//----------------------------------------------------------------------------//
 extern df::entity_site_link*           find_entity_site_link_from_world_site_id(vector<df::entity_site_link* >& vec,
-                                                                                int                             target);
+                                                                                int target
+                                                                                );
 
-//----------------------------------------------------------------------------//
 extern df::history_event*              search_world_history_events(int target);
 
-//----------------------------------------------------------------------------//
 extern df::history_event_collection*   search_world_history_event_collections(int target);
 
-//----------------------------------------------------------------------------//
 extern vector<df::coord2d>             line_algorithm(int point1_center_x,
                                                       int point1_center_y,
                                                       int point2_center_x,
-                                                      int point2_center_y);
-//----------------------------------------------------------------------------//
+                                                      int point2_center_y
+                                                      );
+
 extern void                            draw_site_rectangle(ExportedMapBase* map,
                                                            df::world_site*  world_site,
                                                            int              site_population,
                                                            unsigned char    pixel_R,
                                                            unsigned char    pixel_G,
-                                                           unsigned char    pixel_B);
+                                                           unsigned char    pixel_B
+                                                           );
 
-//----------------------------------------------------------------------------//
 extern void                            draw_site_rectangle_offseted(ExportedMapBase* map,
                                                                     df::world_site*  world_site,
                                                                     unsigned char    pixel_R,
                                                                     unsigned char    pixel_G,
                                                                     unsigned char    pixel_B,
-                                                                    int              offset);
+                                                                    int              offset
+                                                                    );
 
-//----------------------------------------------------------------------------//
 extern void                            draw_site_rectangle_filled_offseted(ExportedMapBase* map,
                                                                            df::world_site*  world_site,
                                                                            unsigned char    pixel_R,
                                                                            unsigned char    pixel_G,
                                                                            unsigned char    pixel_B,
-                                                                           int              offset);
+                                                                           int              offset
+                                                                           );
 
-//----------------------------------------------------------------------------//
 extern void                            draw_thick_color_line(ExportedMapBase* map,
-                                                             int x1, int y1, int x2, int y2,
+                                                             int x1,
+                                                             int y1,
+                                                             int x2,
+                                                             int y2,
                                                              RGB_color& color_center,
-                                                             RGB_color& color_border);
+                                                             RGB_color& color_border
+                                                             );
 
-//----------------------------------------------------------------------------//
 extern void                           draw_thick_color_line_2_colors(ExportedMapBase* map,
-                                                                     int x1, int y1, int x2, int y2,
+                                                                     int x1,
+                                                                     int y1,
+                                                                     int x2,
+                                                                     int y2,
                                                                      RGB_color& color_center1,
                                                                      RGB_color& color_border1,
                                                                      RGB_color& color_center2,
-                                                                     RGB_color& color_border2);
+                                                                     RGB_color& color_border2
+                                                                     );
 
-//----------------------------------------------------------------------------//
 extern int                             get_site_total_population(df::world_site* world_site);
 
-//----------------------------------------------------------------------------//
-extern RGB_color                       RGB_from_elevation_water(RegionDetailsElevationWater&                  rdew,
-                                                                int                                           x,
-                                                                int                                           y,
-                                                                int                                           biome_type,
-                                                                DFHack::BitArray<df::region_map_entry_flags>& flags);
 
-//----------------------------------------------------------------------------//
+extern RGB_color                       RGB_from_elevation_water(RegionDetailsElevationWater& rdew,
+                                                                int x,
+                                                                int y,
+                                                                int biome_type,
+                                                                DFHack::BitArray<df::region_map_entry_flags>& flags
+                                                                );
+
 extern void                            get_nobility_diplomacy_site_color(int            site_type,
                                                                          unsigned char& pixel_R,
                                                                          unsigned char& pixel_G,
-                                                                         unsigned char& pixel_B);
+                                                                         unsigned char& pixel_B
+                                                                         );
 
-//----------------------------------------------------------------------------//
 extern void                            draw_nobility_diplomacy_site(ExportedMapBase* map,
-                                                                    df::world_site* world_site);
+                                                                    df::world_site* world_site
+                                                                    );
 
-//----------------------------------------------------------------------------//
 extern void                            draw_nobility_diplomacy_sites(ExportedMapBase* map);
 
-//----------------------------------------------------------------------------//
 extern df::historical_entity*          f2(df::historical_entity*);
 
-//----------------------------------------------------------------------------//
 extern df::world_site*                 find_world_site_linked_with_entity_links_flags_value(df::historical_entity* entity,
-                                                                                            int flag_value_to_check);
+                                                                                            int flag_value_to_check
+                                                                                            );
 
-//----------------------------------------------------------------------------//
 extern df::historical_entity*          f(df::historical_entity* entity);
 
-//----------------------------------------------------------------------------//
 extern bool                            process_nob_dip_trad_sites_common(ExportedMapBase* map, 
                                                                          RegionDetailsElevationWater& rdew,
                                                                          int x, 
-                                                                         int y);
-//----------------------------------------------------------------------------//
+                                                                         int y
+                                                                         );
 extern void process_world_structures(ExportedMapBase* map);
 
-//----------------------------------------------------------------------------//
-extern void draw_nobility_holdings_sites(ExportedMapBase*  map);
+extern void draw_nobility_holdings_sites(ExportedMapBase* map);
 
 /*****************************************************************************
  Local functions forward declaration
 *****************************************************************************/
-
 void draw_diplomacy_map(ExportedMapBase* map);
 
-//----------------------------------------------------------------------------//
-bool diplomacy_do_work(MapsExporter* maps_exporter,
-                       ExportedMapBase* map);
+bool diplomacy_do_work(MapsExporter* maps_exporter);
 
-//----------------------------------------------------------------------------//
-int get_parameter(df::historical_entity* entity1, df::historical_entity* entity2);
+void diplomacy_1st_pass(ExportedMapBase* map);
 
-//----------------------------------------------------------------------------//
-int get_parameter2(df::historical_entity::T_unknown1b::T_diplomacy* diplomacy_entry, int entity_id);
+void diplomacy_2nd_pass(ExportedMapBase* map);
+
+void diplomacy_3rd_pass(ExportedMapBase* map);
+
+int  get_parameter(df::historical_entity* entity1,
+                  df::historical_entity* entity2
+                  );
+
+int  get_parameter2(df::historical_entity::T_unknown1b::T_diplomacy* diplomacy_entry,
+                   int entity_id
+                   );
 
 /*****************************************************************************
  Module main function.
@@ -197,9 +193,6 @@ void consumer_diplomacy(void* arg)
 
   if (arg != nullptr)
   {
-    // The map where we will write to
-    ExportedMapBase *diplomacy_map = maps_exporter->get_diplomacy_map();
-
     while (!finish)
     {
       if (maps_exporter->is_diplomacy_queue_empty())
@@ -207,7 +200,7 @@ void consumer_diplomacy(void* arg)
         tthread::this_thread::yield();
 
       else // There's data in the queue
-        finish = diplomacy_do_work(maps_exporter, diplomacy_map);
+        finish = diplomacy_do_work(maps_exporter);
     }
   }
 
@@ -219,23 +212,25 @@ void consumer_diplomacy(void* arg)
  Utility function
 
  Get the data from the queue.
- If is the end marker, the queue is empty and no more work needs to be done.Return
+  If is the end marker, the queue is empty and no more work needs to be done in the terrain
+  Then process the diplomacy data to draw it over the terrain map
  If it's actual data process it and update the corresponding map
 *****************************************************************************/
-bool diplomacy_do_work(MapsExporter* maps_exporter,
-                       ExportedMapBase* map)
+bool diplomacy_do_work(MapsExporter* maps_exporter)
 {
   // Get the data from the queue
   RegionDetailsElevationWater rdew = maps_exporter->pop_diplomacy();
+
+  // Get the map
+  ExportedMapDF* diplomacy_map = maps_exporter->get_diplomacy_map();
 
   // Check if is the marker for no more data from the producer
   if (rdew.is_end_marker())
   {
     // All the terrain data has been processed.
-    process_world_structures(map);
+    process_world_structures(diplomacy_map);
 
     // Now draw world sites and relationships over this base map
-    ExportedMapDF* diplomacy_map = maps_exporter->get_diplomacy_map();
     draw_diplomacy_map(diplomacy_map);
 
     // Finish this thread execution
@@ -246,7 +241,7 @@ bool diplomacy_do_work(MapsExporter* maps_exporter,
     // Iterate over the 16 subtiles (x) and (y) that a world tile has
     for (auto x=0; x<16; ++x)
       for (auto y=15; y>=0; --y)
-        process_nob_dip_trad_sites_common(map, rdew, x, y);
+        process_nob_dip_trad_sites_common(diplomacy_map, rdew, x, y);
   }
 
   return false;
@@ -254,15 +249,34 @@ bool diplomacy_do_work(MapsExporter* maps_exporter,
 
 
 
-/*****************************************************************************
-*****************************************************************************/
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+// Draws the diplomacy map over the terrain map
+//----------------------------------------------------------------------------//
 void draw_diplomacy_map(ExportedMapBase* map)
 {
   // Draw rectangles over ALL sites
   draw_nobility_diplomacy_sites(map);
 
   // 1st pass
+  diplomacy_1st_pass(map);
+  // 2nd pass
+  diplomacy_2nd_pass(map);
+  // 3rd pass
+  diplomacy_3rd_pass(map);
+  // Draw rectangles ONLY over each noble holdings
+  draw_nobility_holdings_sites(map);
+  //draw_capital_sites(map);
+
+}
+
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+void diplomacy_1st_pass(ExportedMapBase* map)
+{
   for (unsigned int i = 0; i < df::global::world->world_data->sites.size(); i++)
   {
     df::world_site* site1 = df::global::world->world_data->sites[i];
@@ -423,7 +437,14 @@ void draw_diplomacy_map(ExportedMapBase* map)
     }
   }
 
-  // 2nd pass
+}
+
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+void diplomacy_2nd_pass(ExportedMapBase* map)
+{
   for (unsigned int i = 0; i < df::global::world->world_data->sites.size(); i++)
   {
     df::world_site* site1 = df::global::world->world_data->sites[i];
@@ -590,7 +611,14 @@ void draw_diplomacy_map(ExportedMapBase* map)
     }
   }
 
-  // 3rd pass
+}
+
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+void diplomacy_3rd_pass(ExportedMapBase* map)
+{
   for (unsigned int p = 0; p < df::global::world->entities.all.size(); p++)
   {
     df::historical_entity* entity1 = df::global::world->entities.all[p];
@@ -773,17 +801,15 @@ int a,b;
       }
     }
   }
-
-  // Draw rectangles ONLY over each noble holdings
-  draw_nobility_holdings_sites(map);
-  //draw_capital_sites(map);
-
 }
 
-/*****************************************************************************
-*****************************************************************************/
-
-int copy_ethic_response(int a1, int a2)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int copy_ethic_response(int a1,
+                        int a2
+                        )
 {
   int result;
 
@@ -1023,7 +1049,13 @@ int copy_ethic_response(int a1, int a2)
   return result;
 }
 
-bool search_in_raws(df::historical_entity* entity1, df::historical_entity* entity2)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+bool search_in_raws(df::historical_entity* entity1,
+                    df::historical_entity* entity2
+                    )
 {
   if ( entity1 == nullptr)
     return false;
@@ -1059,7 +1091,13 @@ bool search_in_raws(df::historical_entity* entity1, df::historical_entity* entit
   return true;
 }
 
-int get_parameter(df::historical_entity* entity1, df::historical_entity* entity2)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int get_parameter(df::historical_entity* entity1,
+                  df::historical_entity* entity2
+                  )
 {
   if (entity2 == nullptr) return 0;
 
@@ -1100,7 +1138,14 @@ int get_parameter(df::historical_entity* entity1, df::historical_entity* entity2
   return result;
 }
 
-int ffff(df::historical_entity::T_unknown1b::T_diplomacy* diplomacy_entry,df::history_event* hist_event, int entity_id)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int dip_func1(df::historical_entity::T_unknown1b::T_diplomacy* diplomacy_entry,
+              df::history_event* hist_event,
+              int entity_id
+              )
 {
   int result = hist_event->getWarStatus(entity_id,diplomacy_entry->group_id);
   if (result == 0)
@@ -1134,7 +1179,14 @@ int ffff(df::historical_entity::T_unknown1b::T_diplomacy* diplomacy_entry,df::hi
   return result;
 }
 
-int ffff2(df::historical_entity::T_unknown1b::T_diplomacy* diplomacy_entry,df::history_event_collection* hist_event_col, int entity_id)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int dip_func2(df::historical_entity::T_unknown1b::T_diplomacy* diplomacy_entry,
+              df::history_event_collection* hist_event_col,
+              int entity_id
+              )
 {
   int result = hist_event_col->isBetweenEntities(entity_id, diplomacy_entry->group_id);
   if (result == 0)
@@ -1168,8 +1220,13 @@ int ffff2(df::historical_entity::T_unknown1b::T_diplomacy* diplomacy_entry,df::h
   return result;
 }
 
-
-int get_parameter2(df::historical_entity::T_unknown1b::T_diplomacy* diplomacy_entry, int entity_id)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+int get_parameter2(df::historical_entity::T_unknown1b::T_diplomacy* diplomacy_entry,
+                   int entity_id
+                   )
 {
   int result = 0;
 
@@ -1184,7 +1241,10 @@ int get_parameter2(df::historical_entity::T_unknown1b::T_diplomacy* diplomacy_en
     df::history_event* hist_event = search_world_history_events(event_id);
     if (hist_event == nullptr)   continue;
 
-    result += ffff(diplomacy_entry,hist_event,entity_id);
+    result += dip_func1(diplomacy_entry,
+                        hist_event,
+                        entity_id
+                        );
   }
 
   for (int i = diplomacy_entry->historic_events_collection.size() - 1; i >= 0; i--)
@@ -1195,7 +1255,10 @@ int get_parameter2(df::historical_entity::T_unknown1b::T_diplomacy* diplomacy_en
     df::history_event_collection* hist_event_col = search_world_history_event_collections(event_id);
     if (hist_event_col == nullptr)   continue;
 
-    result += ffff2(diplomacy_entry, hist_event_col, entity_id);
+    result += dip_func2(diplomacy_entry,
+                        hist_event_col,
+                        entity_id
+                        );
   }
 
   return result;

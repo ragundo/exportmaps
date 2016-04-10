@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,10 +14,6 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
@@ -36,136 +28,112 @@ using namespace std;
 /*****************************************************************************
 External functions
 *****************************************************************************/
-extern int get_biome_type(
-             int world_coord_x,
-             int world_coord_y
-           );
+extern int get_biome_type(int world_coord_x,
+                          int world_coord_y
+                          );
 
-//----------------------------------------------------------------------------//
-extern pair<int,int> adjust_coordinates_to_region(
-                       int x,
-                       int y,
-                       int delta,
-                       int pos_x,
-                       int pos_y,
-                       int world_width,
-                       int world_height
-                     );
+extern pair<int,int> adjust_coordinates_to_region(int x,
+                                                  int y,
+                                                  int delta,
+                                                  int pos_x,
+                                                  int pos_y,
+                                                  int world_width,
+                                                  int world_height
+                                                  );
 
-//----------------------------------------------------------------------------//
-extern df::historical_entity* get_historical_entity_from_world_site(
-                                df::world_site* site
-                              );
 
-//----------------------------------------------------------------------------//
-extern df::entity_position_assignment* search_entity_positions_assignments(
-                                         vector<df::entity_position_assignment* >& vec,
-                                         int                                       target
-                                       );
+extern df::historical_entity* get_historical_entity_from_world_site(df::world_site* site);
 
-//----------------------------------------------------------------------------//
-extern df::entity_position* search_entity_positions(
-                              vector<df::entity_position* >& vec,
-                              int entity_id
-                            );
+extern df::entity_position_assignment* search_entity_positions_assignments(vector<df::entity_position_assignment* >& vec,
+                                                                           int target
+                                                                           );
 
-//----------------------------------------------------------------------------//
+extern df::entity_position* search_entity_positions(vector<df::entity_position* >& vec,
+                                                    int entity_id
+                                                    );
+
 extern df::world_site* search_world_data_sites(int site_id);
 
-//----------------------------------------------------------------------------//
 extern df::world_site* search_world_entities(int site_id);
 
-//----------------------------------------------------------------------------//
-extern void draw_thick_color_line(
-              ExportedMapBase* map,
-              int x1,
-              int y1,
-              int x2,
-              int y2,
-              RGB_color& color_center,
-              RGB_color& color_border
-            );
+extern void draw_thick_color_line(ExportedMapBase* map,
+                                  int x1,
+                                  int y1,
+                                  int x2,
+                                  int y2,
+                                  RGB_color& color_center,
+                                  RGB_color& color_border
+                                  );
 
-//----------------------------------------------------------------------------//
-extern void draw_site_rectangle(
-              ExportedMapBase* map,
-              df::world_site*  world_site,
-              int              site_population,
-              unsigned char    pixel_R,
-              unsigned char    pixel_G,
-              unsigned char    pixel_B
-            );
 
-//----------------------------------------------------------------------------//
-extern RGB_color RGB_from_elevation_water(
-                   RegionDetailsElevationWater&                  rdew,
-                   int                                           x,
-                   int                                           y,
-                   int                                           biome_type,
-                   DFHack::BitArray<df::region_map_entry_flags>& flags
-                 );
+extern void draw_site_rectangle(ExportedMapBase* map,
+                                df::world_site*  world_site,
+                                int              site_population,
+                                unsigned char    pixel_R,
+                                unsigned char    pixel_G,
+                                unsigned char    pixel_B
+                                );
 
-//----------------------------------------------------------------------------//
-extern bool process_nob_dip_trad_sites_common(
-              ExportedMapBase*             map,
-              RegionDetailsElevationWater& rdew,
-              int                          x,
-              int                          y
-            );
+extern RGB_color RGB_from_elevation_water(RegionDetailsElevationWater& rdew,
+                                          int x,
+                                          int y,
+                                          int biome_type,
+                                          DFHack::BitArray<df::region_map_entry_flags>& flags
+                                          );
 
-//----------------------------------------------------------------------------//
+extern bool process_nob_dip_trad_sites_common(ExportedMapBase* map,
+                                              RegionDetailsElevationWater& rdew,
+                                              int x,
+                                              int y
+                                              );
+
  extern void process_world_structures(ExportedMapBase* map);
 
 /*****************************************************************************
  Local functions forward declaration
 *****************************************************************************/
 
-bool trading_do_work(MapsExporter* maps_exporter,
-                     ExportedMapBase* map);
+bool trading_do_work(MapsExporter* maps_exporter);
 
-//----------------------------------------------------------------------------//
 void draw_trade_map(ExportedMapBase* map);
 
-//----------------------------------------------------------------------------//
 void draw_regular_sites(ExportedMapBase* map);
 
-//----------------------------------------------------------------------------//
 void draw_trading_sites(ExportedMapBase* map);
 
-//----------------------------------------------------------------------------//
 void draw_regular_site(ExportedMapBase* map,
-                       df::world_site* world_site);       
+                       df::world_site* world_site
+                       );
 
-//----------------------------------------------------------------------------//
 void draw_trading_site(ExportedMapBase* map,
-                       df::world_site* world_site);     
+                       df::world_site* world_site
+                       );
 
-//----------------------------------------------------------------------------//
 void process_trading(ExportedMapBase*       map,
                      df::historical_entity* entity,
-                     df::world_site*        world_site);
+                     df::world_site*        world_site
+                     );
 
-//----------------------------------------------------------------------------//
 void get_no_trading_site_color(int            site_type,
                                unsigned char& pixel_R,
                                unsigned char& pixel_G,
-                               unsigned char& pixel_B);
+                               unsigned char& pixel_B
+                               );
 
-//----------------------------------------------------------------------------//
 void get_trading_site_color(int            site_type,
                             unsigned char& pixel_R,
                             unsigned char& pixel_G,
-                            unsigned char& pixel_B); 
+                            unsigned char& pixel_B
+                            );
 
-//----------------------------------------------------------------------------//
 void draw_trade_relationship_line(ExportedMapBase* map, 
                                   df::world_site*  world_site1,
                                   df::world_site*  world_site2,
                                   int              site_population1,
                                   int              site_population2,
-                                  int              type);
+                                  int              type
+                                  );
 
-//----------------------------------------------------------------------------//
 int get_site_total_population(df::world_site* world_site);
 
 /*****************************************************************************
@@ -179,9 +147,6 @@ void consumer_trading(void* arg)
 
   if (arg != nullptr)
   {
-    // The map where we will write to
-    ExportedMapBase *trade_map = maps_exporter->get_trading_map();
-
     while (!finish)
     {
       if (maps_exporter->is_trading_queue_empty())
@@ -189,7 +154,7 @@ void consumer_trading(void* arg)
         tthread::this_thread::yield();
 
       else // There's data in the queue
-        finish = trading_do_work(maps_exporter, trade_map);
+        finish = trading_do_work(maps_exporter);
     }
   }
   // Function finish -> Thread finish
@@ -205,20 +170,20 @@ void consumer_trading(void* arg)
  If is the end marker, the queue is empty and the basic terrain map was
  generated, but the real trading map must be draw over the terrain map.
  *****************************************************************************/
-bool trading_do_work(MapsExporter* maps_exporter,
-                     ExportedMapBase* map)
+bool trading_do_work(MapsExporter* maps_exporter)
 {
   // Get the data from the queue
   RegionDetailsElevationWater rdew = maps_exporter->pop_trading();
+
+  // The map where we will write to
+  ExportedMapBase* trade_map = maps_exporter->get_trading_map();
 
   // Check if is the marker for no more data from the producer
   if (rdew.is_end_marker())
   {
     // All the terrain data has been processed.
-    process_world_structures(map);
+    process_world_structures(trade_map);
 
-    // Now draw world sites and relationships over this base map
-    ExportedMapDF* trade_map = maps_exporter->get_trading_map();
     draw_trade_map(trade_map);
     return true;
   }
@@ -227,40 +192,38 @@ bool trading_do_work(MapsExporter* maps_exporter,
     // Iterate over the 16 subtiles (x) and (y) that a world tile has
     for (auto x=0; x<16; ++x)
       for (auto y=15; y>=0; --y)
-        process_nob_dip_trad_sites_common(map, rdew, x, y);
+        process_nob_dip_trad_sites_common(trade_map, rdew, x, y);
   }
   return false;
 }
 
 
-/*****************************************************************************
- Utility function
-
- Draws the trade map over the "basic world map" after this one was generated.
- Basic algorithm:
-
-  1.- Draw a rectangle over each site that could have trading relationship
-  2.- Iterate over world.entites
-  3.- For each entity iterate over its vector<entity_site_link*> site_links
-  4.- For each entity_site_link, test its flags and check if trading applies
-  5.- If yes, get the world site linked as world site 1 using its target field
-      as a site_id
-  6.- Repeat again iterating over vector<entity_site_link*> site_links
-  7.- For each entity_site_link test its flags and for different values
-      than step 4.
-  8.- If the flags are ok, get the world site linked as world site 2
-  9.- Draw a line connecting world site 1 and world site 2
- 10 - Iterate over world.world_data.sites vector
- 11 - Check world site flags for a trading one
- 12 - Draw a rectangle over the world site with different color than the
-      regular ones drawed in step 1
- *****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+// Draws the trade map over the "basic world map" after this one was generated.
+//  Basic algorithm:
+//
+//   1.- Draw a rectangle over each site that could have trading relationship
+//   2.- Iterate over world.entites
+//   3.- For each entity iterate over its vector<entity_site_link*> site_links
+//   4.- For each entity_site_link, test its flags and check if trading applies
+//   5.- If yes, get the world site linked as world site 1 using its target field
+      // as a site_id
+//   6.- Repeat again iterating over vector<entity_site_link*> site_links
+//   7.- For each entity_site_link test its flags and for different values
+      // than step 4.
+//   8.- If the flags are ok, get the world site linked as world site 2
+//   9.- Draw a line connecting world site 1 and world site 2
+//  10 - Iterate over world.world_data.sites vector
+//  11 - Check world site flags for a trading one
+//  12 - Draw a rectangle over the world site with different color than the
+//       regular ones drawed in step 1
+//----------------------------------------------------------------------------//
 void draw_trade_map(ExportedMapBase* map)
 {
   int x = 0;
   int y = 0;
-
-
 
   // Draw rectangles over each site
   draw_regular_sites(map);
@@ -310,17 +273,14 @@ void draw_trade_map(ExportedMapBase* map)
 }
 
 
-
-
-/*****************************************************************************
- Utility function
-
- 
-*****************************************************************************/
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void process_trading(ExportedMapBase*       map,
                      df::historical_entity* entity,
-                     df::world_site*        world_site)
+                     df::world_site*        world_site
+                     )
 {
   // Get this site population
   int site_population = get_site_total_population(world_site);
@@ -391,11 +351,10 @@ void process_trading(ExportedMapBase*       map,
 }
 
 
-/*****************************************************************************
- Utility function
-
- 
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void draw_trading_sites(ExportedMapBase* map)
 {
   for (unsigned int t = 0; t < df::global::world->world_data->sites.size(); ++t)
@@ -419,11 +378,11 @@ void draw_trading_sites(ExportedMapBase* map)
   }  
 }
 
-/*****************************************************************************
- Utility function
-
- Draws a rectangle over each world site that can have a trading relationship
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+// Draws a rectangle over each world site that can have a trading relationship
+//----------------------------------------------------------------------------//
 void draw_regular_sites(ExportedMapBase* map)
 {
   // Draw over the "basic" map a rectangle over each world site
@@ -454,15 +413,17 @@ void draw_regular_sites(ExportedMapBase* map)
 
 
 
-/*****************************************************************************
- Utility function
- 
- Draws a rectangle over a world site that could participates in
- trading relationship. Depending of the site population, the rectangle
- is drawed with different colors
-*****************************************************************************/
+
+//----------------------------------------------------------------------------//
+// Utility function
+//
+// Draws a rectangle over a world site that could participates in
+// trading relationship. Depending of the site population, the rectangle
+// is drawed with different colors
+//----------------------------------------------------------------------------//
 void draw_regular_site(ExportedMapBase* map,
-                       df::world_site* world_site)
+                       df::world_site* world_site
+                       )
 {
   unsigned char pixel_R;
   unsigned char pixel_G;
@@ -486,15 +447,16 @@ void draw_regular_site(ExportedMapBase* map,
                       pixel_B);
 }
 
-/*****************************************************************************
- Utility function
- 
- Draws a rectangle over a world site THAT participates in
- trading relationships. Depending of the site population, the rectangle
- is drawed with different colors
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+// Draws a rectangle over a world site THAT participates in
+// trading relationships. Depending of the site population, the rectangle
+// is drawed with different colors
+//----------------------------------------------------------------------------//
 void draw_trading_site(ExportedMapBase* map,
-                       df::world_site* world_site)
+                       df::world_site* world_site
+                       )
 {
   unsigned char pixel_R;
   unsigned char pixel_G;
@@ -520,16 +482,17 @@ void draw_trading_site(ExportedMapBase* map,
 
 
 
-/*****************************************************************************
- Utility function
-
- Returns the base color for a no trading world site.
- It depends of the site type
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+// Returns the base color for a no trading world site.
+// It depends of the site type
+//----------------------------------------------------------------------------//
 void get_no_trading_site_color(int site_type,
                                unsigned char& pixel_R,
                                unsigned char& pixel_G,
-                               unsigned char& pixel_B)
+                               unsigned char& pixel_B
+                               )
 {
   switch (site_type)
   {
@@ -593,16 +556,17 @@ void get_no_trading_site_color(int site_type,
 
 
 
-/*****************************************************************************
- Utility function
-
- Returns the base color for a trading world site.
- It depends of the site type
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+// Returns the base color for a trading world site.
+// It depends of the site type
+//----------------------------------------------------------------------------//
 void get_trading_site_color(int site_type,
                             unsigned char& pixel_R,
                             unsigned char& pixel_G,
-                            unsigned char& pixel_B)
+                            unsigned char& pixel_B
+                            )
 {
   switch (site_type)
   {
@@ -662,18 +626,19 @@ void get_trading_site_color(int site_type,
 
 
 
-/*****************************************************************************
- Utility function
-
- Draws a line over the map connecting two world sites that have a trading
- relationship
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+// Draws a line over the map connecting two world sites that have a trading
+// relationship
+//----------------------------------------------------------------------------//
 void draw_trade_relationship_line(ExportedMapBase* map,              // The map where to draw
                                   df::world_site*  world_site1,      // trading site 1
                                   df::world_site*  world_site2,      // trading site 2
                                   int              site_population1, // site 1 population
                                   int              site_population2, // site 2 population
-                                  int              type)             // relatioship type, changes the line color
+                                  int              type              // relatioship type, changes the line color
+                                  )
 {
 
   // The limits of site 1
@@ -749,12 +714,12 @@ void draw_trade_relationship_line(ExportedMapBase* map,              // The map 
 
 
 
-/*****************************************************************************
- Utility function 
-
- Returns the total population of a world site
- Total population = site units + site nemesis + site inhabitants
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+// Returns the total population of a world site
+// Total population = site units + site nemesis + site inhabitants
+//----------------------------------------------------------------------------//
 int get_site_total_population(df::world_site* world_site)
 {
   int v2 = world_site->nemesis.size() + world_site->units.size();

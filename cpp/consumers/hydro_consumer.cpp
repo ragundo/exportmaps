@@ -41,17 +41,36 @@ using namespace exportmaps_plugin;
 /*****************************************************************************
 External functions
 *****************************************************************************/
-extern int                get_biome_type(int world_coord_x, int world_coord_y);
-extern std::pair<int,int> adjust_coordinates_to_region(int x, int y, int delta, int pos_x, int pos_y, int world_width, int world_height);
+extern int                get_biome_type(int world_coord_x,
+                                         int world_coord_y
+                                         );
+
+extern std::pair<int,int> adjust_coordinates_to_region(int x,
+                                                       int y,
+                                                       int delta,
+                                                       int pos_x,
+                                                       int pos_y,
+                                                       int world_width,
+                                                       int world_height
+                                                       );
 
 /*****************************************************************************
 Local functions forward declaration
 *****************************************************************************/
+bool hydro_do_work(MapsExporter* maps_exporter);
+
 // Return the RGB values for the biome export map given a biome type
-RGB_color RGB_from_elevation_water(RegionDetailsElevationWater& rdew, int x, int y, int biome_type, DFHack::BitArray<df::region_map_entry_flags>& flags);
+RGB_color RGB_from_elevation_water(RegionDetailsElevationWater& rdew,
+                                   int x,
+                                   int y,
+                                   int biome_type,
+                                   DFHack::BitArray<df::region_map_entry_flags>& flags
+                                   );
 
 // Return a world river
-std::pair<df::world_river*, int> get_world_river(int x, int y);
+std::pair<df::world_river*, int> get_world_river(int x,
+                                                 int y
+                                                 );
 
 
 /*****************************************************************************
@@ -60,77 +79,97 @@ This is the function that the thread executes
 *****************************************************************************/
 void consumer_hydro(void* arg)
 {
+  bool                finish  = false;
   MapsExporter* maps_exporter = (MapsExporter*)arg;
 
-  while(arg != nullptr)
+  if (arg != nullptr)
   {
-    if (maps_exporter->is_hydro_queue_empty())
+    while(!finish)
     {
-        // No data on the queue. Sleep 100 ms and try again
+      if (maps_exporter->is_hydro_queue_empty())
+        // No data on the queue. Try again later
         tthread::this_thread::yield();
-    }
-    else // There's data in the queue
-    {
-        // Get the data from the queue
-        RegionDetailsElevationWater rdew = maps_exporter->pop_hydro();
 
-        // Check if is the marker for no more data from the producer
-        if (rdew.is_end_marker())
-        {
-          // All the data has been processed. Finish this thread execution
-          break;
-        }
-        else // There's data to be processed
-        {
-          // Iterate over the 16 subtiles (x) and (y) that a world tile has
-          for (auto x=0; x<16; ++x)
-            for (auto y=15; y>=0; --y)
-            {
-                // Each position of the array is a value that tells us if the local tile
-                // belongs to the NW,N,NE,W,center,E,SW,S,SE world region.
-                // Returns a world coordinate adjusted from the original one
-                std::pair<int,int> adjusted_tile_coordinates = adjust_coordinates_to_region(x,
-                                                                                            y,
-                                                                                            rdew.get_biome_index(x,y),
-                                                                                            rdew.get_pos_x(),
-                                                                                            rdew.get_pos_y(),
-                                                                                            df::global::world->world_data->world_width,
-                                                                                            df::global::world->world_data->world_height);
-
-                // Get the biome type for this world position
-                int biome_type = get_biome_type(adjusted_tile_coordinates.first,
-                                                adjusted_tile_coordinates.second);
-
-                // Get the region where this position belongs to
-                df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first][adjusted_tile_coordinates.second];
-
-                // Get the RGB values associated to this biome type
-                RGB_color rgb_pixel_color = RGB_from_elevation_water(rdew,
-                                                                     x,
-                                                                     y,
-                                                                     biome_type,
-                                                                     rme.flags);
-
-
-                // Write pixels to the bitmap
-                ExportedMapDF* hydro_map = maps_exporter->get_hydro_map();
-                hydro_map->write_world_pixel(rdew.get_pos_x(),
-                                             rdew.get_pos_y(),
-                                             x,
-                                             y,
-                                             rgb_pixel_color);
-            }
-        }
+      else // There's data in the queue
+        finish = hydro_do_work(maps_exporter);
     }
   }
+  // Function finish -> Thread finish
 }
 
-/*****************************************************************************
-Utility function
-Return the RGB values for the hydrosphere export map
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+// Get the data from the queue.
+// If is the end marker, the queue is empty and no more work needs to be done, return
+// If it's actual data process it and update the corresponding map
+//----------------------------------------------------------------------------//
+bool hydro_do_work(MapsExporter* maps_exporter)
+{
+  // Get the data from the queue
+  RegionDetailsElevationWater rdew = maps_exporter->pop_hydro();
 
-RGB_color no_river_color(int biome_type, int elevation)
+  // Check if is the marker for no more data from the producer
+  if (rdew.is_end_marker())
+  {
+    // All the data has been processed. Finish this thread execution
+    return true;
+  }
+
+  // Iterate over the 16 subtiles (x) and (y) that a world tile has
+  for (auto x=0; x<16; ++x)
+    for (auto y=15; y>=0; --y)
+    {
+      // Each position of the array is a value that tells us if the local tile
+      // belongs to the NW,N,NE,W,center,E,SW,S,SE world region.
+      // Returns a world coordinate adjusted from the original one
+      std::pair<int,int> adjusted_tile_coordinates = adjust_coordinates_to_region(x,
+                                                                                  y,
+                                                                                  rdew.get_biome_index(x,y),
+                                                                                  rdew.get_pos_x(),
+                                                                                  rdew.get_pos_y(),
+                                                                                  df::global::world->world_data->world_width,
+                                                                                  df::global::world->world_data->world_height
+                                                                                  );
+
+      // Get the biome type for this world position
+      int biome_type = get_biome_type(adjusted_tile_coordinates.first,
+                                      adjusted_tile_coordinates.second
+                                      );
+
+      // Get the region where this position belongs to
+      df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first]
+                                                                           [adjusted_tile_coordinates.second];
+
+      // Get the RGB values associated to this biome type
+      RGB_color rgb_pixel_color = RGB_from_elevation_water(rdew,
+                                                           x,
+                                                           y,
+                                                           biome_type,
+                                                           rme.flags
+                                                           );
+
+      // Write pixels to the bitmap
+      ExportedMapDF* hydro_map = maps_exporter->get_hydro_map();
+      hydro_map->write_world_pixel(rdew.get_pos_x(),
+                                   rdew.get_pos_y(),
+                                   x,
+                                   y,
+                                   rgb_pixel_color
+                                   );
+
+  }
+  return false; // Continue working
+}
+
+//----------------------------------------------------------------------------//
+// Utility function
+// Return the RGB values for the hydrosphere export map
+//----------------------------------------------------------------------------//
+
+RGB_color no_river_color(int biome_type,
+                         int elevation
+                         )
 {
     // No river present
     if (biome_type == 0) // MOUNTAIN biome
@@ -147,7 +186,15 @@ RGB_color no_river_color(int biome_type, int elevation)
 
 }
 
-RGB_color RGB_from_elevation_water(RegionDetailsElevationWater& rdew, int x, int y, int biome_type, DFHack::BitArray<df::region_map_entry_flags>& flags)
+//----------------------------------------------------------------------------//
+// Utility function
+//----------------------------------------------------------------------------//
+RGB_color RGB_from_elevation_water(RegionDetailsElevationWater& rdew,
+                                   int x,
+                                   int y,
+                                   int biome_type,
+                                   DFHack::BitArray<df::region_map_entry_flags>& flags
+                                   )
 {
     int elevation                      = rdew.get_elevation(x,y);
     int river_horiz_y_min              = rdew.get_rivers_horizontal().y_min[x][y  ];
@@ -177,7 +224,9 @@ RGB_color RGB_from_elevation_water(RegionDetailsElevationWater& rdew, int x, int
                     if ((biome_type < 27) ||  // OCEAN_TROPICAL
                         (biome_type > 29) ||  // OCEAN_ARTIC
                         (elevation  < 99))    // Not shore
-                            return no_river_color(biome_type,elevation);
+                            return no_river_color(biome_type,
+                                                  elevation
+                                                  );
                     break;
         default:    break;
     }
@@ -196,7 +245,9 @@ RGB_color RGB_from_elevation_water(RegionDetailsElevationWater& rdew, int x, int
     if (!expr)
         return RGB_color(0x00,0xff,0xff); // Brook
 
-    std::pair<df::world_river*, int> river_data = get_world_river(rdew.get_pos_x(),rdew.get_pos_y());
+    std::pair<df::world_river*, int> river_data = get_world_river(rdew.get_pos_x(),
+                                                                  rdew.get_pos_y()
+                                                                  );
     df::world_river* ptr_world_river = river_data.first;
     int river_index = river_data.second;
 
@@ -216,7 +267,9 @@ RGB_color RGB_from_elevation_water(RegionDetailsElevationWater& rdew, int x, int
     return RGB_color(0x00,0xe0,0xff); // stream
 }                
 
-
+//----------------------------------------------------------------------------//
+// Utility function
+//----------------------------------------------------------------------------//
 std::pair<df::world_river*, int> get_world_river(int x, int y)
 {
     std::pair<df::world_river*, int> NO_RIVER(nullptr,-1);

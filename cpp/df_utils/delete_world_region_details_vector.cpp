@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,10 +14,6 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
@@ -32,6 +24,10 @@
 
 using namespace std;
 
+/*****************************************************************************
+Module local variables
+
+*****************************************************************************/
 static unsigned int address_Windows = 0x6FE600; // Default for DF42.06
 static unsigned int address_Linux   = 0x0;      // Default for DF42.06
 static unsigned int address_Mac     = 0x0;      // Default for DF42.06
@@ -41,10 +37,9 @@ External functions
 *****************************************************************************/
 extern void delete_world_region_details(df::world_region_details*);
 
-/**************************************************************************
-Forward declarations
-**************************************************************************/
-
+/*****************************************************************************
+Local functions forward declaration
+*****************************************************************************/
 void delete_world_region_details_vector_Windows();
 void delete_world_region_details_vector_Linux();
 
@@ -53,7 +48,6 @@ void delete_world_region_details_vector_Linux();
  Main function
 
 **************************************************************************/
-
 void delete_world_region_details_vector()
 {
   #if defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
@@ -66,9 +60,10 @@ void delete_world_region_details_vector()
 }
 
 
-/**************************************************************************
- Local function
-**************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void delete_world_region_details_vector_Windows()
 {
 #if defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
@@ -85,9 +80,10 @@ void delete_world_region_details_vector_Windows()
 #endif
 }
 
-/**************************************************************************
- Local function
-**************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void delete_world_region_details_vector_Linux()
 {
 #ifdef LINUX_BUILD

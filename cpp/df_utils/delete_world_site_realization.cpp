@@ -1,31 +1,54 @@
+/*
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+*/
+
+// You can always find the latest version of this plugin in Github
+// https://github.com/ragundo/exportmaps
+
 #include "../../include/dfhack.h"
 #include "DFHackVersion.h"
 #include "modules/Filesystem.h"
 
 using namespace std;
 
+/*****************************************************************************
+Module local variables
+
+*****************************************************************************/
 static unsigned int address_Windows = 0x00CC4F60; // Default for DF42.06
 static unsigned int address_Linux   = 0x090406F0; // Default for DF42.06
 static unsigned int address_Mac     = 0x0;        // Default for DF42.06
 
 
+/*****************************************************************************
+Local functions forward declaration
+*****************************************************************************/
 
-
-/**************************************************************************
- Forward declarations
-**************************************************************************/
-
-void delete_world_site_realization_Linux(unsigned int    address_DF_sub,
+void delete_world_site_realization_Linux(unsigned int address_DF_sub,
                                          df::world_site* world_site
-                                        );
+                                         );
 
-void delete_world_site_realization_OSX(unsigned int    address_DF_sub,
+void delete_world_site_realization_OSX(unsigned int address_DF_sub,
                                        df::world_site* world_site
-                                      );
+                                       );
 
-void delete_world_site_realization_Windows(unsigned int    address_DF_sub,
+void delete_world_site_realization_Windows(unsigned int address_DF_sub,
                                            df::world_site* world_site
-                                          );
+                                           );
 
 /**************************************************************************
  Main function
@@ -36,7 +59,6 @@ void delete_world_site_realization_Windows(unsigned int    address_DF_sub,
 
  The routine calls one version for Linux and another for Windows
 **************************************************************************/
-
 void delete_world_site_realization(df::world_site* world_site)
 {
 
@@ -73,12 +95,14 @@ void delete_world_site_realization(df::world_site* world_site)
 }
 
 
-/**************************************************************************
- Local function
 
-**************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void delete_world_site_realization_Linux(unsigned int    address_DF_sub,
-                                       df::world_site* world_site)
+                                         df::world_site* world_site
+                                         )
 {
     #if defined(_LINUX)
 
@@ -99,11 +123,14 @@ void delete_world_site_realization_Linux(unsigned int    address_DF_sub,
     #endif
 }
 
-/**************************************************************************
- Local function
-**************************************************************************/
+
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void delete_world_site_realization_Windows(unsigned int address_DF_sub,
-                                         df::world_site* world_site)
+                                           df::world_site* world_site
+                                           )
 {
   // Windows DF has Address Space Randomization active, so the virtual address
   // doesn't have to be the same every time DF is running.
@@ -116,16 +143,6 @@ void delete_world_site_realization_Windows(unsigned int address_DF_sub,
   __asm push world_site                        /* 1st parameter to the stack = df_world_site*   */
   __asm mov  eax, address_DF_sub_Win           /* eax = address DF subroutine                   */
   __asm call address_DF_sub_Win                /* call DF subroutine                            */
-
-//    __asm xor  eax, eax                          /* eax = 0                       */
-//    __asm push eax                               /* 5th parameter to the stack    */
-//    __asm push eax                               /* 4th parameter to the stack    */
-//    __asm mov  eax, world_pos_y                  /* 3th parameter to the stack    */
-//    __asm push eax
-//    __asm mov  edx, world_pos_x                  /* 2nd parameter in register edx */
-//    __asm mov  ecx, address_world_region_details /* 1st parameter in register ecx */
-//    __asm mov  eax, address_DF_sub_Win               /* eax = address DF subroutine   */
-//    __asm call address_DF_sub                    /* call the DF subroutine        */
 
 #endif // WINDOWS
 }

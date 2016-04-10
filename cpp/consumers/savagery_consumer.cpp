@@ -39,6 +39,7 @@ extern std::pair<int,int> adjust_coordinates_to_region(int x,
 /*****************************************************************************
 Local functions forward declaration
 *****************************************************************************/
+bool      savagery_do_work(MapsExporter* maps_exporter);
 RGB_color RGB_from_savagery(int savagery);
 
 
@@ -48,58 +49,74 @@ This is the function that the thread executes
 *****************************************************************************/
 void consumer_savagery(void* arg)
 {
+  bool                finish  = false;
   MapsExporter* maps_exporter = (MapsExporter*)arg;
 
-  while(arg != nullptr)
+  if (arg != nullptr)
   {
-    if (maps_exporter->is_savagery_queue_empty())
+    while(!finish)
     {
-        // No data on the queue. Sleep 100 ms and try again
+      if (maps_exporter->is_volcanism_queue_empty())
+        // No data on the queue. Try again later
         tthread::this_thread::yield();
-    }
-    else // There's data in the queue
-    {
-        // Get the data from the queue
-        RegionDetailsBiome rdg = maps_exporter->pop_savagery();
 
-        // Check if is the marker for no more data from the producer
-        if (rdg.is_end_marker())
-        {
-          // All the data has been processed. Finish this thread execution
-          break;
-        }
-        else // There's data to be processed
-        {
-            // Iterate over the 16 subtiles (x) and (y) that a world tile has
-            for (auto x=0; x<16; ++x)
-                for (auto y=0; y<16; ++y)
-                {
-                    // Each position of the array is a value that tells us if the local tile
-                    // belongs to the NW,N,NE,W,center,E,SW,S,SE world region.
-                    // Returns a world coordinate adjusted from the original one
-                    std::pair<int,int> adjusted_tile_coordinates = adjust_coordinates_to_region(x,
-                                                                                                y,
-                                                                                                rdg.get_biome_index(x,y),
-                                                                                                rdg.get_pos_x(),
-                                                                                                rdg.get_pos_y(),
-                                                                                                df::global::world->world_data->world_width,
-                                                                                                df::global::world->world_data->world_height);
-                    df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first][adjusted_tile_coordinates.second];
-
-                    // Get the RGB values associated to this savagery
-                    RGB_color rgb_pixel_color = RGB_from_savagery(rme.savagery);
-
-                    // Write pixels to the bitmap
-                    ExportedMapDF* savagery_map = maps_exporter->get_savagery_map();
-                    savagery_map->write_world_pixel(rdg.get_pos_x(),
-                                                    rdg.get_pos_y(),
-                                                    x,
-                                                    y,
-                                                    rgb_pixel_color);
-            }
-        }
+      else // There's data in the queue
+        finish = savagery_do_work(maps_exporter);
     }
   }
+  // Function finish -> Thread finish
+}
+
+//----------------------------------------------------------------------------//
+// Utility function
+//
+// Get the data from the queue.
+// If is the end marker, the queue is empty and no more work needs to be done, return
+// If it's actual data process it and update the corresponding map
+//----------------------------------------------------------------------------//
+bool savagery_do_work(MapsExporter* maps_exporter) // The coordinator object
+{
+  // Get the data from the queue
+  RegionDetailsBiome rdg = maps_exporter->pop_savagery();
+
+  // Check if is the marker for no more data from the producer
+  if (rdg.is_end_marker())
+  {
+    // All the data has been processed. Finish this thread execution
+    return true;
+  }
+  else // There's data to be processed
+    // Iterate over the 16 subtiles (x) and (y) that a world tile has
+    for (auto x=0; x<16; ++x)
+      for (auto y=0; y<16; ++y)
+      {
+        // Each position of the array is a value that tells us if the local tile
+        // belongs to the NW,N,NE,W,center,E,SW,S,SE world region.
+        // Returns a world coordinate adjusted from the original one
+        std::pair<int,int> adjusted_tile_coordinates = adjust_coordinates_to_region(x,
+                                                                                    y,
+                                                                                    rdg.get_biome_index(x,y),
+                                                                                    rdg.get_pos_x(),
+                                                                                    rdg.get_pos_y(),
+                                                                                    df::global::world->world_data->world_width,
+                                                                                    df::global::world->world_data->world_height
+                                                                                    );
+
+        df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first][adjusted_tile_coordinates.second];
+
+        // Get the RGB values associated to this savagery
+        RGB_color rgb_pixel_color = RGB_from_savagery(rme.savagery);
+
+        // Write pixels to the bitmap
+        ExportedMapDF* savagery_map = maps_exporter->get_savagery_map();
+        savagery_map->write_world_pixel(rdg.get_pos_x(),
+                                        rdg.get_pos_y(),
+                                        x,
+                                        y,
+                                        rgb_pixel_color
+                                        );
+      }
+  return false; // Continue working
 }
 
 /*****************************************************************************

@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,10 +14,6 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
@@ -37,7 +29,8 @@ using namespace std;
 External functions
 *****************************************************************************/
 extern int                             get_biome_type(int world_coord_x,
-                                                      int world_coord_y);
+                                                      int world_coord_y
+                                                      );
 
 extern pair<int,int>                   adjust_coordinates_to_region(int x,
                                                                     int y,
@@ -45,158 +38,136 @@ extern pair<int,int>                   adjust_coordinates_to_region(int x,
                                                                     int pos_x,
                                                                     int pos_y,
                                                                     int world_width,
-                                                                    int world_height);
+                                                                    int world_height
+                                                                    );
 
 extern df::historical_entity*          get_historical_entity_from_world_site(df::world_site* site);
 
 extern int                             get_historical_entity_id_from_world_site(df::world_site* site);
 
 extern df::entity_position_assignment* search_entity_positions_assignments(vector<df::entity_position_assignment* >& vec,
-                                                                                                                 int target);
+                                                                           int target
+                                                                           );
 
 extern df::entity_position*            search_entity_positions_own(vector<df::entity_position* >& vec,
-                                                                                              int target);
+                                                                   int target
+                                                                   );
 
 
 extern df::entity_position*            search_entity_positions(vector<df::entity_position* >& vec,
-                                                                                          int entity_id);
+                                                               int entity_id
+                                                               );
 
 extern df::world_site*                 search_world_data_sites(int site_id);
 
 extern df::historical_entity*          search_world_entities(int site_id);
 
 extern df::entity_site_link*           find_entity_site_link_from_world_site_id(vector<df::entity_site_link* >& vec,
-                                                                                int                             target);
+                                                                                int target
+                                                                                );
 
 extern vector<df::coord2d>             line_algorithm(int point1_center_x,
                                                       int point1_center_y,
                                                       int point2_center_x,
-                                                      int point2_center_y);
+                                                      int point2_center_y
+                                                      );
 
-//----------------------------------------------------------------------------//
-extern void draw_site_rectangle(
-              ExportedMapBase* map,
-              df::world_site*  world_site,
-              int              site_population,
-              unsigned char    pixel_R,
-              unsigned char    pixel_G,
-              unsigned char    pixel_B
-              );
+extern void                            draw_site_rectangle(ExportedMapBase* map,
+                                                           df::world_site*  world_site,
+                                                           int              site_population,
+                                                           unsigned char    pixel_R,
+                                                           unsigned char    pixel_G,
+                                                           unsigned char    pixel_B
+                                                           );
 
-//----------------------------------------------------------------------------//
-extern void draw_site_rectangle_offseted(
-              ExportedMapBase* map,
-              df::world_site*  world_site,
-              unsigned char    pixel_R,
-              unsigned char    pixel_G,
-              unsigned char    pixel_B,
-              int              offset
-              );
 
-//----------------------------------------------------------------------------//
-extern void draw_site_rectangle_filled_offseted(
-              ExportedMapBase* map,
-              df::world_site*  world_site,
-              unsigned char    pixel_R,
-              unsigned char    pixel_G,
-              unsigned char    pixel_B,
-              int              offset
-              );
+extern void                            draw_site_rectangle_offseted(ExportedMapBase* map,
+                                                                    df::world_site*  world_site,
+                                                                    unsigned char    pixel_R,
+                                                                    unsigned char    pixel_G,
+                                                                    unsigned char    pixel_B,
+                                                                    int              offset
+                                                                    );
 
-//----------------------------------------------------------------------------//
-extern void draw_thick_color_line(
-              ExportedMapBase* map,
-              int              x1,
-              int              y1,
-              int              x2,
-              int              y2,
-              RGB_color&       color_center,
-              RGB_color&       color_border
-              );
 
-//----------------------------------------------------------------------------//
-extern int get_site_total_population(df::world_site* world_site);
+extern void                            draw_site_rectangle_filled_offseted(ExportedMapBase* map,
+                                                                           df::world_site*  world_site,
+                                                                           unsigned char    pixel_R,
+                                                                           unsigned char    pixel_G,
+                                                                           unsigned char    pixel_B,
+                                                                           int              offset
+                                                                           );
 
-//----------------------------------------------------------------------------//
-extern RGB_color RGB_from_elevation_water(
-                   RegionDetailsElevationWater&                  rdew,
-                   int                                           x,
-                   int                                           y,
-                   int                                           biome_type,
-                   DFHack::BitArray<df::region_map_entry_flags>& flags
-                   );
+extern void                            draw_thick_color_line(ExportedMapBase* map,
+                                                             int              x1,
+                                                             int              y1,
+                                                             int              x2,
+                                                             int              y2,
+                                                             RGB_color&       color_center,
+                                                             RGB_color&       color_border
+                                                             );
 
-//----------------------------------------------------------------------------//
-extern df::historical_entity* f(df::historical_entity* entity);
 
-//----------------------------------------------------------------------------//
-extern bool process_nob_dip_trad_sites_common(
-              ExportedMapBase*             map,
-              RegionDetailsElevationWater& rdew,
-              int                          x,
-              int                          y
-              );
-//----------------------------------------------------------------------------//
-extern void process_world_structures(ExportedMapBase* map);
+extern int                             get_site_total_population(df::world_site* world_site);
+
+extern RGB_color                       RGB_from_elevation_water(RegionDetailsElevationWater& rdew,
+                                                                int x,
+                                                                int y,
+                                                                int biome_type,
+                                                                DFHack::BitArray<df::region_map_entry_flags>& flags
+                                                                );
+
+extern df::historical_entity*          f(df::historical_entity* entity);
+
+extern bool                            process_nob_dip_trad_sites_common(ExportedMapBase* map,
+                                                                         RegionDetailsElevationWater& rdew,
+                                                                         int x,
+                                                                         int y
+                                                                         );
+extern void                            process_world_structures(ExportedMapBase* map);
 
 
 /*****************************************************************************
  Local functions forward declaration
 *****************************************************************************/
 
-void get_nobility_diplomacy_site_color(
-       int            site_type,
-       unsigned char& pixel_R,
-       unsigned char& pixel_G,
-       unsigned char& pixel_B
-       );
+void get_nobility_diplomacy_site_color(int site_type,
+                                       unsigned char& pixel_R,
+                                       unsigned char& pixel_G,
+                                       unsigned char& pixel_B
+                                       );
 
-//----------------------------------------------------------------------------//
-void draw_nobility_diplomacy_site(
-       ExportedMapBase* map,
-       df::world_site* world_site
-     );
+void draw_nobility_diplomacy_site(ExportedMapBase* map,
+                                  df::world_site* world_site
+                                  );
 
-//----------------------------------------------------------------------------//
 void draw_nobility_diplomacy_sites(ExportedMapBase* map);
 
-//----------------------------------------------------------------------------//
 void draw_nobility_map(ExportedMapBase* map);
 
-//----------------------------------------------------------------------------//
-bool nobility_do_work(
-       MapsExporter*    maps_exporter,
-       ExportedMapBase* map
-     );
+bool nobility_do_work(MapsExporter* maps_exporter);
 
-//----------------------------------------------------------------------------//
-void draw_nobility_holdings_sites(ExportedMapBase*  map);
+void draw_nobility_holdings_sites(ExportedMapBase* map);
 
-//----------------------------------------------------------------------------//
-void draw_nobility_relationship_line(
-       ExportedMapBase* map,     // where to draw
-       df::world_site* site1,    // line start
-       df::world_site* site2,    // line end
-       RGB_color& border_color,  // line border color
-       RGB_color& center_color   // line center color
-     );
+void draw_nobility_relationship_line(ExportedMapBase* map,           // where to draw
+                                     df::world_site*  site1,         // line start
+                                     df::world_site*  site2,         // line end
+                                     RGB_color&       border_color,  // line border color
+                                     RGB_color&       center_color   // line center color
+                                     );
 
-//----------------------------------------------------------------------------//
-void draw_holdings_lines(
-       ExportedMapBase*       map,           // where to draw
-       df::historical_entity* entity,        // noble
-       df::entity_site_link*  ent_site_link,
-       df::world_site*        site1          // site where the noble lives now
-     );
+void draw_holdings_lines(ExportedMapBase* map,                 // where to draw
+                         df::historical_entity* entity,        // noble
+                         df::entity_site_link*  ent_site_link,
+                         df::world_site*        site1          // site where the noble lives now
+                         );
 
-//----------------------------------------------------------------------------//
-void draw_capital_lines(
-       ExportedMapBase*       map,
-       df::historical_entity* entity,
-       df::entity_site_link*  ent_site_link,
-       df::world_site*        site1,
-       df::world_site*        site2
-     );
+void draw_capital_lines(ExportedMapBase*       map,
+                        df::historical_entity* entity,
+                        df::entity_site_link*  ent_site_link,
+                        df::world_site*        site1,
+                        df::world_site*        site2
+                        );
 
 /*****************************************************************************
  Module main function.
@@ -209,9 +180,6 @@ void consumer_nobility(void* arg)
 
   if (arg != nullptr)
   {
-    // The map where we will write to
-    ExportedMapBase *nobility_map = maps_exporter->get_nobility_map();
-
     while (!finish)
     {
       if (maps_exporter->is_nobility_queue_empty())
@@ -219,7 +187,7 @@ void consumer_nobility(void* arg)
         tthread::this_thread::yield();
 
       else // There's data in the queue
-        finish = nobility_do_work(maps_exporter, nobility_map);
+        finish = nobility_do_work(maps_exporter);
     }
   }
 
@@ -234,20 +202,21 @@ void consumer_nobility(void* arg)
  If is the end marker, the queue is empty and no more work needs to be done.Return
  If it's actual data process it and update the corresponding map
 *****************************************************************************/
-bool nobility_do_work(MapsExporter* maps_exporter, 
-                      ExportedMapBase* map)
+bool nobility_do_work(MapsExporter* maps_exporter)
 {
   // Get the data from the queue
   RegionDetailsElevationWater rdew = maps_exporter->pop_nobility();
+
+  // The map where we will write to
+  ExportedMapBase *nobility_map = maps_exporter->get_nobility_map();
 
   // Check if is the marker for no more data from the producer
   if (rdew.is_end_marker())
   {
     // All the terrain data has been processed.
-    process_world_structures(map);
+    process_world_structures(nobility_map);
 
     // Now draw world sites and relationships over this base map
-    ExportedMapDF* nobility_map = maps_exporter->get_nobility_map();
     draw_nobility_map(nobility_map);
 
     // Finish this thread execution
@@ -258,17 +227,21 @@ bool nobility_do_work(MapsExporter* maps_exporter,
     // Iterate over the 16 subtiles (x) and (y) that a world tile has
     for (auto x=0; x<16; ++x)
       for (auto y=15; y>=0; --y)
-        process_nob_dip_trad_sites_common(map, rdew, x, y);
+        process_nob_dip_trad_sites_common(nobility_map,
+                                          rdew,
+                                          x,
+                                          y
+                                          );
   }
 
   return false;
 }  
 
 
-
-/*****************************************************************************
-*****************************************************************************/
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void draw_nobility_map(ExportedMapBase* map)
 {
 
@@ -336,12 +309,14 @@ void draw_nobility_map(ExportedMapBase* map)
                            entity,
                            ent_site_link,
                            world_site,
-                           capital_site);
+                           capital_site
+                           );
       else
         draw_holdings_lines(map,
                             entity,
                             ent_site_link,
-                            world_site);
+                            world_site
+                            );
     }
   }
 
@@ -349,9 +324,10 @@ void draw_nobility_map(ExportedMapBase* map)
   draw_nobility_holdings_sites(map);
 }
 
-/*****************************************************************************
-*****************************************************************************/
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void draw_nobility_holdings_sites(ExportedMapBase*  map)
 {
   int pixel_R;
@@ -378,7 +354,8 @@ void draw_nobility_holdings_sites(ExportedMapBase*  map)
 
      // Find the correct entity site link for this one
      df::entity_site_link* ent_site_link = find_entity_site_link_from_world_site_id(hist_ent->site_links,
-                                                                                    world_site->id);
+                                                                                    world_site->id
+                                                                                    );
 
      if (ent_site_link == nullptr) continue;
 
@@ -393,14 +370,17 @@ void draw_nobility_holdings_sites(ExportedMapBase*  map)
                                     255,
                                     0,
                                     255,
-                                    2);
+                                    2
+                                    );
+
        // Draw a hollow rectangle (128,0,128) 3 pixels inside the site boundary
        draw_site_rectangle_offseted(map,
                                     world_site,
                                     128,
                                     0,
                                     128,
-                                    3);
+                                    3
+                                    );
      }
      else // site is NOT capital
      {
@@ -408,11 +388,13 @@ void draw_nobility_holdings_sites(ExportedMapBase*  map)
        if (!(ent_site_link->flags.whole & 0x800)) continue; // land holder residence (the regular sites where a baron etc. actually lives)
 
        df::entity_position_assignment* ent_pos_assign = search_entity_positions_assignments(hist_ent->positions.assignments,
-                                                                                            ent_site_link->anon_1);
+                                                                                            ent_site_link->anon_1
+                                                                                            );
        if (ent_pos_assign == nullptr) continue;
 
        df::entity_position* ent_pos = search_entity_positions_own(hist_ent->positions.own,
-                                                                  ent_pos_assign->position_id);
+                                                                  ent_pos_assign->position_id
+                                                                  );
        if (ent_pos == nullptr) continue;
 
        // We have a entity that owns land
@@ -453,19 +435,18 @@ void draw_nobility_holdings_sites(ExportedMapBase*  map)
                                              pixel_R,
                                              pixel_G,
                                              pixel_B,
-                                             2);
+                                             2
+                                             );
        }
      }
    }
 }
 
 
-
-/*****************************************************************************
-*****************************************************************************/
-
-
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void draw_nobility_diplomacy_sites(ExportedMapBase* map)
 {
   // Draw over the "basic" map a rectangle over each world site
@@ -481,24 +462,28 @@ void draw_nobility_diplomacy_sites(ExportedMapBase* map)
     int site_flags_value = world_site->flags.as_int();
 
     if (site_flags_size == 0x00) 
-      draw_nobility_diplomacy_site(map, world_site);
+      draw_nobility_diplomacy_site(map,
+                                   world_site
+                                   );
 
     if (
         !(site_flags_value  & 0x01) &&
         !(site_flags_value  & 0x80)
        )
-      draw_nobility_diplomacy_site(map, world_site);
+      draw_nobility_diplomacy_site(map,
+                                   world_site
+                                   );
 
   }
 }
 
-
-
-/*****************************************************************************
-*****************************************************************************/
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void draw_nobility_diplomacy_site(ExportedMapBase* map,
-                                  df::world_site* world_site)
+                                  df::world_site* world_site
+                                  )
 {
   unsigned char pixel_R;
   unsigned char pixel_G;
@@ -508,7 +493,8 @@ void draw_nobility_diplomacy_site(ExportedMapBase* map,
   get_nobility_diplomacy_site_color(world_site->type,
                                     pixel_R,
                                     pixel_G,
-                                    pixel_B);
+                                    pixel_B
+                                    );
 
   // Check the population of this site, because it can be empty
   int site_population = get_site_total_population(world_site);
@@ -519,19 +505,19 @@ void draw_nobility_diplomacy_site(ExportedMapBase* map,
                       site_population, // This changes how the site is drawed
                       pixel_R,         // site color
                       pixel_G,
-                      pixel_B);
+                      pixel_B
+                      );
 }
 
-
-
-
-/*****************************************************************************
-*****************************************************************************/
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void get_nobility_diplomacy_site_color(int site_type,
                                        unsigned char& pixel_R,
                                        unsigned char& pixel_G,
-                                       unsigned char& pixel_B)
+                                       unsigned char& pixel_B
+                                       )
 {
   switch (site_type)
   {
@@ -593,15 +579,16 @@ void get_nobility_diplomacy_site_color(int site_type,
 
 }
 
-
-/*****************************************************************************
-*****************************************************************************/
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void draw_nobility_relationship_line(ExportedMapBase* map,    // where to draw
                                      df::world_site* site1,   // line start
                                      df::world_site* site2,   // line end
                                      RGB_color& border_color, // line border color
-                                     RGB_color& center_color) // line center color
+                                     RGB_color& center_color  // line center color
+                                     )
 {
 
   // The limits of site 1
@@ -610,7 +597,7 @@ void draw_nobility_relationship_line(ExportedMapBase* map,    // where to draw
   int site1_global_min_y = site1->global_min_y;
   int site1_global_max_y = site1->global_max_y;
 
-// The limits of site 2
+  // The limits of site 2
   int site2_global_min_x = site2->global_min_x;
   int site2_global_max_x = site2->global_max_x;
   int site2_global_min_y = site2->global_min_y;
@@ -630,17 +617,19 @@ void draw_nobility_relationship_line(ExportedMapBase* map,    // where to draw
                         site2_center_x, // line end x
                         site2_center_y, // line end y
                         center_color,   // center line color
-                        border_color);  // border line color
+                        border_color    // border line color
+                        );
 }
 
-
-/*****************************************************************************
-*****************************************************************************/
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void draw_holdings_lines(ExportedMapBase*       map,
                          df::historical_entity* entity,
                          df::entity_site_link*  ent_site_link,
-                         df::world_site*        site1)
+                         df::world_site*        site1
+                         )
 {
   // draw lines from where the noble lives now to each of its holdings
   for (unsigned int t = 0; t < entity->site_links.size(); t++)
@@ -670,25 +659,32 @@ void draw_holdings_lines(ExportedMapBase*       map,
     std::get<1>(center_color) = 255;
     std::get<2>(center_color) = 0;
 
-    draw_nobility_relationship_line(map, site1, site2, border_color, center_color);
+    draw_nobility_relationship_line(map,
+                                    site1,
+                                    site2,
+                                    border_color,
+                                    center_color
+                                    );
   }
 }
 
 
 
-/*****************************************************************************
-*****************************************************************************/
-
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 void draw_capital_lines(ExportedMapBase*       map,
                         df::historical_entity* entity,
                         df::entity_site_link*  ent_site_link,
                         df::world_site*        site1,
-                        df::world_site*        site2)
+                        df::world_site*        site2
+                        )
 {
   // land holder residence (the regular sites where a baron etc. actually lives)
   df::entity_position_assignment* ent_pos_assign = search_entity_positions_assignments(entity->positions.assignments,
-                                                                                       ent_site_link->anon_1);
+                                                                                       ent_site_link->anon_1
+                                                                                       );
   if (ent_pos_assign == nullptr) return;
 
   int ent_pos_assign_anon_4 = ent_pos_assign->anon_4; // TODO quitar esto y ver si funciona
@@ -730,7 +726,8 @@ void draw_capital_lines(ExportedMapBase*       map,
                                     site1,
                                     site2,
                                     border_color,
-                                    center_color);
+                                    center_color
+                                    );
   }
   else
   {
@@ -748,11 +745,13 @@ void draw_capital_lines(ExportedMapBase*       map,
      if (site3 == nullptr) continue;
 
      df::entity_position_assignment* ent_pos_assign3 = search_entity_positions_assignments(entity->positions.assignments,
-                                                                                           ent_site_link2->anon_1);
+                                                                                           ent_site_link2->anon_1
+                                                                                           );
      if (ent_pos_assign3 == nullptr) continue;
 
      df::entity_position* ent_pos2 = search_entity_positions_own(entity->positions.own,
-                                                                 ent_pos_assign3->position_id);
+                                                                 ent_pos_assign3->position_id
+                                                                 );
      if (ent_pos2 == nullptr) continue;
 
      unsigned char r_color   = 0xff;
@@ -785,7 +784,8 @@ void draw_capital_lines(ExportedMapBase*       map,
                                      site1,
                                      site3,
                                      border_color,
-                                     center_color);
+                                     center_color
+                                     );
     }
   }
 }

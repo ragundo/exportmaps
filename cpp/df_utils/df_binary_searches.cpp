@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,24 +14,21 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
-// https://github.com/ragundo/exportmaps  
+// https://github.com/ragundo/exportmaps
 
 #include "../../include/dfhack.h"
 
 using namespace std;
 using namespace DFHack;
 
-/*****************************************************************************
- Different searches that uses a vector and one id to look for it in the vector
-*****************************************************************************/
 
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 df::world_site* search_world_data_sites(int target)
 {
   vector<df::world_site* >& vec_sites = df::global::world->world_data->sites;
@@ -61,9 +54,10 @@ df::world_site* search_world_data_sites(int target)
   return nullptr;
 }
 
-/*****************************************************************************
-*****************************************************************************/
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 df::historical_entity* search_world_entities(int target)
 {
   vector<df::historical_entity* >*  ptr_vec = &df::global::world->entities.all;
@@ -93,10 +87,13 @@ df::historical_entity* search_world_entities(int target)
 
 
 
-/*****************************************************************************
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 df::entity_position_assignment* search_entity_positions_assignments(vector<df::entity_position_assignment* >& vec,
-                                                                    int                                       target)
+                                                                    int target
+                                                                    )
 {
   int start = 0;
   int end = vec.size() - 1;
@@ -121,10 +118,13 @@ df::entity_position_assignment* search_entity_positions_assignments(vector<df::e
 }
 
 
-/*****************************************************************************
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 df::entity_position* search_entity_positions_own(vector<df::entity_position* >& vec,
-                                                 int                            target)
+                                                 int target
+                                                 )
 {
   int start = 0;
   int end = vec.size() - 1;
@@ -149,10 +149,10 @@ df::entity_position* search_entity_positions_own(vector<df::entity_position* >& 
 }
 
 
-/*****************************************************************************
-*****************************************************************************/
-
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 int get_historical_entity_id_from_world_site(df::world_site* site)
 {
   if ( site == nullptr)
@@ -184,10 +184,10 @@ int get_historical_entity_id_from_world_site(df::world_site* site)
   return -1;
 }
 
-/*****************************************************************************
-*****************************************************************************/
-
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 df::historical_entity* get_historical_entity_from_world_site(df::world_site* site)
 {
   if ( site == nullptr)
@@ -216,12 +216,13 @@ df::historical_entity* get_historical_entity_from_world_site(df::world_site* sit
   return nullptr;
 }
 
-/*****************************************************************************
-*****************************************************************************/
-
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 df::entity_position* search_entity_positions(vector<df::entity_position* >& vec,
-                                             int                            target)
+                                             int target
+                                             )
 {
   int start = 0;
   int end = vec.size() - 1;
@@ -246,13 +247,13 @@ df::entity_position* search_entity_positions(vector<df::entity_position* >& vec,
 }
 
 
-/*****************************************************************************
-*****************************************************************************/
-
-
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 df::entity_site_link* find_entity_site_link_from_world_site_id(vector<df::entity_site_link* >& vec,
-                                                               int                             target)
+                                                               int target
+                                                               )
 {
   int start = 0;
   int end = vec.size() - 1;
@@ -276,9 +277,10 @@ df::entity_site_link* find_entity_site_link_from_world_site_id(vector<df::entity
   return nullptr;
 }
 
-/*****************************************************************************
-*****************************************************************************/
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 df::historical_entity* f(df::historical_entity* entity)
 {
 
@@ -305,9 +307,11 @@ df::historical_entity* f(df::historical_entity* entity)
   return entity;
 }
 
-/*****************************************************************************
-*****************************************************************************/
 
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 df::historical_entity* f2(df::historical_entity* entity)
 {
   if (entity->type == 0)
@@ -330,10 +334,13 @@ df::historical_entity* f2(df::historical_entity* entity)
   return entity;
 }
 
-/*****************************************************************************
-*****************************************************************************/
-
-df::world_site* find_world_site_linked_with_entity_links_flags_value(df::historical_entity* entity, int flag_value_to_check)
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
+df::world_site* find_world_site_linked_with_entity_links_flags_value(df::historical_entity* entity,
+                                                                     int flag_value_to_check
+                                                                     )
 {
   if (entity == nullptr)
     return nullptr;
@@ -351,13 +358,15 @@ df::world_site* find_world_site_linked_with_entity_links_flags_value(df::histori
   return nullptr;
 }
 
-/*****************************************************************************
-*****************************************************************************/
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 df::world_construction* find_construction_square_id_in_world_data_constructions(df::world_data::T_constructions& constructions,
                                                                                 int start,
                                                                                 int end,
-                                                                                int target)
+                                                                                int target
+                                                                                )
 {
   const std::vector<df::world_construction* >& list = constructions.list;
 
@@ -383,9 +392,10 @@ df::world_construction* find_construction_square_id_in_world_data_constructions(
 }
 
 
-/*****************************************************************************
-*****************************************************************************/
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 df::history_event* search_world_history_events(int target)
 {
   vector<df::history_event* >& vec_events = df::global::world->history.events;
@@ -412,9 +422,10 @@ df::history_event* search_world_history_events(int target)
 }
 
 
-/*****************************************************************************
-*****************************************************************************/
-
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 df::history_event_collection* search_world_history_event_collections(int target)
 {
   auto& vec_events = df::global::world->history.event_collections.all;
@@ -440,10 +451,13 @@ df::history_event_collection* search_world_history_event_collections(int target)
   return nullptr;
 }
 
-/*****************************************************************************
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Utility function
+//
+//----------------------------------------------------------------------------//
 df::world_site_realization::T_areas* search_world_site_realization_areas(int target,
-                                                                         df::world_site_realization* wsr)
+                                                                         df::world_site_realization* wsr
+                                                                         )
 {
   if (wsr == nullptr) return nullptr;
   

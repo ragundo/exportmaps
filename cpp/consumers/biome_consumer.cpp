@@ -27,7 +27,8 @@ using namespace exportmaps_plugin;
 External functions
 *****************************************************************************/
 extern int                get_biome_type(int world_coord_x,
-                                         int world_coord_y);
+                                         int world_coord_y
+                                         );
 
 extern std::pair<int,int> adjust_coordinates_to_region(int x,
                                                        int y,
@@ -35,32 +36,31 @@ extern std::pair<int,int> adjust_coordinates_to_region(int x,
                                                        int pos_x,
                                                        int pos_y,
                                                        int world_width,
-                                                       int world_height);
+                                                       int world_height
+                                                       );
 
 /*****************************************************************************
 Local functions forward declaration
 *****************************************************************************/
 RGB_color RGB_from_biome_type(int biome_type);
 
-//----------------------------------------------------------------------------//
-bool biome_do_work(MapsExporter* maps_exporter,
-                   ExportedMapBase* map);
+bool      biome_do_work(MapsExporter* maps_exporter);
 
-//----------------------------------------------------------------------------//
-void process_DF_biome_map (ExportedMapBase* map,
-                           int biome_type,
-                           int pos_x,
-                           int pos_y,
-                           int px,
-                           int py);
+void      process_DF_biome_map (ExportedMapBase* map,
+                                int biome_type,
+                                int pos_x,
+                                int pos_y,
+                                int px,
+                                int py
+                                );
 
-//----------------------------------------------------------------------------//
-void process_Raw_biome_map(ExportedMapBase* map,
-                           int biome_type,
-                           int pos_x,
-                           int pos_y,
-                           int px,
-                           int py);
+void      process_Raw_biome_map(ExportedMapBase* map,
+                                int biome_type,
+                                int pos_x,
+                                int pos_y,
+                                int px,
+                                int py
+                                );
 
 /*****************************************************************************
 Module main function.
@@ -83,7 +83,7 @@ void consumer_biome(void* arg)
         tthread::this_thread::yield();
 
       else // There's data in the queue
-        finish = biome_do_work(maps_exporter, biome_map);
+        finish = biome_do_work(maps_exporter);
     }
   }
   // Function finish -> Thread finish
@@ -96,9 +96,7 @@ void consumer_biome(void* arg)
 // If is the end marker, the queue is empty and no more work needs to be done, return
 // If it's actual data process it and update the corresponding map
 //----------------------------------------------------------------------------//
-bool biome_do_work(MapsExporter* maps_exporter, // The coordinator object
-                   ExportedMapBase* map         // The map where we'll draw
-                   )
+bool biome_do_work(MapsExporter* maps_exporter)
 {
   // Get the data from the queue
   RegionDetailsBiome rdb = maps_exporter->pop_biome();
@@ -122,13 +120,16 @@ bool biome_do_work(MapsExporter* maps_exporter, // The coordinator object
                                                                                   rdb.get_pos_x(),
                                                                                   rdb.get_pos_y(),
                                                                                   df::global::world->world_data->world_width,
-                                                                                  df::global::world->world_data->world_height);
+                                                                                  df::global::world->world_data->world_height
+                                                                                  );
 
       // Get the biome type for this world position
       int biome_type = get_biome_type(adjusted_tile_coordinates.first,
-                                      adjusted_tile_coordinates.second);
+                                      adjusted_tile_coordinates.second
+                                      );
 
       // Discriminate the map type
+      ExportedMapDF* map = maps_exporter->get_biome_map();
       switch (map->get_type())
       {
         // DF style map
@@ -137,7 +138,8 @@ bool biome_do_work(MapsExporter* maps_exporter, // The coordinator object
                                                        rdb.get_pos_x(),
                                                        rdb.get_pos_y(),
                                                        x,
-                                                       y);
+                                                       y
+                                                       );
                                   break;
 
         // Raw map, only data, no PNG
@@ -146,7 +148,8 @@ bool biome_do_work(MapsExporter* maps_exporter, // The coordinator object
                                                         rdb.get_pos_x(),
                                                         rdb.get_pos_y(),
                                                         x,
-                                                        y);
+                                                        y
+                                                        );
                                   break;
         default:                  break;
       };
@@ -159,7 +162,6 @@ bool biome_do_work(MapsExporter* maps_exporter, // The coordinator object
 // Utility function
 // Process one embark tyle of a DF style map (.PNG)
 //----------------------------------------------------------------------------//
-
 void process_DF_biome_map(ExportedMapBase* map,
                           int biome_type,
                           int pos_x,
@@ -176,7 +178,8 @@ void process_DF_biome_map(ExportedMapBase* map,
                          pos_y,
                          px,
                          py,
-                         rgb_pixel_color);
+                         rgb_pixel_color
+                         );
 }
 
 //----------------------------------------------------------------------------//
@@ -196,7 +199,8 @@ void process_Raw_biome_map(ExportedMapBase* map,
                   pos_y,
                   px,
                   py,
-                  biome_type);  
+                  biome_type
+                  );
 }
 
 
