@@ -164,15 +164,15 @@ extern void draw_nobility_holdings_sites(ExportedMapBase* map);
 /*****************************************************************************
  Local functions forward declaration
 *****************************************************************************/
-void draw_diplomacy_map(ExportedMapBase* map);
+void draw_diplomacy_map(MapsExporter* maps_exporter);
 
 bool diplomacy_do_work(MapsExporter* maps_exporter);
 
-void diplomacy_1st_pass(ExportedMapBase* map);
+void diplomacy_1st_pass(MapsExporter* maps_exporter);
 
-void diplomacy_2nd_pass(ExportedMapBase* map);
+void diplomacy_2nd_pass(MapsExporter* maps_exporter);
 
-void diplomacy_3rd_pass(ExportedMapBase* map);
+void diplomacy_3rd_pass(MapsExporter* maps_exporter);
 
 int  get_parameter(df::historical_entity* entity1,
                   df::historical_entity* entity2
@@ -231,7 +231,7 @@ bool diplomacy_do_work(MapsExporter* maps_exporter)
     process_world_structures(diplomacy_map);
 
     // Now draw world sites and relationships over this base map
-    draw_diplomacy_map(diplomacy_map);
+    draw_diplomacy_map(maps_exporter);
 
     // Finish this thread execution
     return true;
@@ -254,20 +254,23 @@ bool diplomacy_do_work(MapsExporter* maps_exporter)
 //
 // Draws the diplomacy map over the terrain map
 //----------------------------------------------------------------------------//
-void draw_diplomacy_map(ExportedMapBase* map)
+void draw_diplomacy_map(MapsExporter* map_exporter)
 {
   // Draw rectangles over ALL sites
-  draw_nobility_diplomacy_sites(map);
+  draw_nobility_diplomacy_sites(map_exporter->get_diplomacy_map());
 
   // 1st pass
-  diplomacy_1st_pass(map);
+  diplomacy_1st_pass(map_exporter);
   // 2nd pass
-  diplomacy_2nd_pass(map);
+  diplomacy_2nd_pass(map_exporter);
   // 3rd pass
-  diplomacy_3rd_pass(map);
+  diplomacy_3rd_pass(map_exporter);
+
   // Draw rectangles ONLY over each noble holdings
-  draw_nobility_holdings_sites(map);
+  draw_nobility_holdings_sites(map_exporter->get_diplomacy_map());
   //draw_capital_sites(map);
+
+  map_exporter->set_percentage_diplomacy(-1);
 
 }
 
@@ -275,8 +278,9 @@ void draw_diplomacy_map(ExportedMapBase* map)
 // Utility function
 //
 //----------------------------------------------------------------------------//
-void diplomacy_1st_pass(ExportedMapBase* map)
+void diplomacy_1st_pass(MapsExporter* map_exporter)
 {
+  ExportedMapBase* map = map_exporter->get_diplomacy_map();
   for (unsigned int i = 0; i < df::global::world->world_data->sites.size(); i++)
   {
     df::world_site* site1 = df::global::world->world_data->sites[i];
@@ -435,6 +439,10 @@ void diplomacy_1st_pass(ExportedMapBase* map)
                               border_color);  // border line color
       }
     }
+
+    float a = i*100;
+    float b = df::global::world->entities.all.size() + 2 * df::global::world->world_data->sites.size();
+    map_exporter->set_percentage_sites((int)(a/b));
   }
 
 }
@@ -443,8 +451,10 @@ void diplomacy_1st_pass(ExportedMapBase* map)
 // Utility function
 //
 //----------------------------------------------------------------------------//
-void diplomacy_2nd_pass(ExportedMapBase* map)
+void diplomacy_2nd_pass(MapsExporter* map_exporter)
 {
+  ExportedMapBase* map = map_exporter->get_diplomacy_map();
+
   for (unsigned int i = 0; i < df::global::world->world_data->sites.size(); i++)
   {
     df::world_site* site1 = df::global::world->world_data->sites[i];
@@ -609,6 +619,10 @@ void diplomacy_2nd_pass(ExportedMapBase* map)
                                        border_color2); // border line color
      }
     }
+
+    float a = (i + df::global::world->world_data->sites.size()) * 100;
+    float b = df::global::world->entities.all.size() + 2 * df::global::world->world_data->sites.size();
+    map_exporter->set_percentage_sites((int)(a/b));
   }
 
 }
@@ -617,8 +631,10 @@ void diplomacy_2nd_pass(ExportedMapBase* map)
 // Utility function
 //
 //----------------------------------------------------------------------------//
-void diplomacy_3rd_pass(ExportedMapBase* map)
+void diplomacy_3rd_pass(MapsExporter* map_exporter)
 {
+  ExportedMapBase* map = map_exporter->get_diplomacy_map();
+
   for (unsigned int p = 0; p < df::global::world->entities.all.size(); p++)
   {
     df::historical_entity* entity1 = df::global::world->entities.all[p];
@@ -800,6 +816,10 @@ int a,b;
         }
       }
     }
+
+    float a = (p + 2 * df::global::world->world_data->sites.size())*100;
+    float b = df::global::world->entities.all.size() + 2 * df::global::world->world_data->sites.size();
+    map_exporter->set_percentage_diplomacy((int)a/b);
   }
 }
 

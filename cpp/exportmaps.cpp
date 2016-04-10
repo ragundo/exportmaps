@@ -118,7 +118,7 @@ DFhackCExport command_result exportmaps (color_ostream& con,                   /
 *****************************************************************************/
 DFhackCExport command_result plugin_init (color_ostream& con,                   // DFHack console
                                           std::vector <PluginCommand>& commands // Parameters received by the console
-                                         )
+                                          )
 {
     // Fill the command list with your commands.
     commands.push_back(PluginCommand("exportmaps",                                                   // Plugin name

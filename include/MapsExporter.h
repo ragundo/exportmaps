@@ -42,6 +42,8 @@
 
 using namespace std;
 
+class Logger;
+
 namespace exportmaps_plugin
 {
 
@@ -115,6 +117,13 @@ namespace exportmaps_plugin
 
       // Threads for each map type
       list<tthread::thread*> consumer_threads;
+
+      // Used to display the percentage of the generation of
+      // sites, diplomacy, nobility and trade maps
+      int percentage_sites;
+      int percentage_trade;
+      int percentage_nobility;
+      int percentage_diplomacy;
 
   public:
 
@@ -215,6 +224,16 @@ namespace exportmaps_plugin
     tthread::mutex& get_mutex();
     void            setup_threads();
     void            wait_for_threads();
+
+    //
+    void set_percentage_sites    (int percentage);
+    void set_percentage_trade    (int percentage);
+    void set_percentage_nobility (int percentage);
+    void set_percentage_diplomacy(int percentage);
+
+  private:
+    void display_progress_special_maps(Logger* logger);
+
   };
 }
 

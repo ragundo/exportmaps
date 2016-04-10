@@ -33,14 +33,15 @@
 #include "../include/RegionDetails.h"
 #include "../include/ExportedMap.h"
 
+
+using namespace exportmaps_plugin;
+using namespace DFHack;
+
+
 /*****************************************************************************
  External functions declaration
 *****************************************************************************/
 extern int  fill_world_region_details  (int world_pos_x, int world_pos_y);
-
-
-using namespace exportmaps_plugin;
-using namespace DFHack;
 
 
 /*****************************************************************************
@@ -62,6 +63,11 @@ bool MapsExporter::generate_maps(Logger& logger)
 {
   if ((maps_to_generate == 0) && (maps_to_generate_extended == 0))
       return false;   // There's nothing to generate
+
+  this->set_percentage_diplomacy(0);
+  this->set_percentage_nobility(0);
+  this->set_percentage_sites(0);
+  this->set_percentage_trade(0);
 
   logger.log_line("Starting threads");
 
@@ -156,7 +162,13 @@ bool MapsExporter::generate_maps(Logger& logger)
       logger.log_line("World map visited");
     }
 
+    // Signal no more data to the threads
     this->push_end();
+
+    // Trading, diplomacy, nobility and specially sites map can be slow to generate
+    // so show a progress counter to inform the user
+    this->display_progress_special_maps(&logger);
+
 
     // Wait for the consumers to finish
     logger.log_line("Waiting for threads to finish");
@@ -330,6 +342,28 @@ ExportedMapDF* MapsExporter::get_sites_map()
     return sites_map.get();
 }
 
+//----------------------------------------------------------------------------//
+// Methods to update the percentage
+//----------------------------------------------------------------------------//
+void MapsExporter::set_percentage_sites(int percentage)
+{
+  this->percentage_sites = percentage;
+}
+
+void MapsExporter::set_percentage_trade(int percentage)
+{
+  this->percentage_trade = percentage;
+}
+
+void MapsExporter::set_percentage_nobility(int percentage)
+{
+  this->percentage_nobility = percentage;
+}
+
+void MapsExporter::set_percentage_diplomacy(int percentage)
+{
+  this->percentage_diplomacy = percentage;
+}
 
 //----------------------------------------------------------------------------//
 // Clean the resources used
@@ -393,4 +427,84 @@ void MapsExporter::cleanup()
     nobility_producer.reset();    
     diplomacy_producer.reset();
     sites_producer.reset();
+}
+
+//----------------------------------------------------------------------------//
+// Display a progress counter in the console for the slowest maps to generate:
+// nobility, diplomacy, trading and specially sites map
+//----------------------------------------------------------------------------//
+void MapsExporter::display_progress_special_maps(Logger* logger)
+{
+  if ((maps_to_generate & MapType::TRADING) ||
+      (maps_to_generate & MapType::NOBILITY) ||
+      (maps_to_generate & MapType::DIPLOMACY) ||
+      (maps_to_generate & MapType::SITES)
+     )
+  {
+    while (((this->percentage_trade    != -1) && (maps_to_generate & MapType::TRADING)) ||
+           ((this->percentage_sites    != -1) && (maps_to_generate & MapType::SITES))   ||
+           ((this->percentage_nobility != -1) && (maps_to_generate & MapType::NOBILITY))
+          )
+    {
+      if (maps_to_generate & MapType::TRADING)
+      {
+        if (this->percentage_trade == -1)
+        {
+          logger->log("Trading map:100% - ");
+        }
+        else
+        {
+          logger->log("Trading map:");
+          logger->log_number(this->percentage_trade,3);
+          logger->log("% - ");
+        }
+      }
+
+      if (maps_to_generate & MapType::NOBILITY)
+      {
+        if (this->percentage_nobility == -1)
+        {
+          logger->log("Nobility map:100% - ");
+        }
+        else
+        {
+          logger->log("Nobility map:");
+          logger->log_number(this->percentage_nobility,3);
+          logger->log("% - ");
+        }
+      }
+
+      if (maps_to_generate & MapType::SITES)
+      {
+        if (this->percentage_sites == -1)
+        {
+          logger->log("Sites map:100% - ");
+        }
+        else
+        {
+          logger->log("Sites map:");
+          logger->log_number(this->percentage_sites,3);
+          logger->log("% - ");
+        }
+      }
+
+      if (maps_to_generate & MapType::DIPLOMACY)
+      {
+        if (this->percentage_diplomacy == -1)
+        {
+          logger->log("Diplomacy map:100% - ");
+        }
+        else
+        {
+          logger->log("Diplomacy map:");
+          logger->log_number(this->percentage_diplomacy,3);
+          logger->log("% - ");
+        }
+      }
+
+      logger->log_cr();
+    }
+    logger->log_endl();
+  }
+
 }

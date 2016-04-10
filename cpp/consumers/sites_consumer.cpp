@@ -72,7 +72,7 @@ int get_historical_entity_id_from_world_site(df::world_site* site);
 /*****************************************************************************
 Local functions forward declaration
 *****************************************************************************/
-int draw_sites_map(ExportedMapBase* map);
+int draw_sites_map(MapsExporter* map_exporter);
 
 bool sites_do_work(MapsExporter* maps_exporter);
 
@@ -189,7 +189,7 @@ bool sites_do_work(MapsExporter*    maps_exporter)
     // All the terrain data has been processed.
     // Now draw world sites over this base map
     process_world_structures(sites_map);
-    draw_sites_map(sites_map);
+    draw_sites_map(maps_exporter);
 
     return true;
   }
@@ -323,8 +323,9 @@ bool process_nob_dip_trad_sites_common(ExportedMapBase*             map,
 // Utility function
 //
 //----------------------------------------------------------------------------//
-int draw_sites_map(ExportedMapBase* map)
+int draw_sites_map(MapsExporter* map_exporter)
 {
+  ExportedMapBase* map = map_exporter->get_sites_map();
   int result = 0;
   for (int i = df::global::world->world_data->sites.size() - 1; i >= 0; i-- )
   {
@@ -368,7 +369,12 @@ int draw_sites_map(ExportedMapBase* map)
     }
 
     delete_world_region_details_vector();
+
+    float a = i*100;
+    float b = df::global::world->world_data->sites.size();
+    map_exporter->set_percentage_sites(100-(int)(a/b));
   }
+  map_exporter->set_percentage_sites(-1);
   return result;
 }
 

@@ -95,7 +95,7 @@ extern bool process_nob_dip_trad_sites_common(ExportedMapBase* map,
 
 bool trading_do_work(MapsExporter* maps_exporter);
 
-void draw_trade_map(ExportedMapBase* map);
+void draw_trade_map(MapsExporter* map_exporter);
 
 void draw_regular_sites(ExportedMapBase* map);
 
@@ -184,7 +184,7 @@ bool trading_do_work(MapsExporter* maps_exporter)
     // All the terrain data has been processed.
     process_world_structures(trade_map);
 
-    draw_trade_map(trade_map);
+    draw_trade_map(maps_exporter);
     return true;
   }
   else // There's data to be processed
@@ -192,7 +192,11 @@ bool trading_do_work(MapsExporter* maps_exporter)
     // Iterate over the 16 subtiles (x) and (y) that a world tile has
     for (auto x=0; x<16; ++x)
       for (auto y=15; y>=0; --y)
-        process_nob_dip_trad_sites_common(trade_map, rdew, x, y);
+        process_nob_dip_trad_sites_common(trade_map,
+                                          rdew,
+                                          x,
+                                          y
+                                          );
   }
   return false;
 }
@@ -220,10 +224,12 @@ bool trading_do_work(MapsExporter* maps_exporter)
 //  12 - Draw a rectangle over the world site with different color than the
 //       regular ones drawed in step 1
 //----------------------------------------------------------------------------//
-void draw_trade_map(ExportedMapBase* map)
+void draw_trade_map(MapsExporter* map_exporter)
 {
   int x = 0;
   int y = 0;
+
+  ExportedMapBase* map = map_exporter->get_trading_map();
 
   // Draw rectangles over each site
   draw_regular_sites(map);
@@ -266,10 +272,16 @@ void draw_trade_map(ExportedMapBase* map)
         }
       }
     }
+
+    float a = l*100;
+    float b = df::global::world->entities.all.size();
+    map_exporter->set_percentage_trade((int)a/b);
   }
 
   // Draw sites with trading relationships over the trading lines
   draw_trading_sites(map);
+
+  map_exporter->set_percentage_trade(-1);
 }
 
 

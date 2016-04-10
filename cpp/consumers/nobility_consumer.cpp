@@ -143,7 +143,7 @@ void draw_nobility_diplomacy_site(ExportedMapBase* map,
 
 void draw_nobility_diplomacy_sites(ExportedMapBase* map);
 
-void draw_nobility_map(ExportedMapBase* map);
+void draw_nobility_map(MapsExporter* map_exporter);
 
 bool nobility_do_work(MapsExporter* maps_exporter);
 
@@ -217,7 +217,7 @@ bool nobility_do_work(MapsExporter* maps_exporter)
     process_world_structures(nobility_map);
 
     // Now draw world sites and relationships over this base map
-    draw_nobility_map(nobility_map);
+    draw_nobility_map(maps_exporter);
 
     // Finish this thread execution
     return true;
@@ -242,8 +242,9 @@ bool nobility_do_work(MapsExporter* maps_exporter)
 // Utility function
 //
 //----------------------------------------------------------------------------//
-void draw_nobility_map(ExportedMapBase* map)
+void draw_nobility_map(MapsExporter* map_exporter)
 {
+  ExportedMapBase* map = map_exporter->get_nobility_map();
 
   // Draw rectangles over ALL sites
   draw_nobility_diplomacy_sites(map);
@@ -318,10 +319,15 @@ void draw_nobility_map(ExportedMapBase* map)
                             world_site
                             );
     }
+    float a = l*100;
+    float b = df::global::world->entities.all.size();
+    map_exporter->set_percentage_sites((int)(a/b));
   }
 
   // Draw rectangles ONLY over each noble holdings
   draw_nobility_holdings_sites(map);
+
+  map_exporter->set_percentage_nobility(-1);
 }
 
 //----------------------------------------------------------------------------//
