@@ -127,7 +127,9 @@ namespace exportmaps_plugin
 
   public:
 
-    void setup_maps(uint32_t maps_to_generate);
+    void setup_maps(uint32_t maps_to_generate,    // Graphical maps to generate
+                    uint32_t maps_to_generate_raw // Raw maps to generate
+                    );
 
     void cleanup();
 

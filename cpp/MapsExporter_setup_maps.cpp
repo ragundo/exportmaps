@@ -33,7 +33,9 @@ using namespace exportmaps_plugin;
 // Set up the maps to be generated according to the command line parameters
 // that we got from DFHack console
 //----------------------------------------------------------------------------//
-void MapsExporter::setup_maps(uint32_t maps)
+void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
+                              uint32_t maps_raw // Raw maps to generate
+                              )
 {
   // Copy the data received from DFHack command line
   maps_to_generate = maps;

@@ -34,112 +34,196 @@
 namespace exportmaps_plugin
 {
 
+  // Convenient alias for a RGB color
   typedef std::tuple<unsigned char, unsigned char, unsigned char> RGB_color;
 
+  /*****************************************************************************
+   Base class that represents a map.
+   A map is a collection of bytes.
+   Graphical maps is a collection of RGB values, so for each world pixel,
+   3 bytes are needed.
+   Raw maps are pure data values. As a unsigned char has a very limited range
+   value, 2 bytes are used for each world position
+  *****************************************************************************/
   class ExportedMapBase
   {
   protected:
-    std::vector<unsigned char>  image;
-    std::string                 filename;
-    int                         width;
-    int                         height;
-    MapType                     type;
+    std::vector<unsigned char>  _image;    // The array of bytes
+    std::string                 _filename; // The name of the file where the map will be saved
+    int                         _width;    // World width in world coordinates
+    int                         _height;   // World height in world coordinates
+    MapType                     _type;     // Graphical map type
+    MapTypeRaw                  _type_raw; // Raw map type
 
   public:
     ExportedMapBase();
 
-    ExportedMapBase(const std::string filename, int world_width, int world_height, MapType type);
+    ExportedMapBase(const std::string filename, // The name of the file where the map will be saved
+                    int world_width,            // World width in world coordinates
+                    int world_height,           // World height in world coordinates
+                    MapType type,               // Graphical map type or NONE
+                    MapTypeRaw type_raw         // Raw map type or NONE_RAW
+                    );
 
-    virtual void write_world_pixel (int pos_x,
-                                    int pos_y,
-                                    int px,
-                                    int py,
-                                    RGB_color& rgb) = 0;
-    
-    virtual void write_embark_pixel(int px,
-                                    int py,
-                                    RGB_color& rgb) = 0;
+    //----------------------------------------------------------------------------//
+    // Write a pixel in the map using world coordinates and offsets
+    //----------------------------------------------------------------------------//
+    virtual void write_world_pixel (int pos_x,     // x coordinate in world coordinates
+                                    int pos_y,     // y coordinate in world coordinates
+                                    int px,        // offset 0..15 respect to pos_x = embark coordinate x
+                                    int py,        // offset 0..15 respect to pos_y = embark coordinate y
+                                    RGB_color& rgb // pixel color
+                                    ) = 0;
+    //----------------------------------------------------------------------------//
+    // Write a pixel in the map using embark coordinates
+    //----------------------------------------------------------------------------//
+    virtual void write_embark_pixel(int px,        // x coordinate in embark coordinates
+                                    int py,        // y coordinate in embark coordinates
+                                    RGB_color& rgb // pixel color
+                                    ) = 0;
 
-    virtual void write_thick_line_point(int px,
-                                        int py,
-                                        RGB_color& color_center,
-                                        RGB_color& color_border) = 0;
+    //----------------------------------------------------------------------------//
+    // Write a thick line (2 border pixels and 1 center) using embark coordinates
+    //----------------------------------------------------------------------------//
+    virtual void write_thick_line_point(int px,                  // x coordinate in embark coordinates
+                                        int py,                  // y coordinate in embark coordinates
+                                        RGB_color& color_center, // center pixel color
+                                        RGB_color& color_border  // border pixels color
+                                        ) = 0;
+    //----------------------------------------------------------------------------//
+    // Write data to a RAW map
+    //----------------------------------------------------------------------------//
+    virtual void write_data(int pos_x,         // x coordinate in world coordinates
+                            int pos_y,         // y coordinate in world coordinates
+                            int px,            // offset 0..15 respect to pos_x = embark coordinate x
+                            int py,            // offset 0..15 respect to pos_y = embark coordinate y
+                            unsigned int value // value to be written
+                            ) = 0;
 
-    virtual void write_data(int pos_x,
-                            int pos_y,
-                            int px,
-                            int py,
-                            unsigned int value) = 0;
-
+    //----------------------------------------------------------------------------//
+    // Write a map to disk
+    //----------------------------------------------------------------------------//
     virtual int write_to_disk() = 0;
 
-	MapType get_type();
+    //----------------------------------------------------------------------------//
+    // Return the type of a graphical map
+    //----------------------------------------------------------------------------//
+    MapType get_type();
+
+    //----------------------------------------------------------------------------//
+    // Return the type of a raw map
+    //----------------------------------------------------------------------------//
+    MapTypeRaw get_type_raw();
+
+    //----------------------------------------------------------------------------//
+    // Return true if the map type is graphical
+    //----------------------------------------------------------------------------//
+    bool is_graphical_map();
+
+    //----------------------------------------------------------------------------//
+    // Return true if the map type is raw
+    //----------------------------------------------------------------------------//
+    bool is_raw_map();
   };
 
   /*****************************************************************************
+   Subclass for graphical maps
   *****************************************************************************/
 
   class ExportedMapDF : public ExportedMapBase
   {
 	public:
 		ExportedMapDF();
-    ExportedMapDF(const std::string filename,
-                  int world_width,
-                  int world_height,
-                  MapType type);
+    ExportedMapDF(const std::string filename, // The name of the file where the map will be saved
+                  int world_width,            // World width in world coordinates
+                  int world_height,           // World height in world coordinates
+                  MapType type                // Graphical map type
+                  );
+    //----------------------------------------------------------------------------//
+    // Write a pixel in the map using world coordinates and offsets
+    //----------------------------------------------------------------------------//
+    void write_world_pixel(int pos_x,     // x coordinate in world coordinates
+                           int pos_y,     // y coordinate in world coordinates
+                           int px,        // offset 0..15 respect to pos_x = embark coordinate x
+                           int py,        // offset 0..15 respect to pos_y = embark coordinate y
+                           RGB_color& rgb // pixel color
+                           );
+    //----------------------------------------------------------------------------//
+    // Write a pixel in the map using embark coordinates
+    //----------------------------------------------------------------------------//
+    void write_embark_pixel(int px,        // x coordinate in embark coordinates
+                            int py,        // y coordinate in embark coordinates
+                            RGB_color& rgb // pixel color
+                            );
 
-    void write_world_pixel(int pos_x,
-                           int pos_y,
-                           int px,
-                           int py,
-                           RGB_color& rgb);
-
-    void write_embark_pixel(int px,
-                            int py,
-                            RGB_color& rgb);
-
-    void write_thick_line_point(int px,
-                                int py,
-                                RGB_color& color_center,
-                                RGB_color& color_border);
-
+    //----------------------------------------------------------------------------//
+    // Write a thick line (2 border pixels and 1 center) using embark coordinates
+    //----------------------------------------------------------------------------//
+    void write_thick_line_point(int px,                  // x coordinate in embark coordinates
+                                int py,                  // y coordinate in embark coordinates
+                                RGB_color& color_center, // center pixel color
+                                RGB_color& color_border  // border pixels color
+                                );
+    //----------------------------------------------------------------------------//
+    // Write data to a RAW map.
+    // Do nothing as this is a graphical map
+    //----------------------------------------------------------------------------//
     void write_data(int pos_x,
                     int pos_y,
                     int px,
                     int py,
-                    unsigned int value);
-
+                    unsigned int value
+                    );
+    //----------------------------------------------------------------------------//
+    // Write a map to disk
+    //----------------------------------------------------------------------------//
 		int write_to_disk();
   };
 
   /*****************************************************************************
+   Subclass for raw maps
   *****************************************************************************/
 
   class ExportedMapRaw : public ExportedMapBase
   {
 	public:
 		ExportedMapRaw();
-    ExportedMapRaw(const std::string filename,
-                   int world_width,
-                   int world_height,
-                   MapType type);
+    ExportedMapRaw(const std::string filename, // The name of the file where the map will be saved
+                   int world_width,            // World width in world coordinates
+                   int world_height,           // World height in world coordinates
+                   MapTypeRaw type_raw         // Raw map type
+                   );
 
+    //----------------------------------------------------------------------------//
+    // Write a pixel in the map using world coordinates and offsets.
+    // Do nothing as this is a raw map.
+    //----------------------------------------------------------------------------//
     void write_world_pixel(int pos_x,
                            int pos_y,
                            int px,
                            int py,
-                           RGB_color& rgb);
-
+                           RGB_color& rgb
+                           );
+    //----------------------------------------------------------------------------//
+    // Write a pixel in the map using embark coordinates.
+    // Do nothing as this is a raw map
+    //----------------------------------------------------------------------------//
     void write_embark_pixel(int px,
                             int py,
-                            RGB_color& rgb);
-
-    void write_data(int pos_x,
-                    int pos_y,
-                    int px,
-                    int py,
-                    unsigned int value);
-
+                            RGB_color& rgb
+                            );
+    //----------------------------------------------------------------------------//
+    // Write data to a RAW map.
+    //----------------------------------------------------------------------------//
+    void write_data(int pos_x,         // x coordinate in world coordinates
+                    int pos_y,         // y coordinate in world coordinates
+                    int px,            // offset 0..15 respect to pos_x = embark coordinate x
+                    int py,            // offset 0..15 respect to pos_y = embark coordinate y
+                    unsigned int value // value to be written
+                    );
+    //----------------------------------------------------------------------------//
+    // Write a map to disk
+    //----------------------------------------------------------------------------//
 		int write_to_disk();
   };
 

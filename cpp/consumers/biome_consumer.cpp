@@ -130,29 +130,25 @@ bool biome_do_work(MapsExporter* maps_exporter)
 
       // Discriminate the map type
       ExportedMapDF* map = maps_exporter->get_biome_map();
-      switch (map->get_type())
-      {
-        // DF style map
-        case MapType::BIOME     : process_DF_biome_map(map,
-                                                       biome_type,
-                                                       rdb.get_pos_x(),
-                                                       rdb.get_pos_y(),
-                                                       x,
-                                                       y
-                                                       );
-                                  break;
 
-        // Raw map, only data, no PNG
-        case MapType::BIOME_RAW : process_Raw_biome_map(map,
-                                                        biome_type,
-                                                        rdb.get_pos_x(),
-                                                        rdb.get_pos_y(),
-                                                        x,
-                                                        y
-                                                        );
-                                  break;
-        default:                  break;
-      };
+      if (map->is_graphical_map())
+        process_DF_biome_map(map,
+                             biome_type,
+                             rdb.get_pos_x(),
+                             rdb.get_pos_y(),
+                             x,
+                             y
+                             );
+
+      else if (map->is_raw_map())
+        process_Raw_biome_map(map,
+                              biome_type,
+                              rdb.get_pos_x(),
+                              rdb.get_pos_y(),
+                              x,
+                              y
+                              );
+
   }
   return false; // Continue working
 }
@@ -185,7 +181,7 @@ void process_DF_biome_map(ExportedMapBase* map,
 //----------------------------------------------------------------------------//
 // Utility function
 // Process one embark tyle of a raw style map
-//----------------------------------------------------------------------------//*****************************************************************************/
+//----------------------------------------------------------------------------//
 void process_Raw_biome_map(ExportedMapBase* map,
                            int biome_type,
                            int pos_x,

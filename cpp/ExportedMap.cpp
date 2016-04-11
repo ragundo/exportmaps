@@ -28,7 +28,6 @@ using namespace exportmaps_plugin;
 ExportedMapBase methods
 *****************************************************************************/
 
-//----------------------------------------------------------------------------//
 ExportedMapBase::ExportedMapBase()
 {
 }
@@ -39,12 +38,14 @@ ExportedMapBase::ExportedMapBase()
 ExportedMapBase::ExportedMapBase(const std::string filename, // name of the file that will store the map
                                  int world_width,            // world width in world coordinates
                                  int world_height,           // world height in world coordinates
-                                 MapType type                // The map type to be draw (biome, elevation, etc)
+                                 MapType type,               // Graphical map type or NONE
+                                 MapTypeRaw type_raw         // Raw map type or NONE_RAW
                                  )
-	  : filename(filename), 
-    width(world_width*16), 
-    height(world_height*16), 
-    type(type)
+    : _filename(filename),
+      _width(world_width*16),
+      _height(world_height*16),
+      _type(type),
+      _type_raw(type_raw)
 {
 }
 
@@ -53,7 +54,31 @@ ExportedMapBase::ExportedMapBase(const std::string filename, // name of the file
 //----------------------------------------------------------------------------//
 MapType ExportedMapBase::get_type()
 {
-	return type;
+  return _type;
+}
+
+//----------------------------------------------------------------------------//
+// Returns the type of a raw map
+//----------------------------------------------------------------------------//
+MapTypeRaw ExportedMapBase::get_type_raw()
+{
+  return _type_raw;
+}
+
+//----------------------------------------------------------------------------//
+// Return true if the map type is graphical
+//----------------------------------------------------------------------------//
+bool ExportedMapBase::is_graphical_map()
+{
+  return _type != MapType::NONE;
+}
+
+//----------------------------------------------------------------------------//
+// Return true if the map type is raw
+//----------------------------------------------------------------------------//
+bool ExportedMapBase::is_raw_map()
+{
+  return _type_raw != MapTypeRaw::NONE_RAW;
 }
 
 /*****************************************************************************
@@ -72,11 +97,16 @@ ExportedMapDF::ExportedMapDF(const std::string filename, // name of the file tha
                              int world_height,           // world height in world coordinates
                              MapType type                // The map type to be draw (biome, elevation, etc)
                              )
-	: ExportedMapBase(filename,world_width,world_height,type)
+  : ExportedMapBase(filename,
+                    world_width,
+                    world_height,
+                    type,
+                    MapTypeRaw::NONE_RAW
+                    )
 {
   // Each world tile has 16 * 16 embark pixels. Each pixel needs 4 bytes
   // so resize the image to its correct size
-  image.resize(world_width * world_height * 16 * 16 * 4); // 4 = RGBA for PNG
+  _image.resize(world_width * world_height * 16 * 16 * 4); // 4 = RGBA for PNG
 }
 
 //----------------------------------------------------------------------------//
@@ -92,15 +122,15 @@ void ExportedMapDF::write_world_pixel(int pos_x,     // pixel world coordinate x
                                       RGB_color& rgb // Pixel color
                                       )
 {
-  int index_png = pos_y * 16 * height +
+  int index_png = pos_y * 16 * _height +
                   pos_x * 16          +
-                  py         * height +
+                  py         * _height +
                   px;
 
-  image[4*index_png + 0] = std::get<0>(rgb);
-  image[4*index_png + 1] = std::get<1>(rgb);
-  image[4*index_png + 2] = std::get<2>(rgb);
-  image[4*index_png + 3] = 255;              // Solid color
+  _image[4*index_png + 0] = std::get<0>(rgb);
+  _image[4*index_png + 1] = std::get<1>(rgb);
+  _image[4*index_png + 2] = std::get<2>(rgb);
+  _image[4*index_png + 3] = 255;              // Solid color
 }
 
 //----------------------------------------------------------------------------//
@@ -117,15 +147,15 @@ void ExportedMapDF::write_embark_pixel(int px,        // Pixel embark coordinate
   int mpy = py % 16;
   int mpx = px % 16;
 
-  int index_png = dpy * 16 * height +
+  int index_png = dpy * 16 * _height +
                   dpx * 16          +
-                  mpy      * height +
+                  mpy      * _height +
                   mpx;
 
-  image[4*index_png + 0] = std::get<0>(rgb);
-  image[4*index_png + 1] = std::get<1>(rgb);
-  image[4*index_png + 2] = std::get<2>(rgb);
-  image[4*index_png + 3] = 255;              // Solid color
+  _image[4*index_png + 0] = std::get<0>(rgb);
+  _image[4*index_png + 1] = std::get<1>(rgb);
+  _image[4*index_png + 2] = std::get<2>(rgb);
+  _image[4*index_png + 3] = 255;              // Solid color
 }
 
 //----------------------------------------------------------------------------//
@@ -138,14 +168,15 @@ void ExportedMapDF::write_thick_line_point(int px,                  // Pixel emb
                                            RGB_color& color_border  // Border color
                                            )
 {
+  // Compute world coordinates
   int dpy = py >> 4;
   int dpx = px >> 4;
   int mpy = py % 16;
   int mpx = px % 16;
 
-  int index_png = dpy * 16 * height +
+  int index_png = dpy * 16 * _height +
                   dpx * 16          +
-                  mpy      * height +
+                  mpy      * _height +
                   mpx;
 
   unsigned char r_center = std::get<0>(color_center);
@@ -154,10 +185,10 @@ void ExportedMapDF::write_thick_line_point(int px,                  // Pixel emb
 
 
   // Draw the center pixel
-  image[4*index_png + 0] = r_center;
-  image[4*index_png + 1] = g_center;
-  image[4*index_png + 2] = b_center;
-  image[4*index_png + 3] = 255;    // Solid color
+  _image[4*index_png + 0] = r_center;
+  _image[4*index_png + 1] = g_center;
+  _image[4*index_png + 2] = b_center;
+  _image[4*index_png + 3] = 255;    // Solid color
 
   unsigned char r_border = std::get<0>(color_border);
   unsigned char g_border = std::get<1>(color_border);
@@ -166,106 +197,106 @@ void ExportedMapDF::write_thick_line_point(int px,                  // Pixel emb
   // Now draw a rectangle around the center pixel using the
   // border color, but check that we don't overwrite previous
   // center pixels of the line
-  if (!((image[4*index_png + 4 + 0] == r_center) &&
-        (image[4*index_png + 4 + 1] == g_center) &&
-        (image[4*index_png + 4 + 2] == b_center)
+  if (!((_image[4*index_png + 4 + 0] == r_center) &&
+        (_image[4*index_png + 4 + 1] == g_center) &&
+        (_image[4*index_png + 4 + 2] == b_center)
        )
      )
   {
-    image[4*index_png + 4 + 0] = r_border;
-    image[4*index_png + 4 + 1] = g_border;
-    image[4*index_png + 4 + 2] = b_border;
-    image[4*index_png + 4 + 3] = 255;    // Solid color
+    _image[4*index_png + 4 + 0] = r_border;
+    _image[4*index_png + 4 + 1] = g_border;
+    _image[4*index_png + 4 + 2] = b_border;
+    _image[4*index_png + 4 + 3] = 255;    // Solid color
   }
 
-  if (!((image[4*index_png - 4 + 0] == r_center) &&
-        (image[4*index_png - 4 + 1] == g_center) &&
-        (image[4*index_png - 4 + 2] == b_center)
+  if (!((_image[4*index_png - 4 + 0] == r_center) &&
+        (_image[4*index_png - 4 + 1] == g_center) &&
+        (_image[4*index_png - 4 + 2] == b_center)
        )
      )
   {
-    image[4*index_png - 4 + 0] = r_border;
-    image[4*index_png - 4 + 1] = g_border;
-    image[4*index_png - 4 + 2] = b_border;
-    image[4*index_png - 4 + 3] = 255;    // Solid color
+    _image[4*index_png - 4 + 0] = r_border;
+    _image[4*index_png - 4 + 1] = g_border;
+    _image[4*index_png - 4 + 2] = b_border;
+    _image[4*index_png - 4 + 3] = 255;    // Solid color
   }
 
   // Go up one line
-  index_png -= this->width;
+  index_png -= this->_width;
 
-  if (!((image[4*index_png + 4 + 0] == r_center) &&
-        (image[4*index_png + 4 + 1] == g_center) &&
-        (image[4*index_png + 4 + 2] == b_center)
+  if (!((_image[4*index_png + 4 + 0] == r_center) &&
+        (_image[4*index_png + 4 + 1] == g_center) &&
+        (_image[4*index_png + 4 + 2] == b_center)
        )
      )
   {
-    image[4*index_png + 4 + 0] = r_border;
-    image[4*index_png + 4 + 1] = g_border;
-    image[4*index_png + 4 + 2] = b_border;
-    image[4*index_png + 4 + 3] = 255;    // Solid color
+    _image[4*index_png + 4 + 0] = r_border;
+    _image[4*index_png + 4 + 1] = g_border;
+    _image[4*index_png + 4 + 2] = b_border;
+    _image[4*index_png + 4 + 3] = 255;    // Solid color
   }
 
-  if (!((image[4*index_png + 0 + 0] == r_center) &&
-        (image[4*index_png + 0 + 1] == g_center) &&
-        (image[4*index_png + 0 + 2] == b_center)
+  if (!((_image[4*index_png + 0 + 0] == r_center) &&
+        (_image[4*index_png + 0 + 1] == g_center) &&
+        (_image[4*index_png + 0 + 2] == b_center)
        )
      )
   {
-    image[4*index_png + 0 + 0] = r_border;
-    image[4*index_png + 0 + 1] = g_border;
-    image[4*index_png + 0 + 2] = b_border;
-    image[4*index_png + 0 + 3] = 255;    // Solid color
+    _image[4*index_png + 0 + 0] = r_border;
+    _image[4*index_png + 0 + 1] = g_border;
+    _image[4*index_png + 0 + 2] = b_border;
+    _image[4*index_png + 0 + 3] = 255;    // Solid color
   }
 
-  if (!((image[4*index_png - 4 + 0] == r_center) &&
-        (image[4*index_png - 4 + 1] == g_center) &&
-        (image[4*index_png - 4 + 2] == b_center)
+  if (!((_image[4*index_png - 4 + 0] == r_center) &&
+        (_image[4*index_png - 4 + 1] == g_center) &&
+        (_image[4*index_png - 4 + 2] == b_center)
        )
      )
   {
-    image[4*index_png - 4 + 0] = r_border;
-    image[4*index_png - 4 + 1] = g_border;
-    image[4*index_png - 4 + 2] = b_border;
-    image[4*index_png - 4 + 3] = 255;    // Solid color
+    _image[4*index_png - 4 + 0] = r_border;
+    _image[4*index_png - 4 + 1] = g_border;
+    _image[4*index_png - 4 + 2] = b_border;
+    _image[4*index_png - 4 + 3] = 255;    // Solid color
   }
 
-  // Go down one line
-  index_png += this->width * 2;
+  // Go down two lines
+  index_png += this->_width * 2;
 
-  if (!((image[4*index_png + 4 + 0] == r_center) &&
-        (image[4*index_png + 4 + 1] == g_center) &&
-        (image[4*index_png + 4 + 2] == b_center)
+  if (!((_image[4*index_png + 4 + 0] == r_center) &&
+        (_image[4*index_png + 4 + 1] == g_center) &&
+        (_image[4*index_png + 4 + 2] == b_center)
        )
      )
   {
-    image[4*index_png + 4 + 0] = r_border;
-    image[4*index_png + 4 + 1] = g_border;
-    image[4*index_png + 4 + 2] = b_border;
-    image[4*index_png + 4 + 3] = 255;    // Solid color
+    _image[4*index_png + 4 + 0] = r_border;
+    _image[4*index_png + 4 + 1] = g_border;
+    _image[4*index_png + 4 + 2] = b_border;
+    _image[4*index_png + 4 + 3] = 255;    // Solid color
   }
 
-  if (!((image[4*index_png + 0 + 0] == r_center) &&
-        (image[4*index_png + 0 + 1] == g_center) &&
-        (image[4*index_png + 0 + 2] == b_center)
+  if (!((_image[4*index_png + 0 + 0] == r_center) &&
+        (_image[4*index_png + 0 + 1] == g_center) &&
+        (_image[4*index_png + 0 + 2] == b_center)
        )
      )
   {
-    image[4*index_png + 0 + 0] = r_border;
-    image[4*index_png + 0 + 1] = g_border;
-    image[4*index_png + 0 + 2] = b_border;
-    image[4*index_png + 0 + 3] = 255;    // Solid color
+    _image[4*index_png + 0 + 0] = r_border;
+    _image[4*index_png + 0 + 1] = g_border;
+    _image[4*index_png + 0 + 2] = b_border;
+    _image[4*index_png + 0 + 3] = 255;    // Solid color
   }
 
-  if (!((image[4*index_png - 4 + 0] == r_center) &&
-        (image[4*index_png - 4 + 1] == g_center) &&
-        (image[4*index_png - 4 + 2] == b_center)
+  if (!((_image[4*index_png - 4 + 0] == r_center) &&
+        (_image[4*index_png - 4 + 1] == g_center) &&
+        (_image[4*index_png - 4 + 2] == b_center)
        )
      )
   {
-    image[4*index_png - 4 + 0] = r_border;
-    image[4*index_png - 4 + 1] = g_border;
-    image[4*index_png - 4 + 2] = b_border;
-    image[4*index_png - 4 + 3] = 255;    // Solid color
+    _image[4*index_png - 4 + 0] = r_border;
+    _image[4*index_png - 4 + 1] = g_border;
+    _image[4*index_png - 4 + 2] = b_border;
+    _image[4*index_png - 4 + 3] = 255;    // Solid color
   }
 }
 
@@ -274,7 +305,12 @@ void ExportedMapDF::write_thick_line_point(int px,                  // Pixel emb
 // Virtual method
 // The base class does nothing
 //----------------------------------------------------------------------------//
-void ExportedMapDF::write_data(int pos_x, int pos_y, int px, int py, unsigned int value)
+void ExportedMapDF::write_data(int pos_x,
+                               int pos_y,
+                               int px,
+                               int py,
+                               unsigned int value
+                               )
 {
 }
 
@@ -286,7 +322,11 @@ int ExportedMapDF::write_to_disk()
 {
   //Encode from raw pixels to disk with a single function call
   //The image argument has width * height RGBA pixels or width * height * 4 bytes
-  return lodepng::encode(filename, image, width, height);
+  return lodepng::encode(_filename,
+                         _image,
+                         _width,
+                         _height
+                         );
 }
 
 
@@ -302,29 +342,46 @@ ExportedMapRaw::ExportedMapRaw()
 ExportedMapRaw::ExportedMapRaw(const std::string filename, // name of the file that will store the map
                                int world_width,            // world width in world coordinates
                                int world_height,           // world height in world coordinates
-                               MapType type                // The map type to be draw (biome, elevation, etc)
+                               MapTypeRaw type_raw         // The raw map type to be written (biome, elevation, etc)
                                )
-	: ExportedMapBase(filename,world_width,world_height,type)
+  : ExportedMapBase(filename,
+                    world_width,
+                    world_height,
+                    MapType::NONE,
+                    type_raw
+                    )
 {
     // Each world tile has 16 * 16 entries. Each entry needs 2 bytes
-    image.resize(world_width * world_height * 16 * 16 * 2);
+    _image.resize(world_width * world_height * 16 * 16 * 2);
 }
 
+//----------------------------------------------------------------------------//
+// Write a pixel in the map using world coordinates and offsets.
+// Do nothing as this is a raw map.
+//----------------------------------------------------------------------------//
 void ExportedMapRaw::write_world_pixel(int pos_x,
                                        int pos_y,
                                        int px,
                                        int py,
-                                       RGB_color& rgb)
+                                       RGB_color& rgb
+                                       )
 {
-
 }
 
+//----------------------------------------------------------------------------//
+// Write a pixel in the map using embark coordinates.
+// Do nothing as this is a raw map
+//----------------------------------------------------------------------------//
 void ExportedMapRaw::write_embark_pixel(int px,
                                         int py,
-                                        RGB_color& rgb)
+                                        RGB_color& rgb
+                                        )
 {
 }
 
+//----------------------------------------------------------------------------//
+// Write data to a RAW map.
+//----------------------------------------------------------------------------//
 void ExportedMapRaw::write_data(int pos_x,         // pixel world coordinate x
                                 int pos_y,         // pixel world coordinate y
                                 int px,            // Delta x (0..15)
@@ -332,15 +389,16 @@ void ExportedMapRaw::write_data(int pos_x,         // pixel world coordinate x
                                 unsigned int value // value to be written to the file
                                 )
 {
-  int index_buffer = pos_y * 16 * height +
-                     pos_x * 16          +
-                     py         * height  +
+  int index_buffer = pos_y * 16 * _height +
+                     pos_x * 16           +
+                     py         * _height +
                      px;
 
 	float f = (float)value/256;
 
-  image[2*index_buffer + 0] = (value <= 255 ? value : value % 256);
-  image[2*index_buffer + 1] = (value <= 255 ? 0     : (unsigned int)floor(f));
+  // Use little endian format (LSB first, MSB last)
+  _image[2*index_buffer + 0] = (value <= 255 ? value : value % 256);
+  _image[2*index_buffer + 1] = (value <= 255 ? 0     : (unsigned int)floor(f));
 }
 
 
