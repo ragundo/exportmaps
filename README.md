@@ -108,4 +108,4 @@ You can use Github's Issues to get support about the plugin. Also you can contac
 
 ## Thanks to
 Warmist, Lethosor, Japa, Q, Angavrilov and all the wonderful people of #dfhack in freenode.
-Without their support, this plugin will never had been developed!!!.
+Without their support, this plugin will never have been developed!!!.
