@@ -98,7 +98,7 @@ Export maps as a raw data files. Ideal for using with external tools that could 
 with biome and vegetation as layers and render the world in 3D.
 
 #### RPC interface
-For generating maps on demand without needing to use the DFHack console. Just connect to DF and request the map using Google's protocol buffers.
+For generating maps on demand without needing to use the DFHack console. Just connect to DF and request a map using Google's protocol buffers.
 
 #### Site exporting
 Similar to DF export site. Get a detailed PNG of a world site.
@@ -108,4 +108,4 @@ You can use Github's Issues to get support about the plugin. Also you can contac
 
 ## Thanks to
 Warmist, Lethosor, Japa, Q, Angavrilov and all the wonderful people of #dfhack in freenode.
-Without its support, this plugin could not have been developed!!!.
+Without their support, this plugin will never had been developed!!!.
