@@ -16,7 +16,7 @@ SET(PROJECT_SRCS
   ./cpp/df_utils/init_world_site_realization.cpp
   ./cpp/df_utils/delete_world_site_realization.cpp
 
-  # Consumers for each different map
+  # Consumers for each different DF map
   ./cpp/consumers/biome_consumer.cpp
   ./cpp/consumers/drainage_consumer.cpp
   ./cpp/consumers/elevation_consumer.cpp
@@ -34,6 +34,10 @@ SET(PROJECT_SRCS
   ./cpp/consumers/nobility_consumer.cpp
   ./cpp/consumers/diplomacy_consumer.cpp
   ./cpp/consumers/sites_consumer.cpp
+
+  # Consumers for each different raw map
+  ./cpp/consumers/biome_type_raw_consumer.cpp
+  ./cpp/consumers/biome_region_raw_consumer.cpp
 
   # Plugin code
   ./cpp/draw_line.cpp

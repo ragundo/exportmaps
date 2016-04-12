@@ -39,6 +39,7 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
 {
   // Copy the data received from DFHack command line
   maps_to_generate = maps;
+  maps_to_generate_raw = maps_raw;
 
   // Get the date elements
   int year  = World::ReadCurrentYear();
@@ -329,5 +330,46 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
 
     if (!sites_map) throw std::bad_alloc();
   }
+
+  ////////////////////////////////////
+  // Raw Maps
+  ////////////////////////////////////
+
+  if (maps_raw & MapTypeRaw::BIOME_TYPE_RAW)
+  {
+    // Compose filename
+    std::stringstream file_name;
+    file_name << region_name << current_date << "-biome-type.raw";
+    biome_type_raw_producer.reset(new ProducerBiomeRawType);
+    if (!biome_type_raw_producer) throw std::bad_alloc();
+
+    biome_type_raw_map.reset(new ExportedMapRaw(file_name.str(),
+                                                df::global::world->world_data->world_width,
+                                                df::global::world->world_data->world_height,
+                                                MapTypeRaw::BIOME_TYPE_RAW
+                                                )
+                             );
+
+    if (!biome_type_raw_map) throw std::bad_alloc();
+  }
+
+  if (maps_raw & MapTypeRaw::BIOME_REGION_RAW)
+  {
+    // Compose filename
+    std::stringstream file_name;
+    file_name << region_name << current_date << "-biome-region.raw";
+    biome_region_raw_producer.reset(new ProducerBiomeRawRegion);
+    if (!biome_region_raw_producer) throw std::bad_alloc();
+
+    biome_region_raw_map.reset(new ExportedMapRaw(file_name.str(),
+                                                  df::global::world->world_data->world_width,
+                                                  df::global::world->world_data->world_height,
+                                                  MapTypeRaw::BIOME_REGION_RAW
+                                                  )
+                               );
+
+    if (!biome_region_raw_map) throw std::bad_alloc();
+  }
+
 }
 

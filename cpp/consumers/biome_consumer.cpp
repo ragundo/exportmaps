@@ -46,21 +46,6 @@ RGB_color RGB_from_biome_type(int biome_type);
 
 bool      biome_do_work(MapsExporter* maps_exporter);
 
-void      process_DF_biome_map (ExportedMapBase* map,
-                                int biome_type,
-                                int pos_x,
-                                int pos_y,
-                                int px,
-                                int py
-                                );
-
-void      process_Raw_biome_map(ExportedMapBase* map,
-                                int biome_type,
-                                int pos_x,
-                                int pos_y,
-                                int px,
-                                int py
-                                );
 
 /*****************************************************************************
 Module main function.
@@ -106,6 +91,9 @@ bool biome_do_work(MapsExporter* maps_exporter)
     // All the data has been processed. Done
     return true;
 
+  // Get the data where we'll write to
+  ExportedMapBase* map = maps_exporter->get_biome_map();
+
   // There's data to be processed
   // Iterate over the 16 subtiles (x) and (y) that a world tile has
   for (auto x=0; x<16; ++x)
@@ -128,75 +116,18 @@ bool biome_do_work(MapsExporter* maps_exporter)
                                       adjusted_tile_coordinates.second
                                       );
 
-      // Discriminate the map type
-      ExportedMapDF* map = maps_exporter->get_biome_map();
+      // Get the RGB values associated to this biome type
+      RGB_color rgb_pixel_color = RGB_from_biome_type(biome_type);
 
-      if (map->is_graphical_map())
-        process_DF_biome_map(map,
-                             biome_type,
-                             rdb.get_pos_x(),
+      // Write pixels to the bitmap
+      map->write_world_pixel(rdb.get_pos_x(),
                              rdb.get_pos_y(),
                              x,
-                             y
+                             y,
+                             rgb_pixel_color
                              );
-
-      else if (map->is_raw_map())
-        process_Raw_biome_map(map,
-                              biome_type,
-                              rdb.get_pos_x(),
-                              rdb.get_pos_y(),
-                              x,
-                              y
-                              );
-
   }
   return false; // Continue working
-}
-
-
-//----------------------------------------------------------------------------//
-// Utility function
-// Process one embark tyle of a DF style map (.PNG)
-//----------------------------------------------------------------------------//
-void process_DF_biome_map(ExportedMapBase* map,
-                          int biome_type,
-                          int pos_x,
-                          int pos_y,
-                          int px,
-                          int py
-                          )
-{
-  // Get the RGB values associated to this biome type
-  RGB_color rgb_pixel_color = RGB_from_biome_type(biome_type);
-          
-  // Write pixels to the bitmap
-  map->write_world_pixel(pos_x,
-                         pos_y,
-                         px,
-                         py,
-                         rgb_pixel_color
-                         );
-}
-
-//----------------------------------------------------------------------------//
-// Utility function
-// Process one embark tyle of a raw style map
-//----------------------------------------------------------------------------//
-void process_Raw_biome_map(ExportedMapBase* map,
-                           int biome_type,
-                           int pos_x,
-                           int pos_y,
-                           int px,
-                           int py
-                           )
-{
-  // Write data to the buffer
-  map->write_data(pos_x,
-                  pos_y,
-                  px,
-                  py,
-                  biome_type
-                  );
 }
 
 

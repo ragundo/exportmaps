@@ -197,7 +197,28 @@ bool MapsExporter::is_sites_queue_empty()
 {
     bool queue_empty;
     mtx.lock();
-    queue_empty = sites_queue.empty();
+    queue_empty = biome_raw_type_queue.empty();
+    mtx.unlock();
+    return queue_empty;
+}
+
+//----------------------------------------------------------------------------//
+bool MapsExporter::is_biome_raw_type_queue_empty()
+{
+    bool queue_empty;
+    mtx.lock();
+    queue_empty = biome_raw_type_queue.empty();
+    mtx.unlock();
+    return queue_empty;
+}
+
+
+//----------------------------------------------------------------------------//
+bool MapsExporter::is_biome_raw_region_queue_empty()
+{
+    bool queue_empty;
+    mtx.lock();
+    queue_empty = biome_raw_region_queue.empty();
     mtx.unlock();
     return queue_empty;
 }

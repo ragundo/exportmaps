@@ -20,6 +20,9 @@
 // https://github.com/ragundo/exportmaps  
 
 #include <math.h>
+#include <iostream>
+#include <fstream>
+
 #include "../include/ExportedMap.h"
 
 using namespace exportmaps_plugin;
@@ -380,6 +383,19 @@ void ExportedMapRaw::write_embark_pixel(int px,
 }
 
 //----------------------------------------------------------------------------//
+// Write a "thick" point of a line.
+// A thick line has a center pixel and two border pixels
+// Do nothing as this is a raw map
+//----------------------------------------------------------------------------//
+void ExportedMapRaw::write_thick_line_point(int px,                  // Pixel embark coordinate x
+                                            int py,                  // Pixel embark coordinate y
+                                            RGB_color& color_center, // Center color
+                                            RGB_color& color_border  // Border color
+                                            )
+{
+}
+
+//----------------------------------------------------------------------------//
 // Write data to a RAW map.
 //----------------------------------------------------------------------------//
 void ExportedMapRaw::write_data(int pos_x,         // pixel world coordinate x
@@ -401,13 +417,40 @@ void ExportedMapRaw::write_data(int pos_x,         // pixel world coordinate x
   _image[2*index_buffer + 1] = (value <= 255 ? 0     : (unsigned int)floor(f));
 }
 
+//----------------------------------------------------------------------------//
+// Write a unsigned int to a stream using Little Endian (LSB,MSB)
+//----------------------------------------------------------------------------//
+void write_little_endian(std::ostream& outs, // The stream where to write
+                         unsigned int value  // Value to be written
+                         )
+{
+  for (unsigned size = sizeof(unsigned int); size; --size, value >>= 8)
+    outs.put( static_cast <char> (value & 0xFF) );
+}
 
 int ExportedMapRaw::write_to_disk()
 {
 	// Write the buffer to the fstream
-	// TODO
-    return 0;
+  std::ofstream outfile(_filename, std::ios::out | std::ios::binary);
+
+  write_little_endian(outfile,
+                      _width
+                      );
+
+  write_little_endian(outfile,
+                      _height
+                      );
+
+  outfile.write((const char*)&_image[0], _image.size());
+
+  // Close the stream
+  outfile.close();
+
+  // Done
+  return 0;
 }
+
+
 
 
 

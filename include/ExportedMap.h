@@ -212,6 +212,17 @@ namespace exportmaps_plugin
                             int py,
                             RGB_color& rgb
                             );
+
+    //----------------------------------------------------------------------------//
+    // Write a thick line (2 border pixels and 1 center) using embark coordinates
+    // Do nothing as this is a raw map
+    //----------------------------------------------------------------------------//
+    void write_thick_line_point(int px,                  // x coordinate in embark coordinates
+                                int py,                  // y coordinate in embark coordinates
+                                RGB_color& color_center, // center pixel color
+                                RGB_color& color_border  // border pixels color
+                                );
+
     //----------------------------------------------------------------------------//
     // Write data to a RAW map.
     //----------------------------------------------------------------------------//

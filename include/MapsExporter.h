@@ -68,9 +68,12 @@ namespace exportmaps_plugin
       queue<class RegionDetailsElevationWater>  diplomacy_queue;
       queue<class RegionDetailsElevationWater>  sites_queue;
 
+      queue<class RegionDetailsBiome>           biome_raw_type_queue;
+      queue<class RegionDetailsBiome>           biome_raw_region_queue;
+
       // Enable the generation of each different map
       uint32_t maps_to_generate;
-      uint32_t maps_to_generate_extended;
+      uint32_t maps_to_generate_raw;
 
       // Different DF data producer for each map
       unique_ptr<class ProducerTemperature>    temperature_producer;
@@ -91,25 +94,30 @@ namespace exportmaps_plugin
       unique_ptr<class ProducerDiplomacy>      diplomacy_producer;
       unique_ptr<class ProducerSites>          sites_producer;
 
+      unique_ptr<class ProducerBiomeRawType>   biome_type_raw_producer;
+      unique_ptr<class ProducerBiomeRawRegion> biome_region_raw_producer;
 
       // Pointers to every map that can be exported
-      unique_ptr<class ExportedMapDF>  temperature_map;
-      unique_ptr<class ExportedMapDF>  rainfall_map;
-      unique_ptr<class ExportedMapDF>  drainage_map;
-      unique_ptr<class ExportedMapDF>  savagery_map;
-      unique_ptr<class ExportedMapDF>  volcanism_map;
-      unique_ptr<class ExportedMapDF>  vegetation_map;
-      unique_ptr<class ExportedMapDF>  evilness_map;
-      unique_ptr<class ExportedMapDF>  salinity_map;
-      unique_ptr<class ExportedMapDF>  hydro_map;
-      unique_ptr<class ExportedMapDF>  elevation_map;
-      unique_ptr<class ExportedMapDF>  elevation_water_map;
-      unique_ptr<class ExportedMapDF>  biome_map;
-      unique_ptr<class ExportedMapDF>  geology_map;
-      unique_ptr<class ExportedMapDF>  trading_map;
-      unique_ptr<class ExportedMapDF>  nobility_map;
-      unique_ptr<class ExportedMapDF>  diplomacy_map;
-      unique_ptr<class ExportedMapDF>  sites_map;
+      unique_ptr<class ExportedMapDF>          temperature_map;
+      unique_ptr<class ExportedMapDF>          rainfall_map;
+      unique_ptr<class ExportedMapDF>          drainage_map;
+      unique_ptr<class ExportedMapDF>          savagery_map;
+      unique_ptr<class ExportedMapDF>          volcanism_map;
+      unique_ptr<class ExportedMapDF>          vegetation_map;
+      unique_ptr<class ExportedMapDF>          evilness_map;
+      unique_ptr<class ExportedMapDF>          salinity_map;
+      unique_ptr<class ExportedMapDF>          hydro_map;
+      unique_ptr<class ExportedMapDF>          elevation_map;
+      unique_ptr<class ExportedMapDF>          elevation_water_map;
+      unique_ptr<class ExportedMapBase>        biome_map;
+      unique_ptr<class ExportedMapDF>          geology_map;
+      unique_ptr<class ExportedMapDF>          trading_map;
+      unique_ptr<class ExportedMapDF>          nobility_map;
+      unique_ptr<class ExportedMapDF>          diplomacy_map;
+      unique_ptr<class ExportedMapDF>          sites_map;
+
+      unique_ptr<class ExportedMapBase>        biome_type_raw_map;
+      unique_ptr<class ExportedMapBase>        biome_region_raw_map;
 
       // Thread synchronization between producer and consumers
       // accessing the different data queues
@@ -143,23 +151,26 @@ namespace exportmaps_plugin
 
     // Push methods
 
-    void push_temperature    (RegionDetailsBiome&          rdg);
-    void push_rainfall       (RegionDetailsBiome&          rdg);
-    void push_drainage       (RegionDetailsBiome&          rdg);
-    void push_savagery       (RegionDetailsBiome&          rdg);
-    void push_volcanism      (RegionDetailsBiome&          rdg);
-    void push_vegetation     (RegionDetailsBiome&          rdg);
-    void push_evilness       (RegionDetailsBiome&          rdg);
-    void push_salinity       (RegionDetailsBiome&          rdg);
-    void push_hydro          (RegionDetailsElevationWater& rdg);
-    void push_elevation      (RegionDetailsElevation&      rde);
-    void push_elevation_water(RegionDetailsElevationWater& rdew);
-    void push_biome          (RegionDetailsBiome&          rdb);
-    void push_geology        (RegionDetailsGeology&        rdg);
-    void push_trading        (RegionDetailsElevationWater& rdg);
-    void push_nobility       (RegionDetailsElevationWater& rdg);        
-    void push_diplomacy      (RegionDetailsElevationWater& rdg);
-    void push_sites          (RegionDetailsElevationWater& rdg);
+    void push_temperature     (RegionDetailsBiome&          rdg);
+    void push_rainfall        (RegionDetailsBiome&          rdg);
+    void push_drainage        (RegionDetailsBiome&          rdg);
+    void push_savagery        (RegionDetailsBiome&          rdg);
+    void push_volcanism       (RegionDetailsBiome&          rdg);
+    void push_vegetation      (RegionDetailsBiome&          rdg);
+    void push_evilness        (RegionDetailsBiome&          rdg);
+    void push_salinity        (RegionDetailsBiome&          rdg);
+    void push_hydro           (RegionDetailsElevationWater& rdg);
+    void push_elevation       (RegionDetailsElevation&      rde);
+    void push_elevation_water (RegionDetailsElevationWater& rdew);
+    void push_biome           (RegionDetailsBiome&          rdb);
+    void push_geology         (RegionDetailsGeology&        rdg);
+    void push_trading         (RegionDetailsElevationWater& rdg);
+    void push_nobility        (RegionDetailsElevationWater& rdg);
+    void push_diplomacy       (RegionDetailsElevationWater& rdg);
+    void push_sites           (RegionDetailsElevationWater& rdg);
+
+    void push_biome_type_raw  (RegionDetailsBiome& rdb);
+    void push_biome_region_raw(RegionDetailsBiome& rdb);
 
     // Pop methods
 
@@ -181,6 +192,9 @@ namespace exportmaps_plugin
     RegionDetailsElevationWater pop_diplomacy();
     RegionDetailsElevationWater pop_sites();
 
+    RegionDetailsBiome          pop_biome_type_raw();
+    RegionDetailsBiome          pop_biome_region_raw();
+
     // Maps getters
 
     ExportedMapDF* get_temperature_map();
@@ -194,12 +208,15 @@ namespace exportmaps_plugin
     ExportedMapDF* get_hydro_map();
     ExportedMapDF* get_elevation_map();
     ExportedMapDF* get_elevation_water_map();
-    ExportedMapDF* get_biome_map();
+    ExportedMapBase* get_biome_map();
     ExportedMapDF* get_geology_map();
     ExportedMapDF* get_trading_map();
     ExportedMapDF* get_nobility_map();
     ExportedMapDF* get_diplomacy_map();
     ExportedMapDF* get_sites_map();
+
+    ExportedMapBase* get_biome_type_raw_map();
+    ExportedMapBase* get_biome_region_raw_map();
 
     // Queue status methods
 
@@ -220,6 +237,9 @@ namespace exportmaps_plugin
     bool is_nobility_queue_empty();
     bool is_diplomacy_queue_empty();
     bool is_sites_queue_empty();
+
+    bool is_biome_raw_type_queue_empty();
+    bool is_biome_raw_region_queue_empty();
 
     // Thread related methods
 

@@ -85,6 +85,13 @@ void MapsExporter::push_end()
 
   if (maps_to_generate & MapType::SITES)
     sites_producer->produce_end(*this);
+
+
+  if (maps_to_generate_raw & MapTypeRaw::BIOME_TYPE_RAW)
+    biome_type_raw_producer->produce_end(*this);
+
+  if (maps_to_generate_raw & MapTypeRaw::BIOME_REGION_RAW)
+    biome_region_raw_producer->produce_end(*this);
 }
 
 //----------------------------------------------------------------------------//
@@ -166,6 +173,17 @@ void MapsExporter::push_data(df::world_region_details* ptr_rd, // df::world_regi
   // Push data for sites map
   if (maps_to_generate & MapType::SITES)
     sites_producer->produce_data(*this,x,y,ptr_rd);
+
+
+
+
+  // Push data for Biome type raw map
+  if (maps_to_generate_raw & MapTypeRaw::BIOME_TYPE_RAW)
+    biome_type_raw_producer->produce_data(*this,x,y,ptr_rd);
+
+  // Push data for Biome region raw map
+  if (maps_to_generate_raw & MapTypeRaw::BIOME_REGION_RAW)
+    biome_region_raw_producer->produce_data(*this,x,y,ptr_rd);
 }
 
 
@@ -294,6 +312,21 @@ void MapsExporter::push_sites(RegionDetailsElevationWater& rdb)
     mtx.unlock();
 }
 
+
+
+void MapsExporter::push_biome_type_raw(RegionDetailsBiome& rdb)
+{
+    mtx.lock();
+    this->biome_raw_type_queue.push(rdb);
+    mtx.unlock();
+}
+
+void MapsExporter::push_biome_region_raw(RegionDetailsBiome& rdb)
+{
+    mtx.lock();
+    this->biome_raw_region_queue.push(rdb);
+    mtx.unlock();
+}
 
 //----------------------------------------------------------------------------//
 // Pop data from each queue.
@@ -468,6 +501,27 @@ RegionDetailsElevationWater MapsExporter::pop_sites()
     mtx.lock();
     RegionDetailsElevationWater rdb = this->sites_queue.front();
     this->sites_queue.pop();
+    mtx.unlock();
+
+    return rdb;
+}
+
+
+RegionDetailsBiome MapsExporter::pop_biome_type_raw()
+{
+    mtx.lock();
+    RegionDetailsBiome rdb = this->biome_raw_type_queue.front();
+    this->biome_raw_type_queue.pop();
+    mtx.unlock();
+
+    return rdb;
+}
+
+RegionDetailsBiome MapsExporter::pop_biome_region_raw()
+{
+    mtx.lock();
+    RegionDetailsBiome rdb = this->biome_raw_region_queue.front();
+    this->biome_raw_region_queue.pop();
     mtx.unlock();
 
     return rdb;

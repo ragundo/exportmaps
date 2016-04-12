@@ -177,68 +177,101 @@ process_command_line(std::vector <std::string>& options)
 
     if (option == "-temperature")                                  // map DF style
       maps_to_generate |= MapType::TEMPERATURE;
+
     else if (option == "-rainfall")                                // map DF style
       maps_to_generate |= MapType::RAINFALL;
+
     else if (option == "-drainage")                                // map DF style
       maps_to_generate |= MapType::DRAINAGE;
+
     else if (option == "-savagery")                                // map DF style
       maps_to_generate |= MapType::SAVAGERY;
+
     else if (option == "-volcanism")                               // map DF style
       maps_to_generate |= MapType::VOLCANISM;
+
     else if (option == "-vegetation")                              // map DF style
       maps_to_generate |= MapType::VEGETATION;
+
     else if (option == "-evilness")                                // map DF style
       maps_to_generate |= MapType::EVILNESS;
+
     else if (option == "-salinity")                                // map DF style
       maps_to_generate |= MapType::SALINITY;
+
     else if (option == "-hydrosphere")                             // map DF style
       maps_to_generate |= MapType::HYDROSPHERE;
+
     else if (option == "-elevation")                               // map DF style
       maps_to_generate |= MapType::ELEVATION;
+
     else if (option == "-elevation-water")                         // map DF style
       maps_to_generate |= MapType::ELEVATION_WATER;
+
     else if (option == "-biome")                                   // map DF style
       maps_to_generate |= MapType::BIOME;
+
     else if (option == "-trading")                                 // map DF style
       maps_to_generate |= MapType::TRADING;
+
     else if (option == "-nobility")                                // map DF style
       maps_to_generate |= MapType::NOBILITY;
+
     else if (option == "-diplomacy")                               // map DF style
       maps_to_generate |= MapType::DIPLOMACY;
+
     else if (option == "-sites")                                   // map DF style
       maps_to_generate |= MapType::SITES;
 
 
+
     else if (option == "-temperature-raw")                         // map raw data file
       maps_to_generate_raw |= MapTypeRaw::TEMPERATURE_RAW;
+
     else if (option == "-rainfall-raw")                            // map raw data file
       maps_to_generate_raw |= MapTypeRaw::RAINFALL_RAW;
+
     else if (option == "-drainage-raw")                            // map raw data file
       maps_to_generate_raw |= MapTypeRaw::DRAINAGE_RAW;
+
     else if (option == "-savagery-raw")                            // map raw data file
       maps_to_generate_raw |= MapTypeRaw::SALINITY_RAW;
+
     else if (option == "-volcanism-raw")                           // map raw data file
       maps_to_generate_raw |= MapTypeRaw::VOLCANISM_RAW;
+
     else if (option == "-vegetation-raw")                          // map raw data file
       maps_to_generate_raw |= MapTypeRaw::VEGETATION_RAW;
+
     else if (option == "-evilness-raw")                            // map raw data file
       maps_to_generate_raw |= MapTypeRaw::EVILNESS_RAW;
+
     else if (option == "-salinity-raw")                            // map raw data file
       maps_to_generate_raw |= MapTypeRaw::SALINITY_RAW;
+
     else if (option == "-hydrosphere-raw")                         // map raw data file
       maps_to_generate_raw |= MapTypeRaw::HYDROSPHERE_RAW;
+
     else if (option == "-elevation-raw")                           // map raw data file
       maps_to_generate_raw |= MapTypeRaw::ELEVATION_RAW;
+
     else if (option == "-elevation-water-raw")                     // map raw data file
       maps_to_generate_raw |= MapTypeRaw::ELEVATION_WATER_RAW;
+
     else if (option == "-biome-raw")                               // map raw data file
-      maps_to_generate_raw |= MapTypeRaw::BIOME_RAW;
+    {
+      maps_to_generate_raw |= MapTypeRaw::BIOME_TYPE_RAW;
+      maps_to_generate_raw |= MapTypeRaw::BIOME_REGION_RAW;
+    }
     else if (option == "-trading-raw")                             // map raw data file
       maps_to_generate_raw |= MapTypeRaw::TRADING_RAW;
+
     else if (option == "-nobility-raw")                            // map raw data file
       maps_to_generate_raw |= MapTypeRaw::NOBILITY_RAW;
+
     else if (option == "-diplomacy-raw")                           // map raw data file
       maps_to_generate_raw |= MapTypeRaw::DIPLOMACY_RAW;
+
     else if (option == "-sites-raw")                               // map raw data file
       maps_to_generate_raw |= MapTypeRaw::SITES_RAW;
 

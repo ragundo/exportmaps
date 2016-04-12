@@ -61,7 +61,7 @@ extern int  fill_world_region_details  (int world_pos_x, int world_pos_y);
 *****************************************************************************/
 bool MapsExporter::generate_maps(Logger& logger)
 {
-  if ((maps_to_generate == 0) && (maps_to_generate_extended == 0))
+  if ((maps_to_generate == 0) && (maps_to_generate_raw == 0))
       return false;   // There's nothing to generate
 
   this->set_percentage_diplomacy(0);
@@ -250,6 +250,14 @@ void MapsExporter::write_maps_to_disk()
 
   if (maps_to_generate & MapType::SITES)
     sites_map.get()->write_to_disk();
+
+//----------------------------------------------------------------------------//
+
+  if (maps_to_generate_raw & MapTypeRaw::BIOME_TYPE_RAW)
+    biome_type_raw_map.get()->write_to_disk();
+
+  if (maps_to_generate_raw & MapTypeRaw::BIOME_REGION_RAW)
+    biome_region_raw_map.get()->write_to_disk();
 }
 
 
@@ -312,7 +320,7 @@ ExportedMapDF* MapsExporter::get_elevation_water_map()
     return elevation_water_map.get();
 }
 
-ExportedMapDF* MapsExporter::get_biome_map()
+ExportedMapBase* MapsExporter::get_biome_map()
 {
     return biome_map.get();
 }
@@ -340,6 +348,17 @@ ExportedMapDF* MapsExporter::get_diplomacy_map()
 ExportedMapDF* MapsExporter::get_sites_map()
 {
     return sites_map.get();
+}
+
+
+ExportedMapBase* MapsExporter::get_biome_type_raw_map()
+{
+    return biome_type_raw_map.get();
+}
+
+ExportedMapBase* MapsExporter::get_biome_region_raw_map()
+{
+    return biome_region_raw_map.get();
 }
 
 //----------------------------------------------------------------------------//
@@ -372,23 +391,26 @@ void MapsExporter::set_percentage_diplomacy(int percentage)
 void MapsExporter::cleanup()
 {
     // Empty data queues if not already done
-    while (!temperature_queue.empty())     temperature_queue.pop();
-    while (!rainfall_queue.empty())        rainfall_queue.pop();
-    while (!drainage_queue.empty())        drainage_queue.pop();
-    while (!savagery_queue.empty())        savagery_queue.pop();
-    while (!volcanism_queue.empty())       volcanism_queue.pop();
-    while (!vegetation_queue.empty())      vegetation_queue.pop();
-    while (!evilness_queue.empty())        evilness_queue.pop();
-    while (!salinity_queue.empty())        salinity_queue.pop();
-    while (!hydro_queue.empty())           hydro_queue.pop();
-    while (!elevation_queue.empty())       elevation_queue.pop();
-    while (!elevation_water_queue.empty()) elevation_water_queue.pop();
-    while (!biome_queue.empty())           biome_queue.pop();
-    while (!geology_queue.empty())         geology_queue.pop();
-    while (!trading_queue.empty())         trading_queue.pop();    
-    while (!nobility_queue.empty())        nobility_queue.pop();    
-    while (!diplomacy_queue.empty())       diplomacy_queue.pop();
-    while (!sites_queue.empty())           sites_queue.pop();
+    while (!temperature_queue.empty())      temperature_queue.pop();
+    while (!rainfall_queue.empty())         rainfall_queue.pop();
+    while (!drainage_queue.empty())         drainage_queue.pop();
+    while (!savagery_queue.empty())         savagery_queue.pop();
+    while (!volcanism_queue.empty())        volcanism_queue.pop();
+    while (!vegetation_queue.empty())       vegetation_queue.pop();
+    while (!evilness_queue.empty())         evilness_queue.pop();
+    while (!salinity_queue.empty())         salinity_queue.pop();
+    while (!hydro_queue.empty())            hydro_queue.pop();
+    while (!elevation_queue.empty())        elevation_queue.pop();
+    while (!elevation_water_queue.empty())  elevation_water_queue.pop();
+    while (!biome_queue.empty())            biome_queue.pop();
+    while (!geology_queue.empty())          geology_queue.pop();
+    while (!trading_queue.empty())          trading_queue.pop();
+    while (!nobility_queue.empty())         nobility_queue.pop();
+    while (!diplomacy_queue.empty())        diplomacy_queue.pop();
+    while (!sites_queue.empty())            sites_queue.pop();
+
+    while (!biome_raw_type_queue.empty())   biome_raw_type_queue.pop();
+    while (!biome_raw_region_queue.empty()) biome_raw_region_queue.pop();
 
     // Destroy the generated maps
     temperature_map.reset();
@@ -409,6 +431,9 @@ void MapsExporter::cleanup()
     diplomacy_map.reset();
     sites_map.reset();
 
+    biome_type_raw_map.reset();
+    biome_region_raw_map.reset();
+
     // Destroy the generated producers
     temperature_producer.reset();
     rainfall_producer.reset();
@@ -427,6 +452,9 @@ void MapsExporter::cleanup()
     nobility_producer.reset();    
     diplomacy_producer.reset();
     sites_producer.reset();
+
+    biome_type_raw_producer.reset();
+    biome_region_raw_producer.reset();
 }
 
 //----------------------------------------------------------------------------//

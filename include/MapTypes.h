@@ -62,11 +62,12 @@ namespace exportmaps_plugin
     HYDROSPHERE_RAW     = 1u <<  8,
     ELEVATION_RAW       = 1u <<  9,
     ELEVATION_WATER_RAW = 1u << 10,
-    BIOME_RAW           = 1u << 11,
-    SITES_RAW           = 1u << 12,
-    TRADING_RAW         = 1u << 13,
-    NOBILITY_RAW        = 1u << 14,
-    DIPLOMACY_RAW       = 1u << 15
+    BIOME_TYPE_RAW      = 1u << 11,
+    BIOME_REGION_RAW    = 1u << 12,
+    SITES_RAW           = 1u << 13,
+    TRADING_RAW         = 1u << 14,
+    NOBILITY_RAW        = 1u << 15,
+    DIPLOMACY_RAW       = 1u << 16
   };
 }
 
