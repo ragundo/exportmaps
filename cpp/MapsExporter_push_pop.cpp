@@ -92,6 +92,9 @@ void MapsExporter::push_end()
 
   if (maps_to_generate_raw & MapTypeRaw::BIOME_REGION_RAW)
     biome_region_raw_producer->produce_end(*this);
+
+  if (maps_to_generate_raw & MapTypeRaw::DRAINAGE_RAW)
+    drainage_raw_producer->produce_end(*this);
 }
 
 //----------------------------------------------------------------------------//
@@ -184,6 +187,10 @@ void MapsExporter::push_data(df::world_region_details* ptr_rd, // df::world_regi
   // Push data for Biome region raw map
   if (maps_to_generate_raw & MapTypeRaw::BIOME_REGION_RAW)
     biome_region_raw_producer->produce_data(*this,x,y,ptr_rd);
+
+  // Push data for drainage type raw map
+  if (maps_to_generate_raw & MapTypeRaw::DRAINAGE_RAW)
+    drainage_raw_producer->produce_data(*this,x,y,ptr_rd);
 }
 
 
@@ -325,6 +332,13 @@ void MapsExporter::push_biome_region_raw(RegionDetailsBiome& rdb)
 {
     mtx.lock();
     this->biome_raw_region_queue.push(rdb);
+    mtx.unlock();
+}
+
+void MapsExporter::push_drainage_raw(RegionDetailsBiome& rdb)
+{
+    mtx.lock();
+    this->drainage_raw_queue.push(rdb);
     mtx.unlock();
 }
 
@@ -522,6 +536,16 @@ RegionDetailsBiome MapsExporter::pop_biome_region_raw()
     mtx.lock();
     RegionDetailsBiome rdb = this->biome_raw_region_queue.front();
     this->biome_raw_region_queue.pop();
+    mtx.unlock();
+
+    return rdb;
+}
+
+RegionDetailsBiome MapsExporter::pop_drainage_raw()
+{
+    mtx.lock();
+    RegionDetailsBiome rdb = this->drainage_raw_queue.front();
+    this->drainage_raw_queue.pop();
     mtx.unlock();
 
     return rdb;

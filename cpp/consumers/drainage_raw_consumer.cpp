@@ -39,18 +39,14 @@ extern std::pair<int,int> adjust_coordinates_to_region(int x,
 /*****************************************************************************
 Local functions forward declaration
 *****************************************************************************/
-bool      drainage_do_work(MapsExporter* maps_exporter);
-
-RGB_color RGB_from_drainage(int drainage);
-
-
+bool      drainage_raw_do_work(MapsExporter* maps_exporter);
 
 
 /*****************************************************************************
 Module main function.
 This is the function that the thread executes
 *****************************************************************************/
-void consumer_drainage(void* arg)
+void consumer_drainage_raw(void* arg)
 {
   bool                finish  = false;
   MapsExporter* maps_exporter = (MapsExporter*)arg;
@@ -59,12 +55,12 @@ void consumer_drainage(void* arg)
   {
     while(!finish)
     {
-      if (maps_exporter->is_drainage_queue_empty())
+      if (maps_exporter->is_drainage_raw_queue_empty())
         // No data on the queue. Try again later
         tthread::this_thread::yield();
 
       else // There's data in the queue
-        finish = drainage_do_work(maps_exporter);
+        finish = drainage_raw_do_work(maps_exporter);
     }
   }
   // Function finish -> Thread finish
@@ -77,10 +73,10 @@ void consumer_drainage(void* arg)
 // If is the end marker, the queue is empty and no more work needs to be done, return
 // If it's actual data process it and update the corresponding map
 //----------------------------------------------------------------------------//
-bool drainage_do_work(MapsExporter* maps_exporter)
+bool drainage_raw_do_work(MapsExporter* maps_exporter)
 {
   // Get the data from the queue
-  RegionDetailsBiome rdg = maps_exporter->pop_drainage();
+  RegionDetailsBiome rdg = maps_exporter->pop_drainage_raw();
 
   // Check if is the marker for no more data from the producer
   if (rdg.is_end_marker())
@@ -88,6 +84,9 @@ bool drainage_do_work(MapsExporter* maps_exporter)
     // All the data has been processed. Finish this thread execution
     return true;
   }
+
+  // Get the map where we'll write to
+  ExportedMapBase* drainage_raw_map = maps_exporter->get_drainage_raw_map();
 
   // Iterate over the 16 subtiles (x) and (y) that a world tile has
   for (auto x=0; x<16; ++x)
@@ -108,29 +107,15 @@ bool drainage_do_work(MapsExporter* maps_exporter)
       df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first]
                                                                            [adjusted_tile_coordinates.second];
 
-      // Get the RGB values associated to this drainage
-      RGB_color rgb_pixel_color = RGB_from_drainage(rme.drainage);
-
-      // Write pixels to the bitmap
-      ExportedMapBase* drainage_map = maps_exporter->get_drainage_map();
-      drainage_map->write_world_pixel(rdg.get_pos_x(),
-                                      rdg.get_pos_y(),
-                                      x,
-                                      y,
-                                      rgb_pixel_color
-                                      );
+      // Write drainage value in the buffer
+      drainage_raw_map->write_data(rdg.get_pos_x(),
+                                   rdg.get_pos_y(),
+                                   x,
+                                   y,
+                                   rme.drainage
+                                   );
 
     }
   return false; // Continue working
 }
 
-//----------------------------------------------------------------------------//
-// Utility function
-// Return the RGB values for the drainage export map given a drainage value.
-//----------------------------------------------------------------------------//
-RGB_color RGB_from_drainage(int drainage)
-{
-  // Drainage * 2,55
-  unsigned char p = (unsigned char)((((350469331425 * drainage) >> 32) >> 5));
-  return RGB_color(p,p,p);
-}

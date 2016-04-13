@@ -38,6 +38,7 @@ SET(PROJECT_SRCS
   # Consumers for each different raw map
   ./cpp/consumers/biome_type_raw_consumer.cpp
   ./cpp/consumers/biome_region_raw_consumer.cpp
+  ./cpp/consumers/drainage_raw_consumer.cpp  
 
   # Plugin code
   ./cpp/draw_line.cpp

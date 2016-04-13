@@ -70,6 +70,7 @@ namespace exportmaps_plugin
 
       queue<class RegionDetailsBiome>           biome_raw_type_queue;
       queue<class RegionDetailsBiome>           biome_raw_region_queue;
+      queue<class RegionDetailsBiome>           drainage_raw_queue;
 
       // Enable the generation of each different map
       uint32_t maps_to_generate;
@@ -96,11 +97,12 @@ namespace exportmaps_plugin
 
       unique_ptr<class ProducerBiomeRawType>   biome_type_raw_producer;
       unique_ptr<class ProducerBiomeRawRegion> biome_region_raw_producer;
+      unique_ptr<class ProducerDrainageRaw>    drainage_raw_producer;
 
       // Pointers to every map that can be exported
       unique_ptr<class ExportedMapDF>          temperature_map;
       unique_ptr<class ExportedMapDF>          rainfall_map;
-      unique_ptr<class ExportedMapDF>          drainage_map;
+      unique_ptr<class ExportedMapBase>        drainage_map;
       unique_ptr<class ExportedMapDF>          savagery_map;
       unique_ptr<class ExportedMapDF>          volcanism_map;
       unique_ptr<class ExportedMapDF>          vegetation_map;
@@ -118,6 +120,7 @@ namespace exportmaps_plugin
 
       unique_ptr<class ExportedMapBase>        biome_type_raw_map;
       unique_ptr<class ExportedMapBase>        biome_region_raw_map;
+      unique_ptr<class ExportedMapBase>        drainage_raw_map;
 
       // Thread synchronization between producer and consumers
       // accessing the different data queues
@@ -171,6 +174,7 @@ namespace exportmaps_plugin
 
     void push_biome_type_raw  (RegionDetailsBiome& rdb);
     void push_biome_region_raw(RegionDetailsBiome& rdb);
+    void push_drainage_raw    (RegionDetailsBiome& rdg);
 
     // Pop methods
 
@@ -194,29 +198,31 @@ namespace exportmaps_plugin
 
     RegionDetailsBiome          pop_biome_type_raw();
     RegionDetailsBiome          pop_biome_region_raw();
+    RegionDetailsBiome          pop_drainage_raw();
 
     // Maps getters
 
-    ExportedMapDF* get_temperature_map();
-    ExportedMapDF* get_rainfall_map();
-    ExportedMapDF* get_drainage_map();
-    ExportedMapDF* get_savagery_map();
-    ExportedMapDF* get_volcanism_map();
-    ExportedMapDF* get_vegetation_map();
-    ExportedMapDF* get_evilness_map();
-    ExportedMapDF* get_salinity_map();
-    ExportedMapDF* get_hydro_map();
-    ExportedMapDF* get_elevation_map();
-    ExportedMapDF* get_elevation_water_map();
+    ExportedMapDF*   get_temperature_map();
+    ExportedMapDF*   get_rainfall_map();
+    ExportedMapBase* get_drainage_map();
+    ExportedMapDF*   get_savagery_map();
+    ExportedMapDF*   get_volcanism_map();
+    ExportedMapDF*   get_vegetation_map();
+    ExportedMapDF*   get_evilness_map();
+    ExportedMapDF*   get_salinity_map();
+    ExportedMapDF*   get_hydro_map();
+    ExportedMapDF*   get_elevation_map();
+    ExportedMapDF*   get_elevation_water_map();
     ExportedMapBase* get_biome_map();
-    ExportedMapDF* get_geology_map();
-    ExportedMapDF* get_trading_map();
-    ExportedMapDF* get_nobility_map();
-    ExportedMapDF* get_diplomacy_map();
-    ExportedMapDF* get_sites_map();
+    ExportedMapDF*   get_geology_map();
+    ExportedMapDF*   get_trading_map();
+    ExportedMapDF*   get_nobility_map();
+    ExportedMapDF*   get_diplomacy_map();
+    ExportedMapDF*   get_sites_map();
 
     ExportedMapBase* get_biome_type_raw_map();
     ExportedMapBase* get_biome_region_raw_map();
+    ExportedMapBase* get_drainage_raw_map();
 
     // Queue status methods
 
@@ -240,6 +246,7 @@ namespace exportmaps_plugin
 
     bool is_biome_raw_type_queue_empty();
     bool is_biome_raw_region_queue_empty();
+    bool is_drainage_raw_queue_empty();
 
     // Thread related methods
 

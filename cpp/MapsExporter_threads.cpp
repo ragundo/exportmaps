@@ -52,6 +52,7 @@ extern void consumer_sites           (void* arg);
 
 extern void consumer_biome_type_raw  (void* arg);
 extern void consumer_biome_region_raw(void* arg);
+extern void consumer_drainage_raw    (void* arg);
 
 /*****************************************************************************
 *****************************************************************************/
@@ -137,7 +138,7 @@ void MapsExporter::setup_threads()
     consumer_threads.push_back(pthread);
   }
 
-  if (maps_to_generate     & MapType::BIOME)
+  if (maps_to_generate & MapType::BIOME)
   {
     tthread::thread* pthread =  new tthread::thread(consumer_biome,(void*)this);
     consumer_threads.push_back(pthread);
@@ -186,6 +187,12 @@ void MapsExporter::setup_threads()
   if (maps_to_generate_raw & MapTypeRaw::BIOME_REGION_RAW)
   {
     tthread::thread* pthread =  new tthread::thread(consumer_biome_region_raw,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
+
+  if (maps_to_generate_raw & MapTypeRaw::DRAINAGE_RAW)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_drainage_raw,(void*)this);
     consumer_threads.push_back(pthread);
   }
 }

@@ -69,6 +69,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
     if (!temperature_map) throw std::bad_alloc();
   }
 
+//----------------------------------------------------------------------------//
+
   if (maps_to_generate & MapType::RAINFALL)
   {
     // Compose filename
@@ -85,6 +87,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
 
     if (!rainfall_map) throw std::bad_alloc();
   }
+
+//----------------------------------------------------------------------------//
 
   if (maps_to_generate & MapType::DRAINAGE)
   {
@@ -103,6 +107,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
     if (!drainage_map) throw std::bad_alloc();
   }
 
+//----------------------------------------------------------------------------//
+
   if (maps_to_generate & MapType::SAVAGERY)
   {
     // Compose filename
@@ -119,6 +125,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
 
     if (!savagery_map) throw std::bad_alloc();
   }
+
+//----------------------------------------------------------------------------//
 
   if (maps_to_generate & MapType::VOLCANISM)
   {
@@ -137,6 +145,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
     if (!volcanism_map) throw std::bad_alloc();
   }
 
+//----------------------------------------------------------------------------//
+
   if (maps_to_generate & MapType::VEGETATION)
   {
     // Compose filename
@@ -152,6 +162,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
 
     if (!vegetation_map) throw std::bad_alloc();
   }
+
+//----------------------------------------------------------------------------//
 
   if (maps_to_generate & MapType::EVILNESS)
   {
@@ -170,6 +182,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
     if (!evilness_map) throw std::bad_alloc();
   }
 
+//----------------------------------------------------------------------------//
+
   if (maps_to_generate & MapType::SALINITY)
   {
     // Compose filename
@@ -186,6 +200,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
 
     if (!salinity_map) throw std::bad_alloc();
   }
+
+//----------------------------------------------------------------------------//
 
   if (maps_to_generate & MapType::HYDROSPHERE)
   {
@@ -204,6 +220,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
     if (!hydro_map) throw std::bad_alloc();
   }
 
+//----------------------------------------------------------------------------//
+
   if (maps_to_generate & MapType::ELEVATION)
   {
     // Compose filename
@@ -219,6 +237,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
 
     if (!elevation_map) throw std::bad_alloc();
   }
+
+//----------------------------------------------------------------------------//
 
   if (maps_to_generate & MapType::ELEVATION_WATER)
   {
@@ -236,6 +256,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
     if (!elevation_water_map) throw std::bad_alloc();
   }
 
+//----------------------------------------------------------------------------//
+
   if (maps_to_generate & MapType::BIOME)
   {
     // Compose filename
@@ -252,6 +274,7 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
     if (!biome_map) throw std::bad_alloc();
   }
 
+//----------------------------------------------------------------------------//
 /*
     if (maps_to_generate & MapType::GEOLOGY)
     {
@@ -269,6 +292,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
     }
 */
 
+//----------------------------------------------------------------------------//
+
   if (maps_to_generate & MapType::TRADING)
   {
     // Compose filename
@@ -285,6 +310,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
     if (!trading_map) throw std::bad_alloc();
   }
 
+//----------------------------------------------------------------------------//
+
   if (maps_to_generate & MapType::NOBILITY)
   {
     // Compose filename
@@ -300,6 +327,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
     if (!nobility_map) throw std::bad_alloc();
   }
 
+//----------------------------------------------------------------------------//
+
   if (maps_to_generate & MapType::DIPLOMACY)
   {
     // Compose filename
@@ -314,6 +343,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
                                           MapType::DIPLOMACY));
     if (!diplomacy_map) throw std::bad_alloc();
   }
+
+//----------------------------------------------------------------------------//
 
   if (maps_to_generate & MapType::SITES)
   {
@@ -353,6 +384,8 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
     if (!biome_type_raw_map) throw std::bad_alloc();
   }
 
+//----------------------------------------------------------------------------//
+
   if (maps_raw & MapTypeRaw::BIOME_REGION_RAW)
   {
     // Compose filename
@@ -369,6 +402,26 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
                                );
 
     if (!biome_region_raw_map) throw std::bad_alloc();
+  }
+
+//----------------------------------------------------------------------------//
+
+  if (maps_raw & MapTypeRaw::DRAINAGE_RAW)
+  {
+    // Compose filename
+    std::stringstream file_name;
+    file_name << region_name << current_date << "-drainage.raw";
+    drainage_raw_producer.reset(new ProducerDrainageRaw);
+    if (!drainage_raw_producer) throw std::bad_alloc();
+
+    drainage_raw_map.reset(new ExportedMapRaw(file_name.str(),
+                                              df::global::world->world_data->world_width,
+                                              df::global::world->world_data->world_height,
+                                              MapTypeRaw::DRAINAGE_RAW
+                                              )
+                           );
+
+    if (!drainage_raw_map) throw std::bad_alloc();
   }
 
 }

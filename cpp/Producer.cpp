@@ -27,7 +27,14 @@ using namespace exportmaps_plugin;
 Base class has empty methods
 *****************************************************************************/
 
-void Producer::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd){}
+void Producer::produce_data(MapsExporter& destination,
+                            int x,
+                            int y,
+                            df::world_region_details* ptr_rd
+                            )
+{
+}
+
 void Producer::produce_end(MapsExporter& destination){}
 
 /*****************************************************************************
@@ -43,7 +50,11 @@ that no more data is availaible
 /*****************************************************************************
  ProducerTemperature methods
 *****************************************************************************/
-void ProducerTemperature::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerTemperature::produce_data(MapsExporter& destination,
+                                       int x,
+                                       int y,
+                                       df::world_region_details* ptr_rd
+                                       )
 {
   // Produce the data using world_region_details
   RegionDetailsBiome rdg(ptr_rd);
@@ -65,7 +76,11 @@ void ProducerTemperature::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerRainfall methods
 *****************************************************************************/
-void ProducerRainfall::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerRainfall::produce_data(MapsExporter& destination,
+                                    int x,
+                                    int y,
+                                    df::world_region_details* ptr_rd
+                                    )
 {
   RegionDetailsBiome rdg(ptr_rd);
 
@@ -85,7 +100,11 @@ void ProducerRainfall::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerDrainage methods
 *****************************************************************************/
-void ProducerDrainage::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerDrainage::produce_data(MapsExporter& destination,
+                                    int x,
+                                    int y,
+                                    df::world_region_details* ptr_rd
+                                    )
 {
   RegionDetailsBiome rdg(ptr_rd);
 
@@ -105,7 +124,11 @@ void ProducerDrainage::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerSavagery methods
 *****************************************************************************/
-void ProducerSavagery::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerSavagery::produce_data(MapsExporter& destination,
+                                    int x,
+                                    int y,
+                                    df::world_region_details* ptr_rd
+                                    )
 {
   RegionDetailsBiome rdg(ptr_rd);
 
@@ -124,7 +147,11 @@ void ProducerSavagery::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerVolcanism methods
 *****************************************************************************/
-void ProducerVolcanism::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerVolcanism::produce_data(MapsExporter& destination,
+                                     int x,
+                                     int y,
+                                     df::world_region_details* ptr_rd
+                                     )
 {
   RegionDetailsBiome rdg(ptr_rd);
 
@@ -144,7 +171,11 @@ void ProducerVolcanism::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerVegetation methods
 *****************************************************************************/
-void ProducerVegetation::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerVegetation::produce_data(MapsExporter& destination,
+                                      int x,
+                                      int y,
+                                      df::world_region_details* ptr_rd
+                                      )
 {
   RegionDetailsBiome rdg(ptr_rd);
 
@@ -164,7 +195,11 @@ void ProducerVegetation::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerEvilness methods
 *****************************************************************************/
-void ProducerEvilness::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerEvilness::produce_data(MapsExporter& destination,
+                                    int x,
+                                    int y,
+                                    df::world_region_details* ptr_rd
+                                    )
 {
   RegionDetailsBiome rdg(ptr_rd);
 
@@ -184,7 +219,11 @@ void ProducerEvilness::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerSalinity methods
 *****************************************************************************/
-void ProducerSalinity::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerSalinity::produce_data(MapsExporter& destination,
+                                    int x,
+                                    int y,
+                                    df::world_region_details* ptr_rd
+                                    )
 {
   RegionDetailsBiome rdg(ptr_rd);
 
@@ -204,7 +243,11 @@ void ProducerSalinity::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerHydro methods
 *****************************************************************************/
-void ProducerHydro::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerHydro::produce_data(MapsExporter& destination,
+                                 int x,
+                                 int y,
+                                 df::world_region_details* ptr_rd
+                                 )
 {
   RegionDetailsElevationWater rdb(ptr_rd);
 
@@ -224,7 +267,11 @@ void ProducerHydro::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerElevation methods
 *****************************************************************************/
-void ProducerElevation::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerElevation::produce_data(MapsExporter& destination,
+                                     int x,
+                                     int y,
+                                     df::world_region_details* ptr_rd
+                                     )
 {
   // Create a copy of the DF data
   RegionDetailsElevation rde(ptr_rd);
@@ -246,7 +293,11 @@ void ProducerElevation::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerElevationWater methods
 *****************************************************************************/
-void ProducerElevationWater::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerElevationWater::produce_data(MapsExporter& destination,
+                                          int x,
+                                          int y,
+                                          df::world_region_details* ptr_rd
+                                          )
 {
   // Create a copy of the DF data
   RegionDetailsElevationWater rdew(ptr_rd);
@@ -268,7 +319,11 @@ void ProducerElevationWater::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerBiome methods
 *****************************************************************************/
-void ProducerBiome::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerBiome::produce_data(MapsExporter& destination,
+                                 int x,
+                                 int y,
+                                 df::world_region_details* ptr_rd
+                                 )
 {
   // Create a copy of the DF data
   RegionDetailsBiome rdb(ptr_rd);
@@ -290,7 +345,11 @@ void ProducerBiome::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerGeology methods
 *****************************************************************************/
-void ProducerGeology::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerGeology::produce_data(MapsExporter& destination,
+                                   int x,
+                                   int y,
+                                   df::world_region_details* ptr_rd
+                                   )
 {
   // Create a copy of the DF data
   RegionDetailsGeology rdg(ptr_rd);
@@ -312,7 +371,11 @@ void ProducerGeology::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerTrading methods
 *****************************************************************************/
-void ProducerTrading::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerTrading::produce_data(MapsExporter& destination,
+                                   int x,
+                                   int y,
+                                   df::world_region_details* ptr_rd
+                                   )
 {
   // Create a copy of the DF data
   RegionDetailsElevationWater rde(ptr_rd);
@@ -334,7 +397,11 @@ void ProducerTrading::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerNobility methods
 *****************************************************************************/
-void ProducerNobility::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerNobility::produce_data(MapsExporter& destination,
+                                    int x,
+                                    int y,
+                                    df::world_region_details* ptr_rd
+                                    )
 {
   // Create a copy of the DF data
   RegionDetailsElevationWater rde(ptr_rd);
@@ -356,7 +423,11 @@ void ProducerNobility::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerDiplomacy methods
 *****************************************************************************/
-void ProducerDiplomacy::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerDiplomacy::produce_data(MapsExporter& destination,
+                                     int x,
+                                     int y,
+                                     df::world_region_details* ptr_rd
+                                     )
 {
   // Create a copy of the DF data
   RegionDetailsElevationWater rde(ptr_rd);
@@ -378,7 +449,11 @@ void ProducerDiplomacy::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerSites methods
 *****************************************************************************/
-void ProducerSites::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerSites::produce_data(MapsExporter& destination,
+                                 int x,
+                                 int y,
+                                 df::world_region_details* ptr_rd
+                                 )
 {
   // Create a copy of the DF data
   RegionDetailsElevationWater rde(ptr_rd);
@@ -400,7 +475,11 @@ void ProducerSites::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerBiomeRawType methods
 *****************************************************************************/
-void ProducerBiomeRawType::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerBiomeRawType::produce_data(MapsExporter& destination,
+                                        int x,
+                                        int y,
+                                        df::world_region_details* ptr_rd
+                                        )
 {
   // Create a copy of the DF data
   RegionDetailsBiome rdb(ptr_rd);
@@ -422,7 +501,11 @@ void ProducerBiomeRawType::produce_end(MapsExporter& destination)
 /*****************************************************************************
 ProducerBiomeRawRegion methods
 *****************************************************************************/
-void ProducerBiomeRawRegion::produce_data(MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd)
+void ProducerBiomeRawRegion::produce_data(MapsExporter& destination,
+                                          int x,
+                                          int y,
+                                          df::world_region_details* ptr_rd
+                                          )
 {
   // Create a copy of the DF data
   RegionDetailsBiome rdb(ptr_rd);
@@ -439,4 +522,30 @@ void ProducerBiomeRawRegion::produce_end(MapsExporter& destination)
 
   // Push the data to the producer for the consumers
   destination.push_biome_region_raw(rdb);
+}
+
+/*****************************************************************************
+ProducerDrainageRaw methods
+*****************************************************************************/
+void ProducerDrainageRaw::produce_data(MapsExporter& destination,
+                                       int x,
+                                       int y,
+                                       df::world_region_details* ptr_rd
+                                       )
+{
+  // Create a copy of the DF data
+  RegionDetailsBiome rdb(ptr_rd);
+
+  // Push the data to the producer for the consumers
+  destination.push_drainage_raw(rdb);
+}
+
+//----------------------------------------------------------------------------//
+void ProducerDrainageRaw::produce_end(MapsExporter& destination)
+{
+  // The end marker is generated by the default constructor
+  RegionDetailsBiome rdb;
+
+  // Push the data to the producer for the consumers
+  destination.push_drainage_raw(rdb);
 }

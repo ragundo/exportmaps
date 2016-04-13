@@ -88,14 +88,13 @@ The availble options are the following:
 | -diplomacy       | DIPLOMACY |                                
 | -sites           | SITES / STRUCTURES / ROADS |
 
+## Raw maps
+Raw maps are binary files with data extracted directly from DF.
+[Read more details about them.](https://github.com/ragundo/exportmaps/dock/raw_maps.md)
 
 
 ## What's next?
 For next releases, this is what's planned:
-
-#### Raw maps
-Export maps as a raw data files. Ideal for using with external tools that could import world elevation data
-with biome and vegetation as layers and render the world in 3D.
 
 #### RPC interface
 For generating maps on demand without needing to use the DFHack console. Just connect to DF and request a map using Google's protocol buffers.

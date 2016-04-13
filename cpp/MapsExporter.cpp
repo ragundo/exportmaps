@@ -258,6 +258,9 @@ void MapsExporter::write_maps_to_disk()
 
   if (maps_to_generate_raw & MapTypeRaw::BIOME_REGION_RAW)
     biome_region_raw_map.get()->write_to_disk();
+
+  if (maps_to_generate_raw & MapTypeRaw::DRAINAGE_RAW)
+    drainage_raw_map.get()->write_to_disk();
 }
 
 
@@ -275,7 +278,7 @@ ExportedMapDF* MapsExporter::get_rainfall_map()
     return rainfall_map.get();
 }
 
-ExportedMapDF* MapsExporter::get_drainage_map()
+ExportedMapBase* MapsExporter::get_drainage_map()
 {
     return drainage_map.get();
 }
@@ -361,6 +364,11 @@ ExportedMapBase* MapsExporter::get_biome_region_raw_map()
     return biome_region_raw_map.get();
 }
 
+ExportedMapBase* MapsExporter::get_drainage_raw_map()
+{
+    return drainage_raw_map.get();
+}
+
 //----------------------------------------------------------------------------//
 // Methods to update the percentage
 //----------------------------------------------------------------------------//
@@ -411,6 +419,7 @@ void MapsExporter::cleanup()
 
     while (!biome_raw_type_queue.empty())   biome_raw_type_queue.pop();
     while (!biome_raw_region_queue.empty()) biome_raw_region_queue.pop();
+    while (!drainage_raw_queue.empty())     drainage_raw_queue.pop();
 
     // Destroy the generated maps
     temperature_map.reset();
@@ -433,6 +442,7 @@ void MapsExporter::cleanup()
 
     biome_type_raw_map.reset();
     biome_region_raw_map.reset();
+    drainage_raw_map.reset();
 
     // Destroy the generated producers
     temperature_producer.reset();
@@ -455,6 +465,7 @@ void MapsExporter::cleanup()
 
     biome_type_raw_producer.reset();
     biome_region_raw_producer.reset();
+    drainage_raw_producer.reset();
 }
 
 //----------------------------------------------------------------------------//
