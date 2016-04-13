@@ -90,7 +90,7 @@ The availble options are the following:
 
 ## Raw maps
 Raw maps are binary files with data extracted directly from DF.
-[Read more details about them.](https://github.com/ragundo/exportmaps/dock/raw_maps.md)
+<a href="docs/raw_maps.md">Read more details about them.</a>
 
 
 ## What's next?
