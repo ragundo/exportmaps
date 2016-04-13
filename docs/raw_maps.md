@@ -2,7 +2,7 @@
 
 ## What are raw maps?
 Raw maps are binary files with data from DF. A drainage raw map, for example, will contain only the
-drainages value for each world position. They're not graphical images, so you can't open them with a image
+drainage value for each world position. They're not graphical images, so you can't open them with a image
 viewer. To open them you need a hex viewer.
 
 ## What are they used for?
