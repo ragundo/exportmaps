@@ -54,7 +54,9 @@ The available options are the following:
 | -biome-region-raw    | BIOME |
 
 As you can see with the biome-region-raw, you can create new maps different to the ones generated
-by DF. This map will have the region id of each world coordinate. As the world is exported in embark
+by DF.
+
+This map will have the region id of each world coordinate. As the world is exported in embark
 coordinates, you get a x16 zoom respect to the data that you can get from exportlegends, with exports
 it in world coordinates ( 1 world coordinate = 16 embark coordinate)
 
