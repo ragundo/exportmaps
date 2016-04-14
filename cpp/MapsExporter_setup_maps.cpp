@@ -424,5 +424,45 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
     if (!drainage_raw_map) throw std::bad_alloc();
   }
 
+  //----------------------------------------------------------------------------//
+
+    if (maps_to_generate_raw & MapTypeRaw::ELEVATION_RAW)
+    {
+      // Compose filename
+      std::stringstream file_name;
+      file_name << region_name << current_date << "-elevation.raw";
+      elevation_raw_producer.reset(new ProducerElevationRaw);
+      if (!elevation_raw_producer) throw std::bad_alloc();
+
+      elevation_raw_map.reset(new ExportedMapRaw(file_name.str(),
+                                                 df::global::world->world_data->world_width,
+                                                 df::global::world->world_data->world_height,
+                                                 MapTypeRaw::ELEVATION_RAW
+                                                 )
+                              );
+
+      if (!elevation_raw_map) throw std::bad_alloc();
+    }
+
+  //----------------------------------------------------------------------------//
+
+    if (maps_to_generate_raw & MapTypeRaw::ELEVATION_WATER_RAW)
+    {
+      // Compose filename
+      std::stringstream file_name;
+      file_name << region_name << current_date << "-elevation-water.raw";
+      elevation_water_raw_producer.reset(new ProducerElevationWaterRaw);
+      if (!elevation_water_raw_producer) throw std::bad_alloc();
+
+      elevation_water_raw_map.reset(new ExportedMapRaw(file_name.str(),
+                                                       df::global::world->world_data->world_width,
+                                                       df::global::world->world_data->world_height,
+                                                       MapTypeRaw::ELEVATION_WATER_RAW
+                                                       )
+                                    );
+
+      if (!elevation_water_raw_map) throw std::bad_alloc();
+    }
+
 }
 

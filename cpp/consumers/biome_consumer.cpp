@@ -117,8 +117,28 @@ bool biome_do_work(MapsExporter* maps_exporter)
                                       );
 
       // Get the RGB values associated to this biome type
-      RGB_color rgb_pixel_color = RGB_from_biome_type(biome_type);
+//      RGB_color rgb_pixel_color = RGB_from_biome_type(biome_type);
 
+df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first]
+                                                                           [adjusted_tile_coordinates.second];
+
+unsigned char r = 0;
+unsigned char g = 0;
+unsigned char b = 0;
+if (rme.region_id < 256)
+{
+  r = rme.region_id;
+  g = rme.region_id;
+  b = rme.region_id;
+}
+else if ( rme.region_id  > 255 )
+{
+  r = rme.region_id % 256;
+  g = 50 * rme.region_id /256;
+  b = (rme.region_id - 256) /2;
+}
+
+RGB_color rgb_pixel_color = RGB_color(r,g,b);
       // Write pixels to the bitmap
       map->write_world_pixel(rdb.get_pos_x(),
                              rdb.get_pos_y(),

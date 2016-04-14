@@ -223,11 +223,32 @@ bool MapsExporter::is_biome_raw_region_queue_empty()
     return queue_empty;
 }
 
+//----------------------------------------------------------------------------//
 bool MapsExporter::is_drainage_raw_queue_empty()
 {
     bool queue_empty;
     mtx.lock();
     queue_empty = drainage_raw_queue.empty();
+    mtx.unlock();
+    return queue_empty;
+}
+
+//----------------------------------------------------------------------------//
+bool MapsExporter::is_elevation_raw_queue_empty()
+{
+    bool queue_empty;
+    mtx.lock();
+    queue_empty = elevation_raw_queue.empty();
+    mtx.unlock();
+    return queue_empty;
+}
+
+//----------------------------------------------------------------------------//
+bool MapsExporter::is_elevation_water_raw_queue_empty()
+{
+    bool queue_empty;
+    mtx.lock();
+    queue_empty = elevation_water_raw_queue.empty();
     mtx.unlock();
     return queue_empty;
 }

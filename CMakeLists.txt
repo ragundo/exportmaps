@@ -39,6 +39,9 @@ SET(PROJECT_SRCS
   ./cpp/consumers/biome_type_raw_consumer.cpp
   ./cpp/consumers/biome_region_raw_consumer.cpp
   ./cpp/consumers/drainage_raw_consumer.cpp  
+  ./cpp/consumers/elevation_raw_consumer.cpp
+  ./cpp/consumers/elevation_water_raw_consumer.cpp
+  
 
   # Plugin code
   ./cpp/draw_line.cpp

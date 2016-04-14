@@ -95,6 +95,12 @@ void MapsExporter::push_end()
 
   if (maps_to_generate_raw & MapTypeRaw::DRAINAGE_RAW)
     drainage_raw_producer->produce_end(*this);
+
+  if (maps_to_generate_raw & MapTypeRaw::ELEVATION_RAW)
+    elevation_raw_producer->produce_end(*this);
+
+  if (maps_to_generate_raw & MapTypeRaw::ELEVATION_WATER_RAW)
+    elevation_water_raw_producer->produce_end(*this);
 }
 
 //----------------------------------------------------------------------------//
@@ -191,6 +197,14 @@ void MapsExporter::push_data(df::world_region_details* ptr_rd, // df::world_regi
   // Push data for drainage type raw map
   if (maps_to_generate_raw & MapTypeRaw::DRAINAGE_RAW)
     drainage_raw_producer->produce_data(*this,x,y,ptr_rd);
+
+  // Push data for the Elevation raw map
+  if (maps_to_generate_raw & MapTypeRaw::ELEVATION_RAW)
+    elevation_raw_producer->produce_data(*this,x,y,ptr_rd);
+
+  // Push data for the Elevation respecting water raw map
+  if (maps_to_generate_raw & MapTypeRaw::ELEVATION_WATER_RAW)
+    elevation_water_raw_producer->produce_data(*this,x,y,ptr_rd);
 }
 
 
@@ -339,6 +353,20 @@ void MapsExporter::push_drainage_raw(RegionDetailsBiome& rdb)
 {
     mtx.lock();
     this->drainage_raw_queue.push(rdb);
+    mtx.unlock();
+}
+
+void MapsExporter::push_elevation_raw(RegionDetailsElevation& rde)
+{
+    mtx.lock();
+    this->elevation_raw_queue.push(rde);
+    mtx.unlock();
+}
+
+void MapsExporter::push_elevation_water_raw(RegionDetailsElevationWater& rdew)
+{
+    mtx.lock();
+    this->elevation_water_raw_queue.push(rdew);
     mtx.unlock();
 }
 
@@ -549,4 +577,24 @@ RegionDetailsBiome MapsExporter::pop_drainage_raw()
     mtx.unlock();
 
     return rdb;
+}
+
+RegionDetailsElevation MapsExporter::pop_elevation_raw()
+{
+    mtx.lock();
+    RegionDetailsElevation rde = this->elevation_raw_queue.front();
+    this->elevation_raw_queue.pop();
+    mtx.unlock();
+
+    return rde;
+}
+
+RegionDetailsElevationWater MapsExporter::pop_elevation_water_raw()
+{
+    mtx.lock();
+    RegionDetailsElevationWater rdew = this->elevation_water_raw_queue.front();
+    this->elevation_water_raw_queue.pop();
+    mtx.unlock();
+
+    return rdew;
 }
