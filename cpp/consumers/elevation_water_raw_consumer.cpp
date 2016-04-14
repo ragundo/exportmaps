@@ -222,8 +222,7 @@ int elevation_water(RegionDetailsElevationWater& rdew,
   if (region->lake_surface != -30000)
     elevation = region->lake_surface;
 
-  int corrected_elevation = elevation - 25;
-
+  int corrected_elevation = elevation;
 
   if ( corrected_elevation < 98)
     corrected_elevation = 98;
