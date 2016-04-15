@@ -282,3 +282,13 @@ bool MapsExporter::is_rainfall_raw_queue_empty()
     mtx.unlock();
     return queue_empty;
 }
+
+//----------------------------------------------------------------------------//
+bool MapsExporter::is_salinity_raw_queue_empty()
+{
+    bool queue_empty;
+    mtx.lock();
+    queue_empty = salinity_raw_queue.empty();
+    mtx.unlock();
+    return queue_empty;
+}

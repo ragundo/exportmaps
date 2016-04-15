@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,10 +14,6 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
@@ -277,6 +269,8 @@ void MapsExporter::write_maps_to_disk()
   if (maps_to_generate_raw & MapTypeRaw::RAINFALL_RAW)
     rainfall_raw_map.get()->write_to_disk();
 
+  if (maps_to_generate_raw & MapTypeRaw::SALINITY_RAW)
+    salinity_raw_map.get()->write_to_disk();
 }
 
 
@@ -319,7 +313,7 @@ ExportedMapBase* MapsExporter::get_evilness_map()
     return evilness_map.get();
 }
 
-ExportedMapDF* MapsExporter::get_salinity_map()
+ExportedMapBase* MapsExporter::get_salinity_map()
 {
     return salinity_map.get();
 }
@@ -409,6 +403,11 @@ ExportedMapBase* MapsExporter::get_rainfall_raw_map()
     return rainfall_raw_map.get();
 }
 
+ExportedMapBase* MapsExporter::get_salinity_raw_map()
+{
+    return salinity_raw_map.get();
+}
+
 //----------------------------------------------------------------------------//
 // Methods to update the percentage
 //----------------------------------------------------------------------------//
@@ -465,6 +464,7 @@ void MapsExporter::cleanup()
     while (!evilness_raw_queue.empty())        evilness_raw_queue.pop();
     while (!hydro_raw_queue.empty())           hydro_raw_queue.pop();
     while (!rainfall_raw_queue.empty())        rainfall_raw_queue.pop();
+    while (!salinity_raw_queue.empty())        salinity_raw_queue.pop();
 
     // Destroy the generated maps
     biome_map.reset();
@@ -493,6 +493,7 @@ void MapsExporter::cleanup()
     evilness_raw_map.reset();
     hydro_raw_map.reset();
     rainfall_raw_map.reset();
+    salinity_raw_map.reset();
 
     // Destroy the generated producers
     biome_producer.reset();
@@ -521,6 +522,7 @@ void MapsExporter::cleanup()
     evilness_raw_producer.reset();
     hydro_raw_producer.reset();
     rainfall_raw_producer.reset();
+    salinity_raw_producer.reset();
 }
 
 //----------------------------------------------------------------------------//

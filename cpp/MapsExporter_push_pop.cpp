@@ -110,6 +110,9 @@ void MapsExporter::push_end()
 
   if (maps_to_generate_raw & MapTypeRaw::RAINFALL_RAW)
     rainfall_raw_producer->produce_end(*this);
+
+  if (maps_to_generate_raw & MapTypeRaw::SALINITY_RAW)
+    salinity_raw_producer->produce_end(*this);
 }
 
 //----------------------------------------------------------------------------//
@@ -226,6 +229,10 @@ void MapsExporter::push_data(df::world_region_details* ptr_rd, // df::world_regi
   // Push data for the rainfall raw map
   if (maps_to_generate_raw & MapTypeRaw::RAINFALL_RAW)
     rainfall_raw_producer->produce_data(*this,x,y,ptr_rd);
+
+  // Push data for the salinity raw map
+  if (maps_to_generate_raw & MapTypeRaw::SALINITY_RAW)
+    salinity_raw_producer->produce_data(*this,x,y,ptr_rd);
 }
 
 
@@ -454,6 +461,15 @@ void MapsExporter::push_rainfall_raw(RegionDetailsBiome& rdb)
 {
     mtx.lock();
     rainfall_raw_queue.push(rdb);
+    mtx.unlock();
+}
+
+//----------------------------------------------------------------------------//
+
+void MapsExporter::push_salinity_raw(RegionDetailsBiome& rdb)
+{
+    mtx.lock();
+    salinity_raw_queue.push(rdb);
     mtx.unlock();
 }
 
@@ -760,3 +776,17 @@ RegionDetailsBiome MapsExporter::pop_rainfall_raw()
 
     return rdb;
 }
+
+//----------------------------------------------------------------------------//
+
+RegionDetailsBiome MapsExporter::pop_salinity_raw()
+{
+    mtx.lock();
+    RegionDetailsBiome rdb = this->salinity_raw_queue.front();
+    this->salinity_raw_queue.pop();
+    mtx.unlock();
+
+    return rdb;
+}
+
+

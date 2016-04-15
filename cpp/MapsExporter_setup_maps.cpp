@@ -506,24 +506,44 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
 
   //----------------------------------------------------------------------------//
 
-    if (maps_to_generate_raw & MapTypeRaw::RAINFALL_RAW)
-    {
-      // Compose filename
-      std::stringstream file_name;
+  if (maps_to_generate_raw & MapTypeRaw::RAINFALL_RAW)
+  {
+    // Compose filename
+    std::stringstream file_name;
 
-      file_name << region_name << current_date << "-rainfall.raw";
-      rainfall_raw_producer.reset(new ProducerRainfallRaw);
-      if (!rainfall_raw_producer) throw std::bad_alloc();
+    file_name << region_name << current_date << "-rainfall.raw";
+    rainfall_raw_producer.reset(new ProducerRainfallRaw);
+    if (!rainfall_raw_producer) throw std::bad_alloc();
 
-      rainfall_raw_map.reset(new ExportedMapRaw(file_name.str(),
-                                                df::global::world->world_data->world_width,
-                                                df::global::world->world_data->world_height,
-                                                MapTypeRaw::RAINFALL_RAW
-                                                )
-                             );
+    rainfall_raw_map.reset(new ExportedMapRaw(file_name.str(),
+                                              df::global::world->world_data->world_width,
+                                              df::global::world->world_data->world_height,
+                                              MapTypeRaw::RAINFALL_RAW
+                                              )
+                           );
 
-      if (!rainfall_raw_map) throw std::bad_alloc();
-    }
+    if (!rainfall_raw_map) throw std::bad_alloc();
+  }
+
+  //----------------------------------------------------------------------------//
+
+  if (maps_to_generate_raw & MapTypeRaw::SALINITY_RAW)
+  {
+    // Compose filename
+    std::stringstream file_name;
+    file_name << region_name << current_date << "-salinity.raw";
+
+    salinity_raw_producer.reset(new ProducerSalinityRaw);
+    if (!salinity_raw_producer) throw std::bad_alloc();
+
+    salinity_raw_map.reset(new ExportedMapRaw(file_name.str(),
+                                              df::global::world->world_data->world_width,
+                                              df::global::world->world_data->world_height,
+                                              MapTypeRaw::SALINITY_RAW
+                                              )
+                           );
+    if (!salinity_raw_map) throw std::bad_alloc();
+  }
 
 
 }
