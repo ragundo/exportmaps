@@ -273,6 +273,10 @@ void MapsExporter::write_maps_to_disk()
 
   if (maps_to_generate_raw & MapTypeRaw::HYDROSPHERE_RAW)
     hydro_raw_map.get()->write_to_disk();
+
+  if (maps_to_generate_raw & MapTypeRaw::RAINFALL_RAW)
+    rainfall_raw_map.get()->write_to_disk();
+
 }
 
 
@@ -285,7 +289,7 @@ ExportedMapDF* MapsExporter::get_temperature_map()
     return temperature_map.get();
 }
 
-ExportedMapDF* MapsExporter::get_rainfall_map()
+ExportedMapBase* MapsExporter::get_rainfall_map()
 {
     return rainfall_map.get();
 }
@@ -400,6 +404,11 @@ ExportedMapBase* MapsExporter::get_hydro_raw_map()
     return hydro_raw_map.get();
 }
 
+ExportedMapBase* MapsExporter::get_rainfall_raw_map()
+{
+    return rainfall_raw_map.get();
+}
+
 //----------------------------------------------------------------------------//
 // Methods to update the percentage
 //----------------------------------------------------------------------------//
@@ -455,25 +464,26 @@ void MapsExporter::cleanup()
     while (!elevation_water_raw_queue.empty()) elevation_water_raw_queue.pop();
     while (!evilness_raw_queue.empty())        evilness_raw_queue.pop();
     while (!hydro_raw_queue.empty())           hydro_raw_queue.pop();
+    while (!rainfall_raw_queue.empty())        rainfall_raw_queue.pop();
 
     // Destroy the generated maps
-    temperature_map.reset();
-    rainfall_map.reset();
+    biome_map.reset();
+    diplomacy_map.reset();
     drainage_map.reset();
-    savagery_map.reset();
-    volcanism_map.reset();
-    vegetation_map.reset();
-    evilness_map.reset();
-    salinity_map.reset();
-    hydro_map.reset();
     elevation_map.reset();
     elevation_water_map.reset();
-    biome_map.reset();
+    evilness_map.reset();
     geology_map.reset();
-    trading_map.reset();
+    hydro_map.reset();
     nobility_map.reset();
-    diplomacy_map.reset();
+    rainfall_map.reset();
+    salinity_map.reset();
+    savagery_map.reset();
     sites_map.reset();
+    temperature_map.reset();
+    trading_map.reset();
+    vegetation_map.reset();
+    volcanism_map.reset();
 
     biome_type_raw_map.reset();
     biome_region_raw_map.reset();
@@ -482,25 +492,26 @@ void MapsExporter::cleanup()
     elevation_water_raw_map.reset();
     evilness_raw_map.reset();
     hydro_raw_map.reset();
+    rainfall_raw_map.reset();
 
     // Destroy the generated producers
-    temperature_producer.reset();
-    rainfall_producer.reset();
+    biome_producer.reset();
+    diplomacy_producer.reset();
     drainage_producer.reset();
-    savagery_producer.reset();
-    volcanism_producer.reset();
-    vegetation_producer.reset();
-    evilness_producer.reset();
-    salinity_producer.reset();
-    hydro_producer.reset();
     elevation_producer.reset();
     elevation_water_producer.reset();
-    biome_producer.reset();
+    evilness_producer.reset();
     geology_producer.reset();
-    trading_producer.reset();
-    nobility_producer.reset();    
-    diplomacy_producer.reset();
+    hydro_producer.reset();
+    nobility_producer.reset();
+    rainfall_producer.reset();
+    salinity_producer.reset();
+    savagery_producer.reset();
     sites_producer.reset();
+    temperature_producer.reset();
+    trading_producer.reset();
+    vegetation_producer.reset();
+    volcanism_producer.reset();
 
     biome_type_raw_producer.reset();
     biome_region_raw_producer.reset();
@@ -509,6 +520,7 @@ void MapsExporter::cleanup()
     elevation_water_raw_producer.reset();
     evilness_raw_producer.reset();
     hydro_raw_producer.reset();
+    rainfall_raw_producer.reset();
 }
 
 //----------------------------------------------------------------------------//

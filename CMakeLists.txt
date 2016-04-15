@@ -43,6 +43,7 @@ SET(PROJECT_SRCS
   ./cpp/consumers/RAW/elevation_water_raw_consumer.cpp
   ./cpp/consumers/RAW/evilness_raw_consumer.cpp  
   ./cpp/consumers/RAW/hydro_raw_consumer.cpp  
+  ./cpp/consumers/RAW/rainfall_raw_consumer.cpp  
   
 
   # Plugin code

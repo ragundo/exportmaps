@@ -107,6 +107,9 @@ void MapsExporter::push_end()
 
   if (maps_to_generate_raw & MapTypeRaw::HYDROSPHERE_RAW)
     hydro_raw_producer->produce_end(*this);
+
+  if (maps_to_generate_raw & MapTypeRaw::RAINFALL_RAW)
+    rainfall_raw_producer->produce_end(*this);
 }
 
 //----------------------------------------------------------------------------//
@@ -220,6 +223,9 @@ void MapsExporter::push_data(df::world_region_details* ptr_rd, // df::world_regi
   if (maps_to_generate_raw & MapTypeRaw::HYDROSPHERE_RAW)
     hydro_raw_producer->produce_data(*this,x,y,ptr_rd);
 
+  // Push data for the rainfall raw map
+  if (maps_to_generate_raw & MapTypeRaw::RAINFALL_RAW)
+    rainfall_raw_producer->produce_data(*this,x,y,ptr_rd);
 }
 
 
@@ -235,12 +241,16 @@ void MapsExporter::push_temperature(RegionDetailsBiome& rdb)
     mtx.unlock();
 }
 
+//----------------------------------------------------------------------------//
+
 void MapsExporter::push_rainfall(RegionDetailsBiome& rdb)
 {
     mtx.lock();
     rainfall_queue.push(rdb);
     mtx.unlock();
 }
+
+//----------------------------------------------------------------------------//
 
 void MapsExporter::push_drainage(RegionDetailsBiome& rdb)
 {
@@ -249,12 +259,16 @@ void MapsExporter::push_drainage(RegionDetailsBiome& rdb)
     mtx.unlock();
 }
 
+//----------------------------------------------------------------------------//
+
 void MapsExporter::push_savagery(RegionDetailsBiome& rdb)
 {
     mtx.lock();
     savagery_queue.push(rdb);
     mtx.unlock();
 }
+
+//----------------------------------------------------------------------------//
 
 void MapsExporter::push_volcanism(RegionDetailsBiome& rdb)
 {
@@ -263,12 +277,16 @@ void MapsExporter::push_volcanism(RegionDetailsBiome& rdb)
     mtx.unlock();
 }
 
+//----------------------------------------------------------------------------//
+
 void MapsExporter::push_vegetation(RegionDetailsBiome& rdb)
 {
     mtx.lock();
     vegetation_queue.push(rdb);
     mtx.unlock();
 }
+
+//----------------------------------------------------------------------------//
 
 void MapsExporter::push_evilness(RegionDetailsBiome& rdb)
 {
@@ -277,12 +295,16 @@ void MapsExporter::push_evilness(RegionDetailsBiome& rdb)
     mtx.unlock();
 }
 
+//----------------------------------------------------------------------------//
+
 void MapsExporter::push_salinity(RegionDetailsBiome& rdb)
 {
     mtx.lock();
     salinity_queue.push(rdb);
     mtx.unlock();
 }
+
+//----------------------------------------------------------------------------//
 
 void MapsExporter::push_hydro(RegionDetailsElevationWater& rdb)
 {
@@ -291,12 +313,16 @@ void MapsExporter::push_hydro(RegionDetailsElevationWater& rdb)
     mtx.unlock();
 }
 
+//----------------------------------------------------------------------------//
+
 void MapsExporter::push_elevation(RegionDetailsElevation& rde)
 {
     mtx.lock();
     this->elevation_queue.push(rde);
     mtx.unlock();
 }
+
+//----------------------------------------------------------------------------//
 
 void MapsExporter::push_elevation_water(RegionDetailsElevationWater& rdew)
 {
@@ -305,6 +331,7 @@ void MapsExporter::push_elevation_water(RegionDetailsElevationWater& rdew)
     mtx.unlock();
 }
 
+//----------------------------------------------------------------------------//
 
 void MapsExporter::push_biome(RegionDetailsBiome& rdb)
 {
@@ -313,12 +340,16 @@ void MapsExporter::push_biome(RegionDetailsBiome& rdb)
     mtx.unlock();
 }
 
+//----------------------------------------------------------------------------//
+
 void MapsExporter::push_geology(RegionDetailsGeology& rdg)
 {
     mtx.lock();
     this->geology_queue.push(rdg);
     mtx.unlock();
 }
+
+//----------------------------------------------------------------------------//
 
 void MapsExporter::push_trading(RegionDetailsElevationWater& rdb)
 {
@@ -327,12 +358,16 @@ void MapsExporter::push_trading(RegionDetailsElevationWater& rdb)
     mtx.unlock();
 }
 
+//----------------------------------------------------------------------------//
+
 void MapsExporter::push_nobility(RegionDetailsElevationWater& rdb)
 {
     mtx.lock();
     nobility_queue.push(rdb);
     mtx.unlock();
 }
+
+//----------------------------------------------------------------------------//
 
 void MapsExporter::push_diplomacy(RegionDetailsElevationWater& rdb)
 {
@@ -341,6 +376,8 @@ void MapsExporter::push_diplomacy(RegionDetailsElevationWater& rdb)
     mtx.unlock();
 }
 
+//----------------------------------------------------------------------------//
+
 void MapsExporter::push_sites(RegionDetailsElevationWater& rdb)
 {
     mtx.lock();
@@ -348,7 +385,7 @@ void MapsExporter::push_sites(RegionDetailsElevationWater& rdb)
     mtx.unlock();
 }
 
-
+//----------------------------------------------------------------------------//
 
 void MapsExporter::push_biome_type_raw(RegionDetailsBiome& rdb)
 {
@@ -357,12 +394,16 @@ void MapsExporter::push_biome_type_raw(RegionDetailsBiome& rdb)
     mtx.unlock();
 }
 
+//----------------------------------------------------------------------------//
+
 void MapsExporter::push_biome_region_raw(RegionDetailsBiome& rdb)
 {
     mtx.lock();
     this->biome_raw_region_queue.push(rdb);
     mtx.unlock();
 }
+
+//----------------------------------------------------------------------------//
 
 void MapsExporter::push_drainage_raw(RegionDetailsBiome& rdb)
 {
@@ -371,12 +412,16 @@ void MapsExporter::push_drainage_raw(RegionDetailsBiome& rdb)
     mtx.unlock();
 }
 
+//----------------------------------------------------------------------------//
+
 void MapsExporter::push_elevation_raw(RegionDetailsElevation& rde)
 {
     mtx.lock();
     this->elevation_raw_queue.push(rde);
     mtx.unlock();
 }
+
+//----------------------------------------------------------------------------//
 
 void MapsExporter::push_elevation_water_raw(RegionDetailsElevationWater& rdew)
 {
@@ -385,6 +430,8 @@ void MapsExporter::push_elevation_water_raw(RegionDetailsElevationWater& rdew)
     mtx.unlock();
 }
 
+//----------------------------------------------------------------------------//
+
 void MapsExporter::push_evilness_raw(RegionDetailsBiome& rdb)
 {
     mtx.lock();
@@ -392,10 +439,21 @@ void MapsExporter::push_evilness_raw(RegionDetailsBiome& rdb)
     mtx.unlock();
 }
 
+//----------------------------------------------------------------------------//
+
 void MapsExporter::push_hydro_raw(RegionDetailsElevationWater& rdb)
 {
     mtx.lock();
     hydro_raw_queue.push(rdb);
+    mtx.unlock();
+}
+
+//----------------------------------------------------------------------------//
+
+void MapsExporter::push_rainfall_raw(RegionDetailsBiome& rdb)
+{
+    mtx.lock();
+    rainfall_raw_queue.push(rdb);
     mtx.unlock();
 }
 
@@ -415,6 +473,8 @@ RegionDetailsBiome MapsExporter::pop_temperature()
     return rdb;
 }
 
+//----------------------------------------------------------------------------//
+
 RegionDetailsBiome MapsExporter::pop_rainfall()
 {
     mtx.lock();
@@ -424,6 +484,8 @@ RegionDetailsBiome MapsExporter::pop_rainfall()
 
     return rdb;
 }
+
+//----------------------------------------------------------------------------//
 
 RegionDetailsBiome MapsExporter::pop_drainage()
 {
@@ -435,6 +497,8 @@ RegionDetailsBiome MapsExporter::pop_drainage()
     return rdb;
 }
 
+//----------------------------------------------------------------------------//
+
 RegionDetailsBiome MapsExporter::pop_savagery()
 {
     mtx.lock();
@@ -444,6 +508,8 @@ RegionDetailsBiome MapsExporter::pop_savagery()
 
     return rdb;
 }
+
+//----------------------------------------------------------------------------//
 
 RegionDetailsBiome MapsExporter::pop_volcanism()
 {
@@ -455,6 +521,8 @@ RegionDetailsBiome MapsExporter::pop_volcanism()
     return rdb;
 }
 
+//----------------------------------------------------------------------------//
+
 RegionDetailsBiome MapsExporter::pop_vegetation()
 {
     mtx.lock();
@@ -464,6 +532,8 @@ RegionDetailsBiome MapsExporter::pop_vegetation()
 
     return rdb;
 }
+
+//----------------------------------------------------------------------------//
 
 RegionDetailsBiome MapsExporter::pop_evilness()
 {
@@ -475,6 +545,8 @@ RegionDetailsBiome MapsExporter::pop_evilness()
     return rdb;
 }
 
+//----------------------------------------------------------------------------//
+
 RegionDetailsBiome MapsExporter::pop_salinity()
 {
     mtx.lock();
@@ -484,6 +556,8 @@ RegionDetailsBiome MapsExporter::pop_salinity()
 
     return rdb;
 }
+
+//----------------------------------------------------------------------------//
 
 RegionDetailsElevationWater MapsExporter::pop_hydro()
 {
@@ -495,6 +569,8 @@ RegionDetailsElevationWater MapsExporter::pop_hydro()
     return rdb;
 }
 
+//----------------------------------------------------------------------------//
+
 RegionDetailsElevation MapsExporter::pop_elevation()
 {
     mtx.lock();
@@ -504,6 +580,8 @@ RegionDetailsElevation MapsExporter::pop_elevation()
 
     return rde;
 }
+
+//----------------------------------------------------------------------------//
 
 RegionDetailsElevationWater MapsExporter::pop_elevation_water()
 {
@@ -515,6 +593,7 @@ RegionDetailsElevationWater MapsExporter::pop_elevation_water()
     return rdew;
 }
 
+//----------------------------------------------------------------------------//
 
 RegionDetailsBiome MapsExporter::pop_biome()
 {
@@ -526,6 +605,7 @@ RegionDetailsBiome MapsExporter::pop_biome()
     return rdb;
 }
 
+//----------------------------------------------------------------------------//
 
 RegionDetailsGeology MapsExporter::pop_geology()
 {
@@ -537,6 +617,8 @@ RegionDetailsGeology MapsExporter::pop_geology()
     return rdg;
 }
 
+//----------------------------------------------------------------------------//
+
 RegionDetailsElevationWater MapsExporter::pop_trading()
 {
     mtx.lock();
@@ -546,6 +628,8 @@ RegionDetailsElevationWater MapsExporter::pop_trading()
 
     return rdb;
 }
+
+//----------------------------------------------------------------------------//
 
 RegionDetailsElevationWater MapsExporter::pop_nobility()
 {
@@ -557,6 +641,8 @@ RegionDetailsElevationWater MapsExporter::pop_nobility()
     return rdb;
 }
 
+//----------------------------------------------------------------------------//
+
 RegionDetailsElevationWater MapsExporter::pop_diplomacy()
 {
     mtx.lock();
@@ -566,6 +652,8 @@ RegionDetailsElevationWater MapsExporter::pop_diplomacy()
 
     return rdb;
 }
+
+//----------------------------------------------------------------------------//
 
 RegionDetailsElevationWater MapsExporter::pop_sites()
 {
@@ -577,6 +665,7 @@ RegionDetailsElevationWater MapsExporter::pop_sites()
     return rdb;
 }
 
+//----------------------------------------------------------------------------//
 
 RegionDetailsBiome MapsExporter::pop_biome_type_raw()
 {
@@ -588,6 +677,8 @@ RegionDetailsBiome MapsExporter::pop_biome_type_raw()
     return rdb;
 }
 
+//----------------------------------------------------------------------------//
+
 RegionDetailsBiome MapsExporter::pop_biome_region_raw()
 {
     mtx.lock();
@@ -597,6 +688,8 @@ RegionDetailsBiome MapsExporter::pop_biome_region_raw()
 
     return rdb;
 }
+
+//----------------------------------------------------------------------------//
 
 RegionDetailsBiome MapsExporter::pop_drainage_raw()
 {
@@ -608,6 +701,8 @@ RegionDetailsBiome MapsExporter::pop_drainage_raw()
     return rdb;
 }
 
+//----------------------------------------------------------------------------//
+
 RegionDetailsElevation MapsExporter::pop_elevation_raw()
 {
     mtx.lock();
@@ -617,6 +712,8 @@ RegionDetailsElevation MapsExporter::pop_elevation_raw()
 
     return rde;
 }
+
+//----------------------------------------------------------------------------//
 
 RegionDetailsElevationWater MapsExporter::pop_elevation_water_raw()
 {
@@ -628,6 +725,8 @@ RegionDetailsElevationWater MapsExporter::pop_elevation_water_raw()
     return rdew;
 }
 
+//----------------------------------------------------------------------------//
+
 RegionDetailsBiome MapsExporter::pop_evilness_raw()
 {
     mtx.lock();
@@ -638,11 +737,25 @@ RegionDetailsBiome MapsExporter::pop_evilness_raw()
     return rdb;
 }
 
+//----------------------------------------------------------------------------//
+
 RegionDetailsElevationWater MapsExporter::pop_hydro_raw()
 {
     mtx.lock();
     RegionDetailsElevationWater rdb = this->hydro_raw_queue.front();
     this->hydro_raw_queue.pop();
+    mtx.unlock();
+
+    return rdb;
+}
+
+//----------------------------------------------------------------------------//
+
+RegionDetailsBiome MapsExporter::pop_rainfall_raw()
+{
+    mtx.lock();
+    RegionDetailsBiome rdb = this->rainfall_raw_queue.front();
+    this->rainfall_raw_queue.pop();
     mtx.unlock();
 
     return rdb;
