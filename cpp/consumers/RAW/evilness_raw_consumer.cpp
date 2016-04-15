@@ -18,8 +18,8 @@
 
 // You can always find the latest version of this plugin in Github
 // https://github.com/ragundo/exportmaps  
-  
-#include "../../include/ExportMaps.h"
+
+#include "../../../include/ExportMaps.h"
 
 using namespace exportmaps_plugin;
 
@@ -39,14 +39,13 @@ extern std::pair<int,int> adjust_coordinates_to_region(int x,
 /*****************************************************************************
 Local functions forward declaration
 *****************************************************************************/
-bool      drainage_raw_do_work(MapsExporter* maps_exporter);
-
+bool      evilness_raw_do_work(MapsExporter* maps_exporter);
 
 /*****************************************************************************
 Module main function.
 This is the function that the thread executes
 *****************************************************************************/
-void consumer_drainage_raw(void* arg)
+void consumer_evilness_raw(void* arg)
 {
   bool                finish  = false;
   MapsExporter* maps_exporter = (MapsExporter*)arg;
@@ -55,12 +54,12 @@ void consumer_drainage_raw(void* arg)
   {
     while(!finish)
     {
-      if (maps_exporter->is_drainage_raw_queue_empty())
+      if (maps_exporter->is_evilness_raw_queue_empty())
         // No data on the queue. Try again later
         tthread::this_thread::yield();
 
       else // There's data in the queue
-        finish = drainage_raw_do_work(maps_exporter);
+        finish = evilness_raw_do_work(maps_exporter);
     }
   }
   // Function finish -> Thread finish
@@ -73,10 +72,10 @@ void consumer_drainage_raw(void* arg)
 // If is the end marker, the queue is empty and no more work needs to be done, return
 // If it's actual data process it and update the corresponding map
 //----------------------------------------------------------------------------//
-bool drainage_raw_do_work(MapsExporter* maps_exporter)
+bool evilness_raw_do_work(MapsExporter* maps_exporter)
 {
   // Get the data from the queue
-  RegionDetailsBiome rdg = maps_exporter->pop_drainage_raw();
+  RegionDetailsBiome rdg = maps_exporter->pop_evilness_raw();
 
   // Check if is the marker for no more data from the producer
   if (rdg.is_end_marker())
@@ -86,7 +85,7 @@ bool drainage_raw_do_work(MapsExporter* maps_exporter)
   }
 
   // Get the map where we'll write to
-  ExportedMapBase* drainage_raw_map = maps_exporter->get_drainage_raw_map();
+  ExportedMapBase* evilness_raw_map = maps_exporter->get_evilness_raw_map();
 
   // Iterate over the 16 subtiles (x) and (y) that a world tile has
   for (auto x=0; x<16; ++x)
@@ -107,15 +106,14 @@ bool drainage_raw_do_work(MapsExporter* maps_exporter)
       df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first]
                                                                            [adjusted_tile_coordinates.second];
 
-      // Write drainage value in the buffer
-      drainage_raw_map->write_data(rdg.get_pos_x(),
-                                   rdg.get_pos_y(),
-                                   x,
-                                   y,
-                                   rme.drainage
-                                   );
+      // Write pixels to the bitmap
+      evilness_raw_map->write_data(rdg.get_pos_x(),
+                               rdg.get_pos_y(),
+                               x,
+                               y,
+                               rme.evilness
+                               );
 
     }
   return false; // Continue working
 }
-

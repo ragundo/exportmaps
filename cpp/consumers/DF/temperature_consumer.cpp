@@ -19,7 +19,7 @@
 // You can always find the latest version of this plugin in Github
 // https://github.com/ragundo/exportmaps  
 
-#include "../../include/ExportMaps.h"
+#include "../../../include/ExportMaps.h"
 
 using namespace exportmaps_plugin;
 
@@ -39,15 +39,16 @@ extern std::pair<int,int> adjust_coordinates_to_region(int x,
 /*****************************************************************************
 Local functions forward declaration
 *****************************************************************************/
-bool      rainfall_do_work(MapsExporter* maps_exporter);
-RGB_color RGB_from_rainfall(int rainfall);
+bool temperature_do_work(MapsExporter* maps_exporter);
+
+RGB_color RGB_from_temperature(int temperature);
 
 
 /*****************************************************************************
 Module main function.
 This is the function that the thread executes
 *****************************************************************************/
-void consumer_rainfall(void* arg)
+void consumer_temperature(void* arg)
 {
   bool                finish  = false;
   MapsExporter* maps_exporter = (MapsExporter*)arg;
@@ -56,12 +57,12 @@ void consumer_rainfall(void* arg)
   {
     while(!finish)
     {
-      if (maps_exporter->is_rainfall_queue_empty())
+      if (maps_exporter->is_temperature_queue_empty())
         // No data on the queue. Try again later
         tthread::this_thread::yield();
 
       else // There's data in the queue
-        finish = rainfall_do_work(maps_exporter);
+        finish = temperature_do_work(maps_exporter);
     }
   }
   // Function finish -> Thread finish
@@ -74,10 +75,10 @@ void consumer_rainfall(void* arg)
 // If is the end marker, the queue is empty and no more work needs to be done, return
 // If it's actual data process it and update the corresponding map
 //----------------------------------------------------------------------------//
-bool rainfall_do_work(MapsExporter* maps_exporter)
+bool temperature_do_work(MapsExporter* maps_exporter) // The coordinator object
 {
   // Get the data from the queue
-  RegionDetailsBiome rdg = maps_exporter->pop_rainfall();
+  RegionDetailsBiome rdg = maps_exporter->pop_temperature();
 
   // Check if is the marker for no more data from the producer
   if (rdg.is_end_marker())
@@ -101,32 +102,37 @@ bool rainfall_do_work(MapsExporter* maps_exporter)
                                                                                   df::global::world->world_data->world_width,
                                                                                   df::global::world->world_data->world_height
                                                                                   );
+      df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first][adjusted_tile_coordinates.second];
 
-      df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first]
-                                                                           [adjusted_tile_coordinates.second];
-
-      // Get the RGB values associated to this rainfall
-      RGB_color rgb_pixel_color = RGB_from_rainfall(rme.rainfall);
+      // Get the RGB values associated to this temperature
+      RGB_color rgb_pixel_color = RGB_from_temperature(rme.temperature);
 
       // Write pixels to the bitmap
-      ExportedMapDF* rainfall_map = maps_exporter->get_rainfall_map();
-      rainfall_map->write_world_pixel(rdg.get_pos_x(),
-                                      rdg.get_pos_y(),
-                                      x,
-                                      y,
-                                      rgb_pixel_color
-                                      );
-
-  }
-  return false; // Continue working
+      ExportedMapDF* temperature_map = maps_exporter->get_temperature_map();
+      temperature_map->write_world_pixel(rdg.get_pos_x(),
+                                         rdg.get_pos_y(),
+                                         x,
+                                         y,
+                                         rgb_pixel_color
+                                         );
+    }
+  return false; // Contiue working
 }
 
+
 //----------------------------------------------------------------------------//
-//Utility function
-//Return the RGB values for the rainfall export map given a rainfall value.
+// Utility function
+// Return the RGB values for the elevation export map given a temperature value.
 //----------------------------------------------------------------------------//
-RGB_color RGB_from_rainfall(int rainfall)
+RGB_color RGB_from_temperature(int temperature)
 {
-  unsigned char p =(unsigned char)((((350469331425 * rainfall) >> 32) >> 5));
-  return RGB_color(p,p,p);
+  int p = 255*(temperature+50)/200;
+
+  if (p >= 0)
+  {
+      unsigned char q = std::min(p,255);
+      return RGB_color(q,q,q);
+  }
+
+  return RGB_color(0,0,0);
 }

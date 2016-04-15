@@ -19,7 +19,7 @@
 // You can always find the latest version of this plugin in Github
 // https://github.com/ragundo/exportmaps  
 
-#include "../../include/ExportMaps.h"
+#include "../../../include/ExportMaps.h"
 
 using namespace exportmaps_plugin;
 
@@ -32,21 +32,21 @@ extern std::pair<int,int> adjust_coordinates_to_region(int x,
                                                        int pos_x,
                                                        int pos_y,
                                                        int world_width,
-                                                       int world_height);
+                                                       int world_height
+                                                       );
 
 
 /*****************************************************************************
 Local functions forward declaration
 *****************************************************************************/
-RGB_color RGB_from_volcanism(int volcanism);
-bool      volcanism_do_work(MapsExporter* maps_exporter);
-
+bool      evilness_do_work(MapsExporter* maps_exporter);
+RGB_color RGB_from_evilness(int evilness);
 
 /*****************************************************************************
 Module main function.
 This is the function that the thread executes
 *****************************************************************************/
-void consumer_volcanism(void* arg)
+void consumer_evilness(void* arg)
 {
   bool                finish  = false;
   MapsExporter* maps_exporter = (MapsExporter*)arg;
@@ -55,12 +55,12 @@ void consumer_volcanism(void* arg)
   {
     while(!finish)
     {
-      if (maps_exporter->is_volcanism_queue_empty())
+      if (maps_exporter->is_evilness_queue_empty())
         // No data on the queue. Try again later
         tthread::this_thread::yield();
 
       else // There's data in the queue
-        finish = volcanism_do_work(maps_exporter);
+        finish = evilness_do_work(maps_exporter);
     }
   }
   // Function finish -> Thread finish
@@ -73,17 +73,21 @@ void consumer_volcanism(void* arg)
 // If is the end marker, the queue is empty and no more work needs to be done, return
 // If it's actual data process it and update the corresponding map
 //----------------------------------------------------------------------------//
-bool volcanism_do_work(MapsExporter* maps_exporter)
+bool evilness_do_work(MapsExporter* maps_exporter)
 {
   // Get the data from the queue
-  RegionDetailsBiome rdg = maps_exporter->pop_volcanism();
+  RegionDetailsBiome rdg = maps_exporter->pop_evilness();
 
   // Check if is the marker for no more data from the producer
   if (rdg.is_end_marker())
-    // All the data has been processed. Done
+  {
+    // All the data has been processed. Finish this thread execution
     return true;
+  }
 
-  // There's data to be processed
+  // Get the map where we'll write to
+  ExportedMapBase* evilness_map = maps_exporter->get_evilness_map();
+
   // Iterate over the 16 subtiles (x) and (y) that a world tile has
   for (auto x=0; x<16; ++x)
     for (auto y=0; y<16; ++y)
@@ -99,30 +103,31 @@ bool volcanism_do_work(MapsExporter* maps_exporter)
                                                                                   df::global::world->world_data->world_width,
                                                                                   df::global::world->world_data->world_height
                                                                                   );
-      // Get the proper df::region_entry
-      df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first][adjusted_tile_coordinates.second];
 
-      // Get the RGB values associated to this volcanism
-      RGB_color rgb_pixel_color = RGB_from_volcanism(rme.volcanism);
+      df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first]
+                                                                           [adjusted_tile_coordinates.second];
+
+      // Get the RGB values associated to this evilness
+      RGB_color rgb_pixel_color = RGB_from_evilness(rme.evilness);
 
       // Write pixels to the bitmap
-      ExportedMapDF* volcanism_map = maps_exporter->get_volcanism_map();
-      volcanism_map->write_world_pixel(rdg.get_pos_x(),
-                                       rdg.get_pos_y(),
-                                       x,
-                                       y,
-                                       rgb_pixel_color
-                                       );
+      evilness_map->write_world_pixel(rdg.get_pos_x(),
+                                      rdg.get_pos_y(),
+                                      x,
+                                      y,
+                                      rgb_pixel_color
+                                      );
+
     }
   return false; // Continue working
 }
 
 //----------------------------------------------------------------------------//
 // Utility function
-// Return the RGB values for the volcanism export map given a volcanism value.
+// Return the RGB values for the evilness export map given a evilness value.
 //----------------------------------------------------------------------------//
-RGB_color RGB_from_volcanism(int volcanism)
+RGB_color RGB_from_evilness(int evilness)
 {
-  unsigned char p =(unsigned char)((((350469331425 * volcanism) >> 32) >> 5));
+  unsigned char p =(unsigned char)((((350469331425 * evilness) >> 32) >> 5));
   return RGB_color(p,p,p);
 }

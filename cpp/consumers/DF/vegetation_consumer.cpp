@@ -19,13 +19,17 @@
 // You can always find the latest version of this plugin in Github
 // https://github.com/ragundo/exportmaps  
 
-#include "../../include/ExportMaps.h"
+#include "../../../include/ExportMaps.h"
 
 using namespace exportmaps_plugin;
 
 /*****************************************************************************
 External functions
 *****************************************************************************/
+extern int                get_biome_type(int world_coord_x,
+                                         int world_coord_y
+                                         );
+
 extern std::pair<int,int> adjust_coordinates_to_region(int x,
                                                        int y,
                                                        int delta,
@@ -39,13 +43,18 @@ extern std::pair<int,int> adjust_coordinates_to_region(int x,
 /*****************************************************************************
 Local functions forward declaration
 *****************************************************************************/
-bool      evilness_raw_do_work(MapsExporter* maps_exporter);
+bool vegetation_do_work(MapsExporter* maps_exporter);
+
+RGB_color RGB_from_vegetation(int vegetation,
+                              int biome_type
+                              );
+
 
 /*****************************************************************************
 Module main function.
 This is the function that the thread executes
 *****************************************************************************/
-void consumer_evilness_raw(void* arg)
+void consumer_vegetation(void* arg)
 {
   bool                finish  = false;
   MapsExporter* maps_exporter = (MapsExporter*)arg;
@@ -54,16 +63,17 @@ void consumer_evilness_raw(void* arg)
   {
     while(!finish)
     {
-      if (maps_exporter->is_evilness_raw_queue_empty())
+      if (maps_exporter->is_vegetation_queue_empty())
         // No data on the queue. Try again later
         tthread::this_thread::yield();
 
       else // There's data in the queue
-        finish = evilness_raw_do_work(maps_exporter);
+        finish = vegetation_do_work(maps_exporter);
     }
   }
   // Function finish -> Thread finish
 }
+
 
 //----------------------------------------------------------------------------//
 // Utility function
@@ -72,20 +82,17 @@ void consumer_evilness_raw(void* arg)
 // If is the end marker, the queue is empty and no more work needs to be done, return
 // If it's actual data process it and update the corresponding map
 //----------------------------------------------------------------------------//
-bool evilness_raw_do_work(MapsExporter* maps_exporter)
+bool vegetation_do_work(MapsExporter* maps_exporter) // The coordinator object
 {
   // Get the data from the queue
-  RegionDetailsBiome rdg = maps_exporter->pop_evilness_raw();
+  RegionDetailsBiome rdg = maps_exporter->pop_vegetation();
 
   // Check if is the marker for no more data from the producer
   if (rdg.is_end_marker())
   {
-    // All the data has been processed. Finish this thread execution
+    // All the data has been processed. Done
     return true;
   }
-
-  // Get the map where we'll write to
-  ExportedMapBase* evilness_raw_map = maps_exporter->get_evilness_raw_map();
 
   // Iterate over the 16 subtiles (x) and (y) that a world tile has
   for (auto x=0; x<16; ++x)
@@ -100,20 +107,43 @@ bool evilness_raw_do_work(MapsExporter* maps_exporter)
                                                                                   rdg.get_pos_x(),
                                                                                   rdg.get_pos_y(),
                                                                                   df::global::world->world_data->world_width,
-                                                                                  df::global::world->world_data->world_height
-                                                                                  );
+                                                                                  df::global::world->world_data->world_height);
 
-      df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first]
-                                                                           [adjusted_tile_coordinates.second];
+      df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first][adjusted_tile_coordinates.second];
+
+      // Get the biome type for this world position
+      int biome_type = get_biome_type(adjusted_tile_coordinates.first,
+                                      adjusted_tile_coordinates.second
+                                      );
+
+      // Get the RGB values associated to this vegetation & biome
+      RGB_color rgb_pixel_color = RGB_from_vegetation(rme.vegetation,
+                                                      biome_type
+                                                      );
 
       // Write pixels to the bitmap
-      evilness_raw_map->write_data(rdg.get_pos_x(),
-                               rdg.get_pos_y(),
-                               x,
-                               y,
-                               rme.evilness
-                               );
+      ExportedMapDF* vegetation_map = maps_exporter->get_vegetation_map();
+      vegetation_map->write_world_pixel(rdg.get_pos_x(),
+                                        rdg.get_pos_y(),
+                                        x,
+                                        y,
+                                        rgb_pixel_color
+                                        );
+     }
+  return false; // Contiue working
+}
 
-    }
-  return false; // Continue working
+//----------------------------------------------------------------------------//
+// Utility function
+// Return the RGB values for the elevation export map given a
+// vegetation & biome value.
+//----------------------------------------------------------------------------//
+RGB_color RGB_from_vegetation(int vegetation, int biome_type)
+{
+    unsigned char p = (255*vegetation)/100;
+
+    if ((biome_type == 0) || ((biome_type >= 27) && (biome_type <= 47))) // Mountain, Ocean, Pool, Lake or River
+        p = 0;
+
+    return RGB_color(p,p,p);
 }

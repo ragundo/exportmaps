@@ -262,3 +262,13 @@ bool MapsExporter::is_evilness_raw_queue_empty()
     mtx.unlock();
     return queue_empty;
 }
+
+//----------------------------------------------------------------------------//
+bool MapsExporter::is_hydro_raw_queue_empty()
+{
+    bool queue_empty;
+    mtx.lock();
+    queue_empty = hydro_raw_queue.empty();
+    mtx.unlock();
+    return queue_empty;
+}

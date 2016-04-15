@@ -270,6 +270,9 @@ void MapsExporter::write_maps_to_disk()
 
   if (maps_to_generate_raw & MapTypeRaw::EVILNESS_RAW)
     evilness_raw_map.get()->write_to_disk();
+
+  if (maps_to_generate_raw & MapTypeRaw::HYDROSPHERE_RAW)
+    hydro_raw_map.get()->write_to_disk();
 }
 
 
@@ -317,7 +320,7 @@ ExportedMapDF* MapsExporter::get_salinity_map()
     return salinity_map.get();
 }
 
-ExportedMapDF* MapsExporter::get_hydro_map()
+ExportedMapBase* MapsExporter::get_hydro_map()
 {
     return hydro_map.get();
 }
@@ -392,6 +395,11 @@ ExportedMapBase* MapsExporter::get_evilness_raw_map()
     return evilness_raw_map.get();
 }
 
+ExportedMapBase* MapsExporter::get_hydro_raw_map()
+{
+    return hydro_raw_map.get();
+}
+
 //----------------------------------------------------------------------------//
 // Methods to update the percentage
 //----------------------------------------------------------------------------//
@@ -446,6 +454,7 @@ void MapsExporter::cleanup()
     while (!elevation_raw_queue.empty())       elevation_raw_queue.pop();
     while (!elevation_water_raw_queue.empty()) elevation_water_raw_queue.pop();
     while (!evilness_raw_queue.empty())        evilness_raw_queue.pop();
+    while (!hydro_raw_queue.empty())           hydro_raw_queue.pop();
 
     // Destroy the generated maps
     temperature_map.reset();
@@ -472,6 +481,7 @@ void MapsExporter::cleanup()
     elevation_raw_map.reset();
     elevation_water_raw_map.reset();
     evilness_raw_map.reset();
+    hydro_raw_map.reset();
 
     // Destroy the generated producers
     temperature_producer.reset();
@@ -498,6 +508,7 @@ void MapsExporter::cleanup()
     elevation_raw_producer.reset();
     elevation_water_raw_producer.reset();
     evilness_raw_producer.reset();
+    hydro_raw_producer.reset();
 }
 
 //----------------------------------------------------------------------------//

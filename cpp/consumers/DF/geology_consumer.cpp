@@ -30,8 +30,8 @@
 #include <utility>
 #include <BitArray.h>
 #include "modules/Maps.h"
-#include "../../include/ExportMaps.h"
-#include "../../include/util/ofsub.h"
+#include "../../../include/ExportMaps.h"
+#include "../../../include/util/ofsub.h"
 
 using namespace DFHack;
 using namespace exportmaps_plugin;

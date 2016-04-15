@@ -19,7 +19,7 @@
 // You can always find the latest version of this plugin in Github
 // https://github.com/ragundo/exportmaps  
 
-#include "../../include/ExportMaps.h"
+#include "../../../include/ExportMaps.h"
 
 using namespace exportmaps_plugin;
 
@@ -32,22 +32,21 @@ extern std::pair<int,int> adjust_coordinates_to_region(int x,
                                                        int pos_x,
                                                        int pos_y,
                                                        int world_width,
-                                                       int world_height
-                                                       );
+                                                       int world_height);
 
 
 /*****************************************************************************
 Local functions forward declaration
 *****************************************************************************/
-bool      savagery_do_work(MapsExporter* maps_exporter);
-RGB_color RGB_from_savagery(int savagery);
+RGB_color RGB_from_volcanism(int volcanism);
+bool      volcanism_do_work(MapsExporter* maps_exporter);
 
 
 /*****************************************************************************
 Module main function.
 This is the function that the thread executes
 *****************************************************************************/
-void consumer_savagery(void* arg)
+void consumer_volcanism(void* arg)
 {
   bool                finish  = false;
   MapsExporter* maps_exporter = (MapsExporter*)arg;
@@ -61,7 +60,7 @@ void consumer_savagery(void* arg)
         tthread::this_thread::yield();
 
       else // There's data in the queue
-        finish = savagery_do_work(maps_exporter);
+        finish = volcanism_do_work(maps_exporter);
     }
   }
   // Function finish -> Thread finish
@@ -74,57 +73,56 @@ void consumer_savagery(void* arg)
 // If is the end marker, the queue is empty and no more work needs to be done, return
 // If it's actual data process it and update the corresponding map
 //----------------------------------------------------------------------------//
-bool savagery_do_work(MapsExporter* maps_exporter) // The coordinator object
+bool volcanism_do_work(MapsExporter* maps_exporter)
 {
   // Get the data from the queue
-  RegionDetailsBiome rdg = maps_exporter->pop_savagery();
+  RegionDetailsBiome rdg = maps_exporter->pop_volcanism();
 
   // Check if is the marker for no more data from the producer
   if (rdg.is_end_marker())
-  {
-    // All the data has been processed. Finish this thread execution
+    // All the data has been processed. Done
     return true;
-  }
-  else // There's data to be processed
-    // Iterate over the 16 subtiles (x) and (y) that a world tile has
-    for (auto x=0; x<16; ++x)
-      for (auto y=0; y<16; ++y)
-      {
-        // Each position of the array is a value that tells us if the local tile
-        // belongs to the NW,N,NE,W,center,E,SW,S,SE world region.
-        // Returns a world coordinate adjusted from the original one
-        std::pair<int,int> adjusted_tile_coordinates = adjust_coordinates_to_region(x,
-                                                                                    y,
-                                                                                    rdg.get_biome_index(x,y),
-                                                                                    rdg.get_pos_x(),
-                                                                                    rdg.get_pos_y(),
-                                                                                    df::global::world->world_data->world_width,
-                                                                                    df::global::world->world_data->world_height
-                                                                                    );
 
-        df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first][adjusted_tile_coordinates.second];
+  // There's data to be processed
+  // Iterate over the 16 subtiles (x) and (y) that a world tile has
+  for (auto x=0; x<16; ++x)
+    for (auto y=0; y<16; ++y)
+    {
+      // Each position of the array is a value that tells us if the local tile
+      // belongs to the NW,N,NE,W,center,E,SW,S,SE world region.
+      // Returns a world coordinate adjusted from the original one
+      std::pair<int,int> adjusted_tile_coordinates = adjust_coordinates_to_region(x,
+                                                                                  y,
+                                                                                  rdg.get_biome_index(x,y),
+                                                                                  rdg.get_pos_x(),
+                                                                                  rdg.get_pos_y(),
+                                                                                  df::global::world->world_data->world_width,
+                                                                                  df::global::world->world_data->world_height
+                                                                                  );
+      // Get the proper df::region_entry
+      df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first][adjusted_tile_coordinates.second];
 
-        // Get the RGB values associated to this savagery
-        RGB_color rgb_pixel_color = RGB_from_savagery(rme.savagery);
+      // Get the RGB values associated to this volcanism
+      RGB_color rgb_pixel_color = RGB_from_volcanism(rme.volcanism);
 
-        // Write pixels to the bitmap
-        ExportedMapDF* savagery_map = maps_exporter->get_savagery_map();
-        savagery_map->write_world_pixel(rdg.get_pos_x(),
-                                        rdg.get_pos_y(),
-                                        x,
-                                        y,
-                                        rgb_pixel_color
-                                        );
-      }
+      // Write pixels to the bitmap
+      ExportedMapDF* volcanism_map = maps_exporter->get_volcanism_map();
+      volcanism_map->write_world_pixel(rdg.get_pos_x(),
+                                       rdg.get_pos_y(),
+                                       x,
+                                       y,
+                                       rgb_pixel_color
+                                       );
+    }
   return false; // Continue working
 }
 
-/*****************************************************************************
-Utility function
-Return the RGB values for the elevation export map given a savagery value.
-*****************************************************************************/
-RGB_color RGB_from_savagery(int savagery)
+//----------------------------------------------------------------------------//
+// Utility function
+// Return the RGB values for the volcanism export map given a volcanism value.
+//----------------------------------------------------------------------------//
+RGB_color RGB_from_volcanism(int volcanism)
 {
-  unsigned char p =(unsigned char)((((350469331425 * savagery) >> 32) >> 5));
+  unsigned char p =(unsigned char)((((350469331425 * volcanism) >> 32) >> 5));
   return RGB_color(p,p,p);
 }

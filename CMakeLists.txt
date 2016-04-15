@@ -17,31 +17,32 @@ SET(PROJECT_SRCS
   ./cpp/df_utils/delete_world_site_realization.cpp
 
   # Consumers for each different DF map
-  ./cpp/consumers/biome_consumer.cpp
-  ./cpp/consumers/drainage_consumer.cpp
-  ./cpp/consumers/elevation_consumer.cpp
-  ./cpp/consumers/elevation_water_consumer.cpp
-  ./cpp/consumers/evilness_consumer.cpp
-  ./cpp/consumers/geology_consumer.cpp
-  ./cpp/consumers/hydro_consumer.cpp
-  ./cpp/consumers/rainfall_consumer.cpp
-  ./cpp/consumers/salinity_consumer.cpp
-  ./cpp/consumers/savagery_consumer.cpp
-  ./cpp/consumers/vegetation_consumer.cpp
-  ./cpp/consumers/volcanism_consumer.cpp
-  ./cpp/consumers/temperature_consumer.cpp
-  ./cpp/consumers/trade_consumer.cpp
-  ./cpp/consumers/nobility_consumer.cpp
-  ./cpp/consumers/diplomacy_consumer.cpp
-  ./cpp/consumers/sites_consumer.cpp
+  ./cpp/consumers/DF/biome_consumer.cpp
+  ./cpp/consumers/DF/drainage_consumer.cpp
+  ./cpp/consumers/DF/elevation_consumer.cpp
+  ./cpp/consumers/DF/elevation_water_consumer.cpp
+  ./cpp/consumers/DF/evilness_consumer.cpp
+  ./cpp/consumers/DF/geology_consumer.cpp
+  ./cpp/consumers/DF/hydro_consumer.cpp
+  ./cpp/consumers/DF/rainfall_consumer.cpp
+  ./cpp/consumers/DF/salinity_consumer.cpp
+  ./cpp/consumers/DF/savagery_consumer.cpp
+  ./cpp/consumers/DF/vegetation_consumer.cpp
+  ./cpp/consumers/DF/volcanism_consumer.cpp
+  ./cpp/consumers/DF/temperature_consumer.cpp
+  ./cpp/consumers/DF/trade_consumer.cpp
+  ./cpp/consumers/DF/nobility_consumer.cpp
+  ./cpp/consumers/DF/diplomacy_consumer.cpp
+  ./cpp/consumers/DF/sites_consumer.cpp
 
   # Consumers for each different raw map
-  ./cpp/consumers/biome_type_raw_consumer.cpp
-  ./cpp/consumers/biome_region_raw_consumer.cpp
-  ./cpp/consumers/drainage_raw_consumer.cpp  
-  ./cpp/consumers/elevation_raw_consumer.cpp
-  ./cpp/consumers/elevation_water_raw_consumer.cpp
-  ./cpp/consumers/evilness_raw_consumer.cpp  
+  ./cpp/consumers/RAW/biome_type_raw_consumer.cpp
+  ./cpp/consumers/RAW/biome_region_raw_consumer.cpp
+  ./cpp/consumers/RAW/drainage_raw_consumer.cpp  
+  ./cpp/consumers/RAW/elevation_raw_consumer.cpp
+  ./cpp/consumers/RAW/elevation_water_raw_consumer.cpp
+  ./cpp/consumers/RAW/evilness_raw_consumer.cpp  
+  ./cpp/consumers/RAW/hydro_raw_consumer.cpp  
   
 
   # Plugin code

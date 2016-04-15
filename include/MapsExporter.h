@@ -74,6 +74,7 @@ namespace exportmaps_plugin
       queue<class RegionDetailsElevation>       elevation_raw_queue;
       queue<class RegionDetailsElevationWater>  elevation_water_raw_queue;
       queue<class RegionDetailsBiome>           evilness_raw_queue;
+      queue<class RegionDetailsElevationWater>  hydro_raw_queue;
 
 
       // Enable the generation of each different map
@@ -105,6 +106,7 @@ namespace exportmaps_plugin
       unique_ptr<class ProducerElevationRaw>      elevation_raw_producer;
       unique_ptr<class ProducerElevationWaterRaw> elevation_water_raw_producer;
       unique_ptr<class ProducerEvilnessRaw>       evilness_raw_producer;
+      unique_ptr<class ProducerHydroRaw>          hydro_raw_producer;
 
       // Pointers to every map that can be exported
       unique_ptr<class ExportedMapDF>             temperature_map;
@@ -115,7 +117,7 @@ namespace exportmaps_plugin
       unique_ptr<class ExportedMapDF>             vegetation_map;
       unique_ptr<class ExportedMapBase>           evilness_map;
       unique_ptr<class ExportedMapDF>             salinity_map;
-      unique_ptr<class ExportedMapDF>             hydro_map;
+      unique_ptr<class ExportedMapBase>           hydro_map;
       unique_ptr<class ExportedMapBase>           elevation_map;
       unique_ptr<class ExportedMapBase>           elevation_water_map;
       unique_ptr<class ExportedMapBase>           biome_map;
@@ -131,6 +133,7 @@ namespace exportmaps_plugin
       unique_ptr<class ExportedMapBase>           elevation_raw_map;
       unique_ptr<class ExportedMapBase>           elevation_water_raw_map;
       unique_ptr<class ExportedMapBase>           evilness_raw_map;
+      unique_ptr<class ExportedMapBase>           hydro_raw_map;
 
       // Thread synchronization between producer and consumers
       // accessing the different data queues
@@ -188,6 +191,7 @@ namespace exportmaps_plugin
     void push_elevation_raw      (RegionDetailsElevation&      rde);
     void push_elevation_water_raw(RegionDetailsElevationWater& rdew);
     void push_evilness_raw       (RegionDetailsBiome&          rdg);
+    void push_hydro_raw          (RegionDetailsElevationWater& rdg);
 
     // Pop methods
 
@@ -215,6 +219,7 @@ namespace exportmaps_plugin
     RegionDetailsElevation      pop_elevation_raw();
     RegionDetailsElevationWater pop_elevation_water_raw();
     RegionDetailsBiome          pop_evilness_raw();
+    RegionDetailsElevationWater pop_hydro_raw();
 
     // Maps getters
 
@@ -226,7 +231,7 @@ namespace exportmaps_plugin
     ExportedMapDF*   get_vegetation_map();
     ExportedMapBase* get_evilness_map();
     ExportedMapDF*   get_salinity_map();
-    ExportedMapDF*   get_hydro_map();
+    ExportedMapBase* get_hydro_map();
     ExportedMapBase* get_elevation_map();
     ExportedMapBase* get_elevation_water_map();
     ExportedMapBase* get_biome_map();
@@ -242,6 +247,7 @@ namespace exportmaps_plugin
     ExportedMapBase* get_elevation_raw_map();
     ExportedMapBase* get_elevation_water_raw_map();
     ExportedMapBase* get_evilness_raw_map();
+    ExportedMapBase* get_hydro_raw_map();
 
     // Queue status methods
 
@@ -269,6 +275,7 @@ namespace exportmaps_plugin
     bool is_elevation_raw_queue_empty();
     bool is_elevation_water_raw_queue_empty();
     bool is_evilness_raw_queue_empty();
+    bool is_hydro_raw_queue_empty();
 
     // Thread related methods
 

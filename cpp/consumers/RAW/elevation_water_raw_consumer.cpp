@@ -19,7 +19,7 @@
 // You can always find the latest version of this plugin in Github
 // https://github.com/ragundo/exportmaps  
 
-#include "../../include/ExportMaps.h"
+#include "../../../include/ExportMaps.h"
 
 using namespace exportmaps_plugin;
 
@@ -42,22 +42,21 @@ extern std::pair<int,int> adjust_coordinates_to_region(int x,
 /*****************************************************************************
 Local functions forward declaration
 *****************************************************************************/
-bool      elevation_water_do_work(MapsExporter* maps_exporter);
+bool elevation_water_raw_do_work(MapsExporter* maps_exporter);
 
-// Return the RGB values for the biome export map given a biome type
-RGB_color RGB_from_elevation_water(RegionDetailsElevationWater& rdew,
-                                   int x,
-                                   int y,
-                                   int biome_type,
-                                   df::world_region* region
-                                   );
+int  elevation_water(RegionDetailsElevationWater& rdew,
+                     int x,
+                     int y,
+                     int biome_type,
+                     df::world_region* region
+                     );
 
 
 /*****************************************************************************
 Module main function.
 This is the function that the thread executes
 *****************************************************************************/
-void consumer_elevation_water(void* arg)
+void consumer_elevation_water_raw(void* arg)
 {
   bool                finish  = false;
   MapsExporter* maps_exporter = (MapsExporter*)arg;
@@ -66,12 +65,12 @@ void consumer_elevation_water(void* arg)
   {
     while(!finish)
     {
-      if (maps_exporter->is_elevation_water_queue_empty())
+      if (maps_exporter->is_elevation_water_raw_queue_empty())
         // No data on the queue. Try again later
         tthread::this_thread::yield();
 
       else // There's data in the queue
-        finish = elevation_water_do_work(maps_exporter);
+        finish = elevation_water_raw_do_work(maps_exporter);
     }
   }
   // Function finish -> Thread finish
@@ -84,10 +83,10 @@ void consumer_elevation_water(void* arg)
 // If is the end marker, the queue is empty and no more work needs to be done, return
 // If it's actual data process it and update the corresponding map
 //----------------------------------------------------------------------------//
-bool elevation_water_do_work(MapsExporter* maps_exporter)
+bool elevation_water_raw_do_work(MapsExporter* maps_exporter)
 {
   // Get the data from the queue
-  RegionDetailsElevationWater rdew = maps_exporter->pop_elevation_water();
+  RegionDetailsElevationWater rdew = maps_exporter->pop_elevation_water_raw();
 
   // Check if is the marker for no more data from the producer
   if (rdew.is_end_marker())
@@ -96,8 +95,8 @@ bool elevation_water_do_work(MapsExporter* maps_exporter)
     return true;
   }
 
-  // Get the map where we'll write to
-  ExportedMapBase* elevation_water_map = maps_exporter->get_elevation_water_map();
+  // The map where we'll write to
+  ExportedMapBase* elevation_water_raw_map = maps_exporter->get_elevation_water_raw_map();
 
   // Iterate over the 16 subtiles (x) and (y) that a world tile has
   for (auto x=0; x<16; ++x)
@@ -114,7 +113,6 @@ bool elevation_water_do_work(MapsExporter* maps_exporter)
                                                                                   df::global::world->world_data->world_width,
                                                                                   df::global::world->world_data->world_height
                                                                                   );
-
       // Get the biome type for this world position
       int biome_type = get_biome_type(adjusted_tile_coordinates.first,
                                       adjusted_tile_coordinates.second
@@ -126,42 +124,36 @@ bool elevation_water_do_work(MapsExporter* maps_exporter)
 
       df::world_region* region = df::global::world->world_data->regions[rme.region_id];
 
-      // Get the RGB values associated to this biome type
-      RGB_color rgb_pixel_color = RGB_from_elevation_water(rdew,
-                                                           x,
-                                                           y,
-                                                           biome_type,
-                                                           region
-                                                           );
-      // Write pixels to the bitmap
-      elevation_water_map->write_world_pixel(rdew.get_pos_x(),
-                                             rdew.get_pos_y(),
-                                             x,
-                                             y,
-                                             rgb_pixel_color
-                                             );
+      int corrected_elevation = elevation_water(rdew,
+                                                x,
+                                                y,
+                                                biome_type,
+                                                region
+                                                );
+
+      // Write value to the map
+      elevation_water_raw_map->write_data(rdew.get_pos_x(),
+                                          rdew.get_pos_y(),
+                                          x,
+                                          y,
+                                          corrected_elevation
+                                          );
   }
   return false; // Continue working
 }
 
 //----------------------------------------------------------------------------//
 // Utility function
-// Return the RGB values for the elevation respecting water export map
+// Return the corrected elevation value
 //----------------------------------------------------------------------------//
-
-RGB_color RGB_from_elevation_water(RegionDetailsElevationWater& rdew,
-                                   int x,
-                                   int y,
-                                   int biome_type,
-                                   df::world_region* region
-                                   )
+int elevation_water(RegionDetailsElevationWater& rdew,
+                             int x,
+                             int y,
+                             int biome_type,
+                             df::world_region* region
+                             )
 {
-  unsigned char r = 127;
-  unsigned char g = 0;
-  unsigned char b = 0;
-
-  int elevation = rdew.get_elevation(x,y);
-  bool v23 = false;
+  int elevation  = rdew.get_elevation(x,y);
   bool has_river = true;
 
   int river_horiz_y_min              = rdew.get_rivers_horizontal().y_min[x  ][y];
@@ -175,7 +167,6 @@ RGB_color RGB_from_elevation_water(RegionDetailsElevationWater& rdew,
     {
       elevation = rdew.get_elevation(x,y);
       has_river = false;
-      v23 = false;
     }
 
   if (has_river)
@@ -226,37 +217,16 @@ RGB_color RGB_from_elevation_water(RegionDetailsElevationWater& rdew,
         (rdew.get_rivers_vertical().elevation[x][y+1] < elevation)
         )
       elevation = rdew.get_rivers_vertical().elevation[x][y+1];
-
-    r = 0;
-    g = elevation;
-    b = elevation;
-    v23 = true;
   }
 
   if (region->lake_surface != -30000)
     elevation = region->lake_surface;
 
-  int corrected_elevation = elevation - 25;
+  int corrected_elevation = elevation;
 
-  if (corrected_elevation > 255)
-    corrected_elevation = 255;
+  if ( corrected_elevation < 98)
+    corrected_elevation = 98;
 
-  if ( corrected_elevation < 73)
-    corrected_elevation = 73;
+  return corrected_elevation;
+}
 
-  if ((region->type  == 5)         || // GLACIER
-      ((corrected_elevation <= 73) &&
-       (region->type == 4)           // LAKE
-      )
-     )
-  {
-    r = g = 0;
-    b = corrected_elevation;
-  }
-  else if (!v23)
-  {
-    r = g = b = corrected_elevation;
-  }
-
-  return RGB_color(r,g,b);
-}                

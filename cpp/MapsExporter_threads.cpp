@@ -56,6 +56,7 @@ extern void consumer_drainage_raw       (void* arg);
 extern void consumer_elevation_raw      (void* arg);
 extern void consumer_elevation_water_raw(void* arg);
 extern void consumer_evilness_raw       (void* arg);
+extern void consumer_hydro_raw          (void* arg);
 
 /*****************************************************************************
 *****************************************************************************/
@@ -214,6 +215,12 @@ void MapsExporter::setup_threads()
   if (maps_to_generate_raw & MapTypeRaw::EVILNESS_RAW)
   {
     tthread::thread* pthread =  new tthread::thread(consumer_evilness_raw,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
+
+  if (maps_to_generate_raw & MapTypeRaw::HYDROSPHERE_RAW)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_hydro_raw,(void*)this);
     consumer_threads.push_back(pthread);
   }
 }

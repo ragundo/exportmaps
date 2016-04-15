@@ -104,6 +104,9 @@ void MapsExporter::push_end()
 
   if (maps_to_generate_raw & MapTypeRaw::EVILNESS_RAW)
     evilness_raw_producer->produce_end(*this);
+
+  if (maps_to_generate_raw & MapTypeRaw::HYDROSPHERE_RAW)
+    hydro_raw_producer->produce_end(*this);
 }
 
 //----------------------------------------------------------------------------//
@@ -212,6 +215,11 @@ void MapsExporter::push_data(df::world_region_details* ptr_rd, // df::world_regi
   // Push data for the evilness raw map
   if (maps_to_generate_raw & MapTypeRaw::EVILNESS_RAW)
     evilness_raw_producer->produce_data(*this,x,y,ptr_rd);
+
+  // Push data for the hydrosphere raw map
+  if (maps_to_generate_raw & MapTypeRaw::HYDROSPHERE_RAW)
+    hydro_raw_producer->produce_data(*this,x,y,ptr_rd);
+
 }
 
 
@@ -381,6 +389,13 @@ void MapsExporter::push_evilness_raw(RegionDetailsBiome& rdb)
 {
     mtx.lock();
     evilness_raw_queue.push(rdb);
+    mtx.unlock();
+}
+
+void MapsExporter::push_hydro_raw(RegionDetailsElevationWater& rdb)
+{
+    mtx.lock();
+    hydro_raw_queue.push(rdb);
     mtx.unlock();
 }
 
@@ -618,6 +633,16 @@ RegionDetailsBiome MapsExporter::pop_evilness_raw()
     mtx.lock();
     RegionDetailsBiome rdb = this->evilness_raw_queue.front();
     this->evilness_raw_queue.pop();
+    mtx.unlock();
+
+    return rdb;
+}
+
+RegionDetailsElevationWater MapsExporter::pop_hydro_raw()
+{
+    mtx.lock();
+    RegionDetailsElevationWater rdb = this->hydro_raw_queue.front();
+    this->hydro_raw_queue.pop();
     mtx.unlock();
 
     return rdb;

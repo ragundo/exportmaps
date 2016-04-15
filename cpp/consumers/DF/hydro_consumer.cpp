@@ -1,8 +1,4 @@
-/* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.2, October 3rd, 2004
-
-  Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
-
+/*
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
@@ -18,10 +14,6 @@
   2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
-  Jean-loup Gailly jloup@gzip.org
-  Mark Adler madler@alumni.caltech.edu
-
 */
 
 // You can always find the latest version of this plugin in Github
@@ -29,8 +21,8 @@
 
 #include <utility>
 #include <BitArray.h>
-#include "../../include/ExportMaps.h"
-#include "../../include/util/ofsub.h"
+#include "../../../include/ExportMaps.h"
+#include "../../../include/util/ofsub.h"
 
 
 
@@ -116,6 +108,9 @@ bool hydro_do_work(MapsExporter* maps_exporter)
     return true;
   }
 
+  // Get the map where we'll write to
+  ExportedMapBase* hydro_map = maps_exporter->get_hydro_map();
+
   // Iterate over the 16 subtiles (x) and (y) that a world tile has
   for (auto x=0; x<16; ++x)
     for (auto y=15; y>=0; --y)
@@ -150,7 +145,6 @@ bool hydro_do_work(MapsExporter* maps_exporter)
                                                            );
 
       // Write pixels to the bitmap
-      ExportedMapDF* hydro_map = maps_exporter->get_hydro_map();
       hydro_map->write_world_pixel(rdew.get_pos_x(),
                                    rdew.get_pos_y(),
                                    x,
