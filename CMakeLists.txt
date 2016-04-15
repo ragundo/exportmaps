@@ -41,6 +41,7 @@ SET(PROJECT_SRCS
   ./cpp/consumers/drainage_raw_consumer.cpp  
   ./cpp/consumers/elevation_raw_consumer.cpp
   ./cpp/consumers/elevation_water_raw_consumer.cpp
+  ./cpp/consumers/evilness_raw_consumer.cpp  
   
 
   # Plugin code

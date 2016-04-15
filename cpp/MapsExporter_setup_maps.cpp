@@ -464,5 +464,26 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
       if (!elevation_water_raw_map) throw std::bad_alloc();
     }
 
+    //----------------------------------------------------------------------------//
+
+      if (maps_to_generate_raw & MapTypeRaw::EVILNESS_RAW)
+      {
+        // Compose filename
+        std::stringstream file_name;
+        file_name << region_name << current_date << "-evilness.raw";
+
+        evilness_raw_producer.reset(new ProducerEvilnessRaw);
+        if (!evilness_raw_producer) throw std::bad_alloc();
+
+        evilness_raw_map.reset(new ExportedMapRaw(file_name.str(),
+                                                  df::global::world->world_data->world_width,
+                                                  df::global::world->world_data->world_height,
+                                                  MapTypeRaw::EVILNESS_RAW
+                                                  )
+                               );
+
+        if (!evilness_raw_map) throw std::bad_alloc();
+      }
+
 }
 

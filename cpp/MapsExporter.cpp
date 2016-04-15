@@ -267,6 +267,9 @@ void MapsExporter::write_maps_to_disk()
 
   if (maps_to_generate_raw & MapTypeRaw::ELEVATION_WATER_RAW)
     elevation_water_raw_map.get()->write_to_disk();
+
+  if (maps_to_generate_raw & MapTypeRaw::EVILNESS_RAW)
+    evilness_raw_map.get()->write_to_disk();
 }
 
 
@@ -304,7 +307,7 @@ ExportedMapDF* MapsExporter::get_vegetation_map()
     return vegetation_map.get();
 }
 
-ExportedMapDF* MapsExporter::get_evilness_map()
+ExportedMapBase* MapsExporter::get_evilness_map()
 {
     return evilness_map.get();
 }
@@ -359,7 +362,6 @@ ExportedMapDF* MapsExporter::get_sites_map()
     return sites_map.get();
 }
 
-
 ExportedMapBase* MapsExporter::get_biome_type_raw_map()
 {
     return biome_type_raw_map.get();
@@ -383,6 +385,11 @@ ExportedMapBase* MapsExporter::get_elevation_raw_map()
 ExportedMapBase* MapsExporter::get_elevation_water_raw_map()
 {
     return elevation_water_raw_map.get();
+}
+
+ExportedMapBase* MapsExporter::get_evilness_raw_map()
+{
+    return evilness_raw_map.get();
 }
 
 //----------------------------------------------------------------------------//
@@ -436,8 +443,9 @@ void MapsExporter::cleanup()
     while (!biome_raw_type_queue.empty())      biome_raw_type_queue.pop();
     while (!biome_raw_region_queue.empty())    biome_raw_region_queue.pop();
     while (!drainage_raw_queue.empty())        drainage_raw_queue.pop();
-    while (!elevation_raw_queue.empty())       elevation_queue.pop();
-    while (!elevation_water_raw_queue.empty()) elevation_water_queue.pop();
+    while (!elevation_raw_queue.empty())       elevation_raw_queue.pop();
+    while (!elevation_water_raw_queue.empty()) elevation_water_raw_queue.pop();
+    while (!evilness_raw_queue.empty())        evilness_raw_queue.pop();
 
     // Destroy the generated maps
     temperature_map.reset();
@@ -463,6 +471,7 @@ void MapsExporter::cleanup()
     drainage_raw_map.reset();
     elevation_raw_map.reset();
     elevation_water_raw_map.reset();
+    evilness_raw_map.reset();
 
     // Destroy the generated producers
     temperature_producer.reset();
@@ -488,6 +497,7 @@ void MapsExporter::cleanup()
     drainage_raw_producer.reset();
     elevation_raw_producer.reset();
     elevation_water_raw_producer.reset();
+    evilness_raw_producer.reset();
 }
 
 //----------------------------------------------------------------------------//
