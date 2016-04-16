@@ -54,6 +54,7 @@ namespace exportmaps_plugin
     int                         _height;   // World height in world coordinates
     MapType                     _type;     // Graphical map type
     MapTypeRaw                  _type_raw; // Raw map type
+    MapTypeHeightMap            _type_hm;  // Heightmap type
 
   public:
     ExportedMapBase();
@@ -62,7 +63,8 @@ namespace exportmaps_plugin
                     int world_width,            // World width in world coordinates
                     int world_height,           // World height in world coordinates
                     MapType type,               // Graphical map type or NONE
-                    MapTypeRaw type_raw         // Raw map type or NONE_RAW
+                    MapTypeRaw type_raw,        // Raw map type or NONE_RAW
+                    MapTypeHeightMap type_hm    // Height map type or NONE_HM
                     );
 
     //----------------------------------------------------------------------------//
@@ -237,6 +239,61 @@ namespace exportmaps_plugin
     //----------------------------------------------------------------------------//
 		int write_to_disk();
   };
+
+  /*****************************************************************************
+   Subclass for Heightmaps
+  *****************************************************************************/
+
+  class ExportedMapHM : public ExportedMapBase
+  {
+  public:
+    ExportedMapHM();
+    ExportedMapHM(const std::string filename, // The name of the file where the map will be saved
+                  int world_width,            // World width in world coordinates
+                  int world_height,           // World height in world coordinates
+                  MapTypeHeightMap type       // Heightmap type
+                  );
+    //----------------------------------------------------------------------------//
+    // Write a pixel in the map using world coordinates and offsets
+    //----------------------------------------------------------------------------//
+    void write_world_pixel(int pos_x,     // x coordinate in world coordinates
+                           int pos_y,     // y coordinate in world coordinates
+                           int px,        // offset 0..15 respect to pos_x = embark coordinate x
+                           int py,        // offset 0..15 respect to pos_y = embark coordinate y
+                           RGB_color& rgb // pixel color
+                           );
+    //----------------------------------------------------------------------------//
+    // Write a pixel in the map using embark coordinates
+    //----------------------------------------------------------------------------//
+    void write_embark_pixel(int px,        // x coordinate in embark coordinates
+                            int py,        // y coordinate in embark coordinates
+                            RGB_color& rgb // pixel color
+                            );
+
+    //----------------------------------------------------------------------------//
+    // Write a thick line (2 border pixels and 1 center) using embark coordinates
+    //----------------------------------------------------------------------------//
+    void write_thick_line_point(int px,                  // x coordinate in embark coordinates
+                                int py,                  // y coordinate in embark coordinates
+                                RGB_color& color_center, // center pixel color
+                                RGB_color& color_border  // border pixels color
+                                );
+    //----------------------------------------------------------------------------//
+    // Write data to a RAW map.
+    // Do nothing as this is a graphical map
+    //----------------------------------------------------------------------------//
+    void write_data(int pos_x,
+                    int pos_y,
+                    int px,
+                    int py,
+                    unsigned int value
+                    );
+    //----------------------------------------------------------------------------//
+    // Write a map to disk
+    //----------------------------------------------------------------------------//
+    int write_to_disk();
+  };
+
 
 }
 

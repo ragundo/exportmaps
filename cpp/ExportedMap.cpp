@@ -42,13 +42,15 @@ ExportedMapBase::ExportedMapBase(const std::string filename, // name of the file
                                  int world_width,            // world width in world coordinates
                                  int world_height,           // world height in world coordinates
                                  MapType type,               // Graphical map type or NONE
-                                 MapTypeRaw type_raw         // Raw map type or NONE_RAW
+                                 MapTypeRaw type_raw,        // Raw map type or NONE_RAW
+                                 MapTypeHeightMap type_hm    // Heightmap type or NONE_HM
                                  )
     : _filename(filename),
       _width(world_width*16),
       _height(world_height*16),
       _type(type),
-      _type_raw(type_raw)
+      _type_raw(type_raw),
+      _type_hm(type_hm)
 {
 }
 
@@ -104,7 +106,8 @@ ExportedMapDF::ExportedMapDF(const std::string filename, // name of the file tha
                     world_width,
                     world_height,
                     type,
-                    MapTypeRaw::NONE_RAW
+                    MapTypeRaw::NONE_RAW,
+                    MapTypeHeightMap::NONE_HM
                     )
 {
   // Each world tile has 16 * 16 embark pixels. Each pixel needs 4 bytes
@@ -351,7 +354,8 @@ ExportedMapRaw::ExportedMapRaw(const std::string filename, // name of the file t
                     world_width,
                     world_height,
                     MapType::NONE,
-                    type_raw
+                    type_raw,
+                    MapTypeHeightMap::NONE_HM
                     )
 {
     // Each world tile has 16 * 16 entries. Each entry needs 2 bytes
@@ -451,6 +455,111 @@ int ExportedMapRaw::write_to_disk()
 }
 
 
+/*****************************************************************************
+ExportedMapHM methods
+*****************************************************************************/
+
+ExportedMapHM::ExportedMapHM()
+{
+}
+
+//----------------------------------------------------------------------------//
+// Constructor
+//----------------------------------------------------------------------------//
+ExportedMapHM::ExportedMapHM(const std::string filename, // name of the file that will store the map
+                             int world_width,            // world width in world coordinates
+                             int world_height,           // world height in world coordinates
+                             MapTypeHeightMap type       // The heightmap type
+                             )
+  : ExportedMapBase(filename,
+                    world_width,
+                    world_height,
+                    MapType::NONE,
+                    MapTypeRaw::NONE_RAW,
+                    type
+                    )
+{
+  // Each world tile has 16 * 16 embark pixels. Each pixel needs 4 bytes
+  // so resize the image to its correct size
+  _image.resize(world_width * world_height * 16 * 16 * 4); // 4 = RGBA for PNG
+}
+
+//----------------------------------------------------------------------------//
+// Write a pixel to the image using world coordinates.
+// As the maps are draw using embark coordinates, for drawing a pixel we need
+// the world coordinate and the offset in the 16x16 pixel array that a world
+// tile has of embark tiles
+//----------------------------------------------------------------------------//
+void ExportedMapHM::write_world_pixel(int pos_x,     // pixel world coordinate x
+                                      int pos_y,     // pixel world coordinate y
+                                      int px,        // Delta x (0..15)
+                                      int py,        // Delta y (0..15)
+                                      RGB_color& rgb // Pixel color
+                                      )
+{
+  int index_png = pos_y * 16 * _height +
+                  pos_x * 16          +
+                  py         * _height +
+                  px;
+
+  _image[4*index_png + 0] = std::get<0>(rgb);
+  _image[4*index_png + 1] = std::get<1>(rgb);
+  _image[4*index_png + 2] = std::get<2>(rgb);
+  _image[4*index_png + 3] = 255;              // Solid color
+}
+
+//----------------------------------------------------------------------------//
+// Write a pixel to the image using embark coordinates.
+//----------------------------------------------------------------------------//
+void ExportedMapHM::write_embark_pixel(int px,        // Pixel embark coordinate x
+                                       int py,        // Pixel embark coordinate y
+                                       RGB_color& rgb // Pixel color
+                                       )
+{
+
+}
+
+//----------------------------------------------------------------------------//
+// Write a "thick" point of a line.
+// A thick line has a center pixel and two border pixels
+//----------------------------------------------------------------------------//
+void ExportedMapHM::write_thick_line_point(int px,                  // Pixel embark coordinate x
+                                           int py,                  // Pixel embark coordinate y
+                                           RGB_color& color_center, // Center color
+                                           RGB_color& color_border  // Border color
+                                           )
+{
+
+}
+
+
+//----------------------------------------------------------------------------//
+// Virtual method
+// The base class does nothing
+//----------------------------------------------------------------------------//
+void ExportedMapHM::write_data(int pos_x,
+                               int pos_y,
+                               int px,
+                               int py,
+                               unsigned int value
+                               )
+{
+}
+
+
+//----------------------------------------------------------------------------//
+// Write the image as PNG file to disk
+//----------------------------------------------------------------------------//
+int ExportedMapHM::write_to_disk()
+{
+  //Encode from raw pixels to disk with a single function call
+  //The image argument has width * height RGBA pixels or width * height * 4 bytes
+  return lodepng::encode(_filename,
+                         _image,
+                         _width,
+                         _height
+                         );
+}
 
 
 

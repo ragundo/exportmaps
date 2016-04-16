@@ -50,6 +50,8 @@ namespace exportmaps_plugin
   class MapsExporter
   {
     // Producer data queues for each different map
+
+    // DF maps
     queue<class RegionDetailsBiome>           biome_queue;
     queue<class RegionDetailsElevationWater>  diplomacy_queue;
     queue<class RegionDetailsBiome>           drainage_queue;
@@ -68,6 +70,7 @@ namespace exportmaps_plugin
     queue<class RegionDetailsBiome>           vegetation_queue;
     queue<class RegionDetailsBiome>           volcanism_queue;
 
+    // Raw maps
     queue<class RegionDetailsBiome>           biome_raw_type_queue;
     queue<class RegionDetailsBiome>           biome_raw_region_queue;
     queue<class RegionDetailsBiome>           drainage_raw_queue;
@@ -78,38 +81,47 @@ namespace exportmaps_plugin
     queue<class RegionDetailsBiome>           rainfall_raw_queue;
     queue<class RegionDetailsBiome>           salinity_raw_queue;
 
+    // Heightmaps
+    queue<class RegionDetailsElevation>       elevation_hm_queue;
+    queue<class RegionDetailsElevationWater>  elevation_water_hm_queue;    
+
     // Enable the generation of each different map
-    uint32_t maps_to_generate;
-    uint32_t maps_to_generate_raw;
+    uint32_t maps_to_generate;      // DF style maps
+    uint32_t maps_to_generate_raw;  // Raw binary maps
+    uint32_t maps_to_generate_hm;   // Heightmap style maps
+
 
     // Different DF data producer for each map
-    unique_ptr<class ProducerBiome>             biome_producer;
-    unique_ptr<class ProducerDiplomacy>         diplomacy_producer;
-    unique_ptr<class ProducerDrainage>          drainage_producer;
-    unique_ptr<class ProducerElevation>         elevation_producer;
-    unique_ptr<class ProducerElevationWater>    elevation_water_producer;
-    unique_ptr<class ProducerEvilness>          evilness_producer;
-    unique_ptr<class ProducerGeology>           geology_producer;
-    unique_ptr<class ProducerHydro>             hydro_producer;
-    unique_ptr<class ProducerNobility>          nobility_producer;
-    unique_ptr<class ProducerRainfall>          rainfall_producer;
-    unique_ptr<class ProducerSalinity>          salinity_producer;
-    unique_ptr<class ProducerSavagery>          savagery_producer;
-    unique_ptr<class ProducerSites>             sites_producer;
-    unique_ptr<class ProducerTemperature>       temperature_producer;
-    unique_ptr<class ProducerTrading>           trading_producer;
-    unique_ptr<class ProducerVegetation>        vegetation_producer;
-    unique_ptr<class ProducerVolcanism>         volcanism_producer;
+    unique_ptr<class ProducerBiome>                   biome_producer;
+    unique_ptr<class ProducerDiplomacy>               diplomacy_producer;
+    unique_ptr<class ProducerDrainage>                drainage_producer;
+    unique_ptr<class ProducerElevation>               elevation_producer;
+    unique_ptr<class ProducerElevationWater>          elevation_water_producer;
+    unique_ptr<class ProducerEvilness>                evilness_producer;
+    unique_ptr<class ProducerGeology>                 geology_producer;
+    unique_ptr<class ProducerHydro>                   hydro_producer;
+    unique_ptr<class ProducerNobility>                nobility_producer;
+    unique_ptr<class ProducerRainfall>                rainfall_producer;
+    unique_ptr<class ProducerSalinity>                salinity_producer;
+    unique_ptr<class ProducerSavagery>                savagery_producer;
+    unique_ptr<class ProducerSites>                   sites_producer;
+    unique_ptr<class ProducerTemperature>             temperature_producer;
+    unique_ptr<class ProducerTrading>                 trading_producer;
+    unique_ptr<class ProducerVegetation>              vegetation_producer;
+    unique_ptr<class ProducerVolcanism>               volcanism_producer;
 
-    unique_ptr<class ProducerBiomeRawType>      biome_type_raw_producer;
-    unique_ptr<class ProducerBiomeRawRegion>    biome_region_raw_producer;
-    unique_ptr<class ProducerDrainageRaw>       drainage_raw_producer;
-    unique_ptr<class ProducerElevationRaw>      elevation_raw_producer;
-    unique_ptr<class ProducerElevationWaterRaw> elevation_water_raw_producer;
-    unique_ptr<class ProducerEvilnessRaw>       evilness_raw_producer;
-    unique_ptr<class ProducerHydroRaw>          hydro_raw_producer;
-    unique_ptr<class ProducerRainfallRaw>       rainfall_raw_producer;
-    unique_ptr<class ProducerSalinityRaw>       salinity_raw_producer;
+    unique_ptr<class ProducerBiomeRawType>            biome_type_raw_producer;
+    unique_ptr<class ProducerBiomeRawRegion>          biome_region_raw_producer;
+    unique_ptr<class ProducerDrainageRaw>             drainage_raw_producer;
+    unique_ptr<class ProducerElevationRaw>            elevation_raw_producer;
+    unique_ptr<class ProducerElevationWaterRaw>       elevation_water_raw_producer;
+    unique_ptr<class ProducerEvilnessRaw>             evilness_raw_producer;
+    unique_ptr<class ProducerHydroRaw>                hydro_raw_producer;
+    unique_ptr<class ProducerRainfallRaw>             rainfall_raw_producer;
+    unique_ptr<class ProducerSalinityRaw>             salinity_raw_producer;
+
+    unique_ptr<class ProducerElevationHeightMap>      elevation_hm_producer;
+    unique_ptr<class ProducerElevationWaterHeightMap> elevation_water_hm_producer;    
 
     // Pointers to every map that can be exported
     unique_ptr<class ExportedMapBase>           biome_map;
@@ -140,6 +152,9 @@ namespace exportmaps_plugin
     unique_ptr<class ExportedMapBase>           rainfall_raw_map;
     unique_ptr<class ExportedMapBase>           salinity_raw_map;
 
+    unique_ptr<class ExportedMapBase>           elevation_hm_map;
+    unique_ptr<class ExportedMapBase>           elevation_water_hm_map;    
+
     // Thread synchronization between producer and consumers
     // accessing the different data queues
     tthread::mutex mtx;
@@ -156,8 +171,9 @@ namespace exportmaps_plugin
 
   public:
 
-    void setup_maps(uint32_t maps_to_generate,    // Graphical maps to generate
-                    uint32_t maps_to_generate_raw // Raw maps to generate
+    void setup_maps(uint32_t maps_to_generate,     // Graphical maps to generate
+                    uint32_t maps_to_generate_raw, // Raw maps to generate
+                    uint32_t maps_to_generate_hm   // Heightmaps to generate
                     );
 
     void cleanup();
@@ -200,6 +216,9 @@ namespace exportmaps_plugin
     void push_rainfall_raw       (RegionDetailsBiome&          rdg);
     void push_salinity_raw       (RegionDetailsBiome&          rdg);
 
+    void push_elevation_hm       (RegionDetailsElevation&      rde);
+    void push_elevation_water_hm (RegionDetailsElevationWater& rdew);    
+
     // Pop methods
 
     RegionDetailsBiome          pop_biome();
@@ -229,6 +248,9 @@ namespace exportmaps_plugin
     RegionDetailsElevationWater pop_hydro_raw();
     RegionDetailsBiome          pop_rainfall_raw();
     RegionDetailsBiome          pop_salinity_raw();
+
+    RegionDetailsElevation      pop_elevation_hm();
+    RegionDetailsElevationWater pop_elevation_water_hm();    
 
     // Maps getters
 
@@ -260,6 +282,9 @@ namespace exportmaps_plugin
     ExportedMapBase* get_rainfall_raw_map();
     ExportedMapBase* get_salinity_raw_map();
 
+    ExportedMapBase* get_elevation_hm_map();
+    ExportedMapBase* get_elevation_water_hm_map();    
+
     // Queue status methods
 
     bool is_biome_queue_empty();
@@ -289,6 +314,9 @@ namespace exportmaps_plugin
     bool is_hydro_raw_queue_empty();
     bool is_rainfall_raw_queue_empty();
     bool is_salinity_raw_queue_empty();
+
+    bool is_elevation_hm_queue_empty();
+    bool is_elevation_water_hm_queue_empty();    
 
     // Thread related methods
 

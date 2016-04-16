@@ -53,7 +53,10 @@ extern int  fill_world_region_details  (int world_pos_x, int world_pos_y);
 *****************************************************************************/
 bool MapsExporter::generate_maps(Logger& logger)
 {
-  if ((maps_to_generate == 0) && (maps_to_generate_raw == 0))
+  if ((maps_to_generate     == 0) &&
+      (maps_to_generate_raw == 0) &&
+      (maps_to_generate_hm  == 0)
+      )
       return false;   // There's nothing to generate
 
   this->set_percentage_diplomacy(0);
@@ -271,6 +274,15 @@ void MapsExporter::write_maps_to_disk()
 
   if (maps_to_generate_raw & MapTypeRaw::SALINITY_RAW)
     salinity_raw_map.get()->write_to_disk();
+
+//----------------------------------------------------------------------------//
+
+  if (maps_to_generate_hm & MapTypeHeightMap::ELEVATION_HM)
+    elevation_hm_map.get()->write_to_disk();
+
+  if (maps_to_generate_hm & MapTypeHeightMap::ELEVATION_WATER_HM)
+    elevation_water_hm_map.get()->write_to_disk();
+
 }
 
 
@@ -408,6 +420,20 @@ ExportedMapBase* MapsExporter::get_salinity_raw_map()
     return salinity_raw_map.get();
 }
 
+
+
+
+
+ExportedMapBase* MapsExporter::get_elevation_hm_map()
+{
+    return elevation_hm_map.get();
+}
+
+ExportedMapBase* MapsExporter::get_elevation_water_hm_map()
+{
+    return elevation_water_hm_map.get();
+}
+
 //----------------------------------------------------------------------------//
 // Methods to update the percentage
 //----------------------------------------------------------------------------//
@@ -466,6 +492,10 @@ void MapsExporter::cleanup()
     while (!rainfall_raw_queue.empty())        rainfall_raw_queue.pop();
     while (!salinity_raw_queue.empty())        salinity_raw_queue.pop();
 
+    while (!elevation_hm_queue.empty())        elevation_hm_queue.pop();
+    while (!elevation_water_hm_queue.empty())  elevation_water_hm_queue.pop();
+
+
     // Destroy the generated maps
     biome_map.reset();
     diplomacy_map.reset();
@@ -495,6 +525,9 @@ void MapsExporter::cleanup()
     rainfall_raw_map.reset();
     salinity_raw_map.reset();
 
+    elevation_hm_map.reset();
+    elevation_water_hm_map.reset();
+
     // Destroy the generated producers
     biome_producer.reset();
     diplomacy_producer.reset();
@@ -523,6 +556,9 @@ void MapsExporter::cleanup()
     hydro_raw_producer.reset();
     rainfall_raw_producer.reset();
     salinity_raw_producer.reset();
+
+    elevation_hm_producer.reset();
+    elevation_water_hm_producer.reset();
 }
 
 //----------------------------------------------------------------------------//

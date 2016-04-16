@@ -32,34 +32,36 @@ using namespace exportmaps_plugin;
  External functions declaration
  Here comes all the threads functions for the different maps.
 *****************************************************************************/
-extern void consumer_biome              (void* arg);
-extern void consumer_diplomacy          (void* arg);
-extern void consumer_drainage           (void* arg);
-extern void consumer_elevation          (void* arg);
-extern void consumer_elevation_water    (void* arg);
-extern void consumer_evilness           (void* arg);
-extern void consumer_geology            (void* arg);
-extern void consumer_hydro              (void* arg);
-extern void consumer_nobility           (void* arg);
-extern void consumer_rainfall           (void* arg);
-extern void consumer_salinity           (void* arg);
-extern void consumer_savagery           (void* arg);
-extern void consumer_sites              (void* arg);
-extern void consumer_temperature        (void* arg);
-extern void consumer_trading            (void* arg);
-extern void consumer_vegetation         (void* arg);
-extern void consumer_volcanism          (void* arg);
+extern void consumer_biome                     (void* arg);
+extern void consumer_diplomacy                 (void* arg);
+extern void consumer_drainage                  (void* arg);
+extern void consumer_elevation                 (void* arg);
+extern void consumer_elevation_water           (void* arg);
+extern void consumer_evilness                  (void* arg);
+extern void consumer_geology                   (void* arg);
+extern void consumer_hydro                     (void* arg);
+extern void consumer_nobility                  (void* arg);
+extern void consumer_rainfall                  (void* arg);
+extern void consumer_salinity                  (void* arg);
+extern void consumer_savagery                  (void* arg);
+extern void consumer_sites                     (void* arg);
+extern void consumer_temperature               (void* arg);
+extern void consumer_trading                   (void* arg);
+extern void consumer_vegetation                (void* arg);
+extern void consumer_volcanism                 (void* arg);
 
+extern void consumer_biome_type_raw            (void* arg);
+extern void consumer_biome_region_raw          (void* arg);
+extern void consumer_drainage_raw              (void* arg);
+extern void consumer_elevation_raw             (void* arg);
+extern void consumer_elevation_water_raw       (void* arg);
+extern void consumer_evilness_raw              (void* arg);
+extern void consumer_hydro_raw                 (void* arg);
+extern void consumer_rainfall_raw              (void* arg);
+extern void consumer_salinity_raw              (void* arg);
 
-extern void consumer_biome_type_raw     (void* arg);
-extern void consumer_biome_region_raw   (void* arg);
-extern void consumer_drainage_raw       (void* arg);
-extern void consumer_elevation_raw      (void* arg);
-extern void consumer_elevation_water_raw(void* arg);
-extern void consumer_evilness_raw       (void* arg);
-extern void consumer_hydro_raw          (void* arg);
-extern void consumer_rainfall_raw       (void* arg);
-extern void consumer_salinity_raw       (void* arg);
+extern void consumer_elevation_heightmap       (void* arg);
+extern void consumer_elevation_water_heightmap (void* arg);
 
 /*****************************************************************************
 *****************************************************************************/
@@ -236,6 +238,18 @@ void MapsExporter::setup_threads()
   if (maps_to_generate_raw & MapTypeRaw::SALINITY_RAW)
   {
     tthread::thread* pthread =  new tthread::thread(consumer_salinity_raw,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
+
+  if (maps_to_generate_hm & MapTypeHeightMap::ELEVATION_HM)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_elevation_heightmap,(void*)this);
+    consumer_threads.push_back(pthread);
+  }
+
+  if (maps_to_generate_hm & MapTypeHeightMap::ELEVATION_WATER_HM)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_elevation_water_heightmap,(void*)this);
     consumer_threads.push_back(pthread);
   }
 }

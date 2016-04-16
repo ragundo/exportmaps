@@ -37,7 +37,11 @@ using namespace exportmaps_plugin;
 /*****************************************************************************
 Local function definitions
 *****************************************************************************/
-std::tuple<unsigned int, unsigned int, std::vector<int> > process_command_line(std::vector <std::string>& options);
+std::tuple<unsigned int,
+           unsigned int,
+           unsigned int,
+           std::vector<int>
+          >process_command_line(std::vector <std::string>& options);
 
 /*****************************************************************************
 Plugin global variables
@@ -88,15 +92,20 @@ DFhackCExport command_result exportmaps (color_ostream& con,                   /
   Logger logger(con);
 
   // Process command line arguments
-  std::tuple<unsigned int, unsigned int, std::vector<int> > command_line;
+  std::tuple<unsigned int,
+             unsigned int,
+             unsigned int,
+             std::vector<int>
+            > command_line;
 
   // tuple.first is a uint where each bit ON means a graphical map type to be generated
   // tuple.second is a uint ehere each bit ON means a raw map type to be generated
-  // tuple.third is a vector with indexes to wrong arguments in the command line
+  // tuple.third is a uint ehere each bit ON means a heightmap type to be generated  
+  // tuple.fourth is a vector with indexes to wrong arguments in the command line
   command_line = process_command_line(parameters);
 
   // Alias to the vector of index to wrong options
-  std::vector<int>& unknown_options = std::get<2>(command_line);
+  std::vector<int>& unknown_options = std::get<3>(command_line);
 
   // Warn the user about unknown options
   for (unsigned int i = 0; i < unknown_options.size(); ++i)
@@ -112,7 +121,8 @@ DFhackCExport command_result exportmaps (color_ostream& con,                   /
 
   // Choose what maps to export
   maps_exporter.setup_maps(std::get<0>(command_line), // Graphical maps
-                           std::get<1>(command_line)  // Raw maps
+                           std::get<1>(command_line), // Raw maps
+                           std::get<2>(command_line)  // Height maps
                            );
 
   // Begin generating data for the threads(consumers) and use the logger
@@ -131,9 +141,9 @@ DFhackCExport command_result plugin_init (color_ostream& con,                   
                                           )
 {
     // Fill the command list with your commands.
-    commands.push_back(PluginCommand("exportmaps",                                                   // Plugin name
-                                     "Export world maps to disk in Fortress/Adventure/Legends Mode", // Plugin brief description
-                                     exportmaps                                                      // Subroutine to be executed when the plugin is called
+    commands.push_back(PluginCommand("exportmaps",                                                                        // Plugin name
+                                     "Export world maps in different formats to disk in Fortress/Adventure/Legends Mode", // Plugin brief description
+                                     exportmaps                                                                           // Subroutine to be executed when the plugin is called
                                      /*,
                                      true or false - true means that the command can't be used from non-interactive user interface'*/
                                      ));
@@ -148,11 +158,12 @@ returns a tuple, where
  tuple.third is a vector with index to wrong arguments
  
 *****************************************************************************************/
-std::tuple<unsigned int, unsigned int, std::vector<int> >
+std::tuple<unsigned int, unsigned int, unsigned int, std::vector<int> >
 process_command_line(std::vector <std::string>& options)
 {
   unsigned int     maps_to_generate     = 0; // Graphical maps to generate
   unsigned int     maps_to_generate_raw = 0; // Raw maps to generate
+  unsigned int     maps_to_generate_hm  = 0; // Heightmaps to generate  
   std::vector<int> errors(options.size());   // Vector with index to wrong command line options
 
   // Iterate over all the command line options received
@@ -169,11 +180,15 @@ process_command_line(std::vector <std::string>& options)
 
     // Check command line
     if (option == "-all")                                          // All maps
-      return std::tuple<unsigned int, unsigned int,std::vector<int> >(
-                                                                      -1, // All graphical maps
-                                                                      -1, // All raw maps
-                                                                      errors
-                                                                      );
+      return std::tuple<unsigned int,
+                        unsigned int,
+                        unsigned int,
+                        std::vector<int>
+                       >(    -1, // All graphical maps
+                             -1, // All raw maps
+                             -1, // All height maps
+                         errors
+                         );
 
     if (option == "-temperature")                                  // map DF style
       maps_to_generate |= MapType::TEMPERATURE;
@@ -223,7 +238,7 @@ process_command_line(std::vector <std::string>& options)
     else if (option == "-sites")                                   // map DF style
       maps_to_generate |= MapType::SITES;
 
-
+    // Raw maps
 
     else if (option == "-temperature-raw")                         // map raw data file
       maps_to_generate_raw |= MapTypeRaw::TEMPERATURE_RAW;
@@ -275,11 +290,24 @@ process_command_line(std::vector <std::string>& options)
     else if (option == "-sites-raw")                               // map raw data file
       maps_to_generate_raw |= MapTypeRaw::SITES_RAW;
 
+    // Heightmaps
+
+    else if (option == "-elevation-hm")                            // Heighmap style
+      maps_to_generate_hm |= MapTypeHeightMap::ELEVATION_HM;
+
+    else if (option == "-elevation-water-hm")                      // Heightmap style
+      maps_to_generate_hm |= MapTypeHeightMap::ELEVATION_WATER_HM;    
+
     else                                                           // ERROR - unknown argument
       errors[argv_iterator] = argv_iterator;
   }
-  return std::tuple<unsigned int, unsigned int, std::vector<int> >(maps_to_generate,
-                                                                   maps_to_generate_raw,
-                                                                   errors
-                                                                   );
+  return std::tuple<unsigned int,
+                    unsigned int,
+                    unsigned int,
+                    std::vector<int>
+                   >(maps_to_generate,
+                     maps_to_generate_raw,
+                     maps_to_generate_hm,
+                     errors
+                     );
 }

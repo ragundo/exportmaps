@@ -33,13 +33,15 @@ using namespace exportmaps_plugin;
 // Set up the maps to be generated according to the command line parameters
 // that we got from DFHack console
 //----------------------------------------------------------------------------//
-void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
-                              uint32_t maps_raw // Raw maps to generate
+void MapsExporter::setup_maps(uint32_t maps,     // Graphical maps to generate
+                              uint32_t maps_raw, // Raw maps to generate
+                              uint32_t maps_hm   // Height maps to generate
                               )
 {
   // Copy the data received from DFHack command line
   maps_to_generate = maps;
   maps_to_generate_raw = maps_raw;
+  maps_to_generate_hm = maps_hm;
 
   // Get the date elements
   int year  = World::ReadCurrentYear();
@@ -544,6 +546,47 @@ void MapsExporter::setup_maps(uint32_t maps,    // Graphical maps to generate
                            );
     if (!salinity_raw_map) throw std::bad_alloc();
   }
+
+  //----------------------------------------------------------------------------//
+
+    if (maps_to_generate_hm & MapTypeHeightMap::ELEVATION_HM)
+    {
+      // Compose filename
+      std::stringstream file_name;
+      file_name << region_name << current_date << "-elevation-heightmap.png";
+      elevation_hm_producer.reset(new ProducerElevationHeightMap);
+      if (!elevation_hm_producer) throw std::bad_alloc();
+
+      elevation_hm_map.reset(new ExportedMapHM(file_name.str(),
+                                               df::global::world->world_data->world_width,
+                                               df::global::world->world_data->world_height,
+                                               MapTypeHeightMap::ELEVATION_HM
+                                               )
+                             );
+
+      if (!elevation_hm_map) throw std::bad_alloc();
+    }
+
+  //----------------------------------------------------------------------------//
+
+    if (maps_to_generate_hm & MapTypeHeightMap::ELEVATION_WATER_HM)
+    {
+      // Compose filename
+      std::stringstream file_name;
+      file_name << region_name << current_date << "-elevation-water-heightmap.png";
+      elevation_water_hm_producer.reset(new ProducerElevationWaterHeightMap);
+      if (!elevation_water_hm_producer) throw std::bad_alloc();
+
+      elevation_water_hm_map.reset(new ExportedMapHM(file_name.str(),
+                                                     df::global::world->world_data->world_width,
+                                                     df::global::world->world_data->world_height,
+                                                     MapTypeHeightMap::ELEVATION_WATER_HM
+                                                     )
+                                   );
+
+      if (!elevation_water_hm_map) throw std::bad_alloc();
+    }
+
 
 
 }

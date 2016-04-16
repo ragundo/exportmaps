@@ -373,6 +373,31 @@ namespace exportmaps_plugin
   };
 
 
+/*****************************************************************************
+  *****************************************************************************/
+
+  class ProducerElevationHeightMap : public Producer
+  {
+
+  public:
+    void produce_data(class MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd);
+
+    void produce_end(class MapsExporter& destination);
+  };
+
+  /*****************************************************************************
+  *****************************************************************************/
+
+  class ProducerElevationWaterHeightMap : public Producer
+  {
+
+  public:
+    void produce_data(class MapsExporter& destination, int x, int y, df::world_region_details* ptr_rd);
+
+    void produce_end(class MapsExporter& destination);
+  };
+
+
 }  
 
 #endif // PRODUCER_H

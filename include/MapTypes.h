@@ -69,6 +69,13 @@ namespace exportmaps_plugin
     NOBILITY_RAW        = 1u << 15,
     DIPLOMACY_RAW       = 1u << 16
   };
+
+  enum MapTypeHeightMap : uint32_t
+  {
+    NONE_HM            = 0u,
+    ELEVATION_HM       = 1u <<  0,
+    ELEVATION_WATER_HM = 1u <<  1
+  };  
 }
 
 #endif
