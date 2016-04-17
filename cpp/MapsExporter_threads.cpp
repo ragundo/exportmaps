@@ -59,6 +59,7 @@ extern void consumer_evilness_raw              (void* arg);
 extern void consumer_hydro_raw                 (void* arg);
 extern void consumer_rainfall_raw              (void* arg);
 extern void consumer_salinity_raw              (void* arg);
+extern void consumer_savagery_raw              (void* arg);
 
 extern void consumer_elevation_heightmap       (void* arg);
 extern void consumer_elevation_water_heightmap (void* arg);
@@ -164,92 +165,130 @@ void MapsExporter::setup_threads()
 
   if (maps_to_generate & MapType::TRADING)
   {
-    tthread::thread* pthread =  new tthread::thread(consumer_trading,(void*)this);
+    tthread::thread* pthread =  new tthread::thread(consumer_trading,
+                                                    (void*)this
+                                                    );
     consumer_threads.push_back(pthread);
   }
 
   if (maps_to_generate & MapType::NOBILITY)
   {
-    tthread::thread* pthread =  new tthread::thread(consumer_nobility,(void*)this);
+    tthread::thread* pthread =  new tthread::thread(consumer_nobility,
+                                                    (void*)this
+                                                    );
     consumer_threads.push_back(pthread);
   }
 
   if (maps_to_generate & MapType::DIPLOMACY)
   {
-    tthread::thread* pthread =  new tthread::thread(consumer_diplomacy,(void*)this);
+    tthread::thread* pthread =  new tthread::thread(consumer_diplomacy,
+                                                    (void*)this
+                                                    );
     consumer_threads.push_back(pthread);
   }
 
   if (maps_to_generate & MapType::SITES)
   {
-    tthread::thread* pthread =  new tthread::thread(consumer_sites,(void*)this);
+    tthread::thread* pthread =  new tthread::thread(consumer_sites,
+                                                    (void*)this
+                                                    );
     consumer_threads.push_back(pthread);
   }
 
 
   if (maps_to_generate_raw & MapTypeRaw::BIOME_TYPE_RAW)
   {
-    tthread::thread* pthread =  new tthread::thread(consumer_biome_type_raw,(void*)this);
+    tthread::thread* pthread =  new tthread::thread(consumer_biome_type_raw,
+                                                    (void*)this
+                                                    );
     consumer_threads.push_back(pthread);
   }
 
   if (maps_to_generate_raw & MapTypeRaw::BIOME_REGION_RAW)
   {
-    tthread::thread* pthread =  new tthread::thread(consumer_biome_region_raw,(void*)this);
+    tthread::thread* pthread =  new tthread::thread(consumer_biome_region_raw,
+                                                    (void*)this
+                                                    );
     consumer_threads.push_back(pthread);
   }
 
   if (maps_to_generate_raw & MapTypeRaw::DRAINAGE_RAW)
   {
-    tthread::thread* pthread =  new tthread::thread(consumer_drainage_raw,(void*)this);
+    tthread::thread* pthread =  new tthread::thread(consumer_drainage_raw,
+                                                    (void*)this
+                                                    );
     consumer_threads.push_back(pthread);
   }
 
   if (maps_to_generate_raw & MapTypeRaw::ELEVATION_RAW)
   {
-    tthread::thread* pthread =  new tthread::thread(consumer_elevation_raw,(void*)this);
+    tthread::thread* pthread =  new tthread::thread(consumer_elevation_raw,
+                                                    (void*)this
+                                                    );
     consumer_threads.push_back(pthread);
   }
 
   if (maps_to_generate_raw & MapTypeRaw::ELEVATION_WATER_RAW)
   {
-    tthread::thread* pthread =  new tthread::thread(consumer_elevation_water_raw,(void*)this);
+    tthread::thread* pthread =  new tthread::thread(consumer_elevation_water_raw,
+                                                    (void*)this
+                                                    );
     consumer_threads.push_back(pthread);
   }
 
   if (maps_to_generate_raw & MapTypeRaw::EVILNESS_RAW)
   {
-    tthread::thread* pthread =  new tthread::thread(consumer_evilness_raw,(void*)this);
+    tthread::thread* pthread =  new tthread::thread(consumer_evilness_raw,
+                                                    (void*)this
+                                                    );
     consumer_threads.push_back(pthread);
   }
 
   if (maps_to_generate_raw & MapTypeRaw::HYDROSPHERE_RAW)
   {
-    tthread::thread* pthread =  new tthread::thread(consumer_hydro_raw,(void*)this);
+    tthread::thread* pthread =  new tthread::thread(consumer_hydro_raw,
+                                                    (void*)this
+                                                    );
     consumer_threads.push_back(pthread);
   }
 
   if (maps_to_generate_raw & MapTypeRaw::RAINFALL_RAW)
   {
-    tthread::thread* pthread =  new tthread::thread(consumer_rainfall_raw,(void*)this);
+    tthread::thread* pthread =  new tthread::thread(consumer_rainfall_raw,
+                                                    (void*)this
+                                                    );
     consumer_threads.push_back(pthread);
   }
 
   if (maps_to_generate_raw & MapTypeRaw::SALINITY_RAW)
   {
-    tthread::thread* pthread =  new tthread::thread(consumer_salinity_raw,(void*)this);
+    tthread::thread* pthread =  new tthread::thread(consumer_salinity_raw,
+                                                    (void*)this
+                                                    );
+    consumer_threads.push_back(pthread);
+  }
+
+  if (maps_to_generate_raw & MapTypeRaw::SAVAGERY_RAW)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_savagery_raw,
+                                                    (void*)this
+                                                    );
     consumer_threads.push_back(pthread);
   }
 
   if (maps_to_generate_hm & MapTypeHeightMap::ELEVATION_HM)
   {
-    tthread::thread* pthread =  new tthread::thread(consumer_elevation_heightmap,(void*)this);
+    tthread::thread* pthread =  new tthread::thread(consumer_elevation_heightmap,
+                                                    (void*)this
+                                                    );
     consumer_threads.push_back(pthread);
   }
 
   if (maps_to_generate_hm & MapTypeHeightMap::ELEVATION_WATER_HM)
   {
-    tthread::thread* pthread =  new tthread::thread(consumer_elevation_water_heightmap,(void*)this);
+    tthread::thread* pthread =  new tthread::thread(consumer_elevation_water_heightmap,
+                                                    (void*)this
+                                                    );
     consumer_threads.push_back(pthread);
   }
 }

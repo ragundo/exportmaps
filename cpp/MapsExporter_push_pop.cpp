@@ -115,6 +115,9 @@ void MapsExporter::push_end()
   if (maps_to_generate_raw & MapTypeRaw::SALINITY_RAW)
     salinity_raw_producer->produce_end(*this);
 
+  if (maps_to_generate_raw & MapTypeRaw::SAVAGERY_RAW)
+    savagery_raw_producer->produce_end(*this);
+
 //----------------------------------------------------------------------------//
 
   if (maps_to_generate_hm & MapTypeHeightMap::ELEVATION_HM)
@@ -242,6 +245,11 @@ void MapsExporter::push_data(df::world_region_details* ptr_rd, // df::world_regi
   // Push data for the salinity raw map
   if (maps_to_generate_raw & MapTypeRaw::SALINITY_RAW)
     salinity_raw_producer->produce_data(*this,x,y,ptr_rd);
+
+  // Push data for the savagery raw map
+  if (maps_to_generate_raw & MapTypeRaw::SAVAGERY_RAW)
+    savagery_raw_producer->produce_data(*this,x,y,ptr_rd);
+
 
 //----------------------------------------------------------------------------//
 
@@ -491,6 +499,19 @@ void MapsExporter::push_salinity_raw(RegionDetailsBiome& rdb)
     salinity_raw_queue.push(rdb);
     mtx.unlock();
 }
+
+//----------------------------------------------------------------------------//
+
+void MapsExporter::push_savagery_raw(RegionDetailsBiome& rdb)
+{
+    mtx.lock();
+    savagery_raw_queue.push(rdb);
+    mtx.unlock();
+}
+
+
+
+
 
 
 //----------------------------------------------------------------------------//
@@ -827,6 +848,22 @@ RegionDetailsBiome MapsExporter::pop_salinity_raw()
 
     return rdb;
 }
+
+//----------------------------------------------------------------------------//
+
+RegionDetailsBiome MapsExporter::pop_savagery_raw()
+{
+    mtx.lock();
+    RegionDetailsBiome rdb = this->savagery_raw_queue.front();
+    this->savagery_raw_queue.pop();
+    mtx.unlock();
+
+    return rdb;
+}
+
+
+
+
 
 //----------------------------------------------------------------------------//
 

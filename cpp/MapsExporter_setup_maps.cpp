@@ -549,6 +549,27 @@ void MapsExporter::setup_maps(uint32_t maps,     // Graphical maps to generate
 
   //----------------------------------------------------------------------------//
 
+    if (maps_to_generate_raw & MapTypeRaw::SAVAGERY_RAW)
+    {
+      // Compose filename
+      std::stringstream file_name;
+      file_name << region_name << current_date << "-savagery.raw";
+
+      savagery_raw_producer.reset(new ProducerSavageryRaw);
+      if (!savagery_raw_producer) throw std::bad_alloc();
+
+      savagery_raw_map.reset(new ExportedMapRaw(file_name.str(),
+                                                df::global::world->world_data->world_width,
+                                                df::global::world->world_data->world_height,
+                                                MapTypeRaw::SAVAGERY_RAW
+                                                )
+                             );
+
+      if (!savagery_raw_map) throw std::bad_alloc();
+    }
+
+  //----------------------------------------------------------------------------//
+
     if (maps_to_generate_hm & MapTypeHeightMap::ELEVATION_HM)
     {
       // Compose filename

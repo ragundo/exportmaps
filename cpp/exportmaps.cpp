@@ -250,7 +250,7 @@ process_command_line(std::vector <std::string>& options)
       maps_to_generate_raw |= MapTypeRaw::DRAINAGE_RAW;
 
     else if (option == "-savagery-raw")                            // map raw data file
-      maps_to_generate_raw |= MapTypeRaw::SALINITY_RAW;
+      maps_to_generate_raw |= MapTypeRaw::SAVAGERY_RAW;
 
     else if (option == "-volcanism-raw")                           // map raw data file
       maps_to_generate_raw |= MapTypeRaw::VOLCANISM_RAW;

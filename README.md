@@ -2,7 +2,7 @@
 A DFHack plugin for exporting world maps while in game.
 
 ## What do it does?
-It exports all the world maps while you are playing the game (Fortress or Adventure). There's no need to enter Legends mode.
+It exports all the world maps while you are playing the game (Fortress or Adventure) and many more. There's no need to enter Legends mode.
 
 You can also use it in Legends mode, as it provides a very fast way to exports the maps.
 
@@ -32,6 +32,14 @@ Additionally to standard DF image maps, you can generate raw maps which are bina
 ready to be processed by an external tool.
 <a href="docs/raw_maps.md">Read more details about them.</a>
 
+## Height Maps
+Heightmaps are raw maps encoded as a grayscale PNG with their values scaled to the range 0-255
+(a elevation of 123 is translated to a pixel with color RGB(123,123,123)).
+
+Several DF maps are heightmaps: salinity, savagery, etc
+
+There are several tools that allow you to import a heightmap and view it in 3D (Blender for example).
+
 ## Is it fast?
 Very,very fast. Exportmaps uses a thread for each map to be generated, so it uses all the cores of your computer for generating them.
 The world is visited only once, generating the data for each world coordinate. The different threads process that data simultaneously 
@@ -40,7 +48,7 @@ to generate the maps.
 In contrast, DF only allows you to generate them one map each time.
 
 **NOTE:** Sites/Structures/Roads is, by far, the slowest map to generate as a full realization of each world site needs to be 
-generated, added to the map and destroyed.
+generated, added to the map and destroyed. If you want to speed up the generation, export all the maps except this one.
 
 ## Is it multiplatform?
 Unfortunately no. This plugin requires some trickery to get the data natively from DF. As I don't have access to a Mac computer, OS X is not supported.

@@ -293,6 +293,17 @@ bool MapsExporter::is_salinity_raw_queue_empty()
     return queue_empty;
 }
 
+//----------------------------------------------------------------------------//
+bool MapsExporter::is_savagery_raw_queue_empty()
+{
+    bool queue_empty;
+    mtx.lock();
+    queue_empty = savagery_raw_queue.empty();
+    mtx.unlock();
+    return queue_empty;
+}
+
+
 
 //----------------------------------------------------------------------------//
 bool MapsExporter::is_elevation_hm_queue_empty()

@@ -45,6 +45,7 @@ SET(PROJECT_SRCS
   ./cpp/consumers/RAW/hydro_raw_consumer.cpp  
   ./cpp/consumers/RAW/rainfall_raw_consumer.cpp  
   ./cpp/consumers/RAW/salinity_raw_consumer.cpp  
+  ./cpp/consumers/RAW/savagery_raw_consumer.cpp
 
   # Consumers for heightmaps
   ./cpp/consumers/heightmaps/elevation_heightmap_consumer.cpp

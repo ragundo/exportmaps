@@ -698,6 +698,29 @@ void ProducerSalinityRaw::produce_end(MapsExporter& destination)
   destination.push_salinity_raw(rdg);
 }
 
+/*****************************************************************************
+ProducerSavageryRaw methods
+*****************************************************************************/
+void ProducerSavageryRaw::produce_data(MapsExporter& destination,
+                                       int x,
+                                       int y,
+                                       df::world_region_details* ptr_rd
+                                       )
+{
+  RegionDetailsBiome rdg(ptr_rd);
+
+  destination.push_savagery_raw(rdg);
+}
+
+//----------------------------------------------------------------------------//
+void ProducerSavageryRaw::produce_end(MapsExporter& destination)
+{
+    RegionDetailsBiome rdg;
+
+    // Push the data to the producer for the consumers
+    destination.push_savagery_raw(rdg);
+}
+
 
 
 /*****************************************************************************

@@ -275,6 +275,9 @@ void MapsExporter::write_maps_to_disk()
   if (maps_to_generate_raw & MapTypeRaw::SALINITY_RAW)
     salinity_raw_map.get()->write_to_disk();
 
+  if (maps_to_generate_raw & MapTypeRaw::SAVAGERY_RAW)
+    savagery_raw_map.get()->write_to_disk();
+
 //----------------------------------------------------------------------------//
 
   if (maps_to_generate_hm & MapTypeHeightMap::ELEVATION_HM)
@@ -305,7 +308,7 @@ ExportedMapBase* MapsExporter::get_drainage_map()
     return drainage_map.get();
 }
 
-ExportedMapDF* MapsExporter::get_savagery_map()
+ExportedMapBase* MapsExporter::get_savagery_map()
 {
     return savagery_map.get();
 }
@@ -420,6 +423,10 @@ ExportedMapBase* MapsExporter::get_salinity_raw_map()
     return salinity_raw_map.get();
 }
 
+ExportedMapBase* MapsExporter::get_savagery_raw_map()
+{
+    return savagery_raw_map.get();
+}
 
 
 
@@ -491,6 +498,7 @@ void MapsExporter::cleanup()
     while (!hydro_raw_queue.empty())           hydro_raw_queue.pop();
     while (!rainfall_raw_queue.empty())        rainfall_raw_queue.pop();
     while (!salinity_raw_queue.empty())        salinity_raw_queue.pop();
+    while (!savagery_raw_queue.empty())        savagery_raw_queue.pop();
 
     while (!elevation_hm_queue.empty())        elevation_hm_queue.pop();
     while (!elevation_water_hm_queue.empty())  elevation_water_hm_queue.pop();
@@ -524,6 +532,7 @@ void MapsExporter::cleanup()
     hydro_raw_map.reset();
     rainfall_raw_map.reset();
     salinity_raw_map.reset();
+    savagery_raw_map.reset();
 
     elevation_hm_map.reset();
     elevation_water_hm_map.reset();
@@ -556,6 +565,7 @@ void MapsExporter::cleanup()
     hydro_raw_producer.reset();
     rainfall_raw_producer.reset();
     salinity_raw_producer.reset();
+    savagery_raw_producer.reset();
 
     elevation_hm_producer.reset();
     elevation_water_hm_producer.reset();
