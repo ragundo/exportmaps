@@ -59,7 +59,7 @@ To solve this, and generate a true elevation heightmap, type in the console:
 
 You can import this heightmap and view it in 3D using Blender. Here's the result:
 
-![alt tag](https://github.com/ragundo/exportmaps/blob/master/docs/blender.png)
+![alt tag](https://github.com/ragundo/exportmaps/blob/raw_maps/docs/blender.png)
 
 
 ## Is it fast?
