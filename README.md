@@ -85,7 +85,7 @@ for the elevation respecting water levels heightmap.
 
 You can import this heightmap, for example, in Blender and view it in 3D. Here's the result:
 
-![alt tag](https://github.com/ragundo/exportmaps/blob/raw_maps/docs/blender.png)
+![alt tag](https://github.com/ragundo/exportmaps/blob/master/docs/blender.png)
 
 
 
