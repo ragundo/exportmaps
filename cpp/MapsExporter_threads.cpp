@@ -60,6 +60,7 @@ extern void consumer_hydro_raw                 (void* arg);
 extern void consumer_rainfall_raw              (void* arg);
 extern void consumer_salinity_raw              (void* arg);
 extern void consumer_savagery_raw              (void* arg);
+extern void consumer_temperature_raw           (void* arg);
 
 extern void consumer_elevation_heightmap       (void* arg);
 extern void consumer_elevation_water_heightmap (void* arg);
@@ -275,6 +276,12 @@ void MapsExporter::setup_threads()
                                                     );
     consumer_threads.push_back(pthread);
   }
+  
+  if (maps_to_generate_raw & MapTypeRaw::TEMPERATURE_RAW)
+  {
+    tthread::thread* pthread =  new tthread::thread(consumer_temperature_raw,(void*)this);
+    consumer_threads.push_back(pthread);
+  }  
 
   if (maps_to_generate_hm & MapTypeHeightMap::ELEVATION_HM)
   {

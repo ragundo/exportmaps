@@ -117,6 +117,10 @@ void MapsExporter::push_end()
 
   if (maps_to_generate_raw & MapTypeRaw::SAVAGERY_RAW)
     savagery_raw_producer->produce_end(*this);
+    
+  if (maps_to_generate_raw & MapTypeRaw::TEMPERATURE_RAW)
+    temperature_raw_producer->produce_end(*this);
+    
 
 //----------------------------------------------------------------------------//
 
@@ -249,6 +253,11 @@ void MapsExporter::push_data(df::world_region_details* ptr_rd, // df::world_regi
   // Push data for the savagery raw map
   if (maps_to_generate_raw & MapTypeRaw::SAVAGERY_RAW)
     savagery_raw_producer->produce_data(*this,x,y,ptr_rd);
+    
+  // Push data for the temperature raw map
+  if (maps_to_generate_raw & MapTypeRaw::TEMPERATURE_RAW)
+    temperature_raw_producer->produce_data(*this,x,y,ptr_rd);
+    
 
 
 //----------------------------------------------------------------------------//
@@ -509,7 +518,12 @@ void MapsExporter::push_savagery_raw(RegionDetailsBiome& rdb)
     mtx.unlock();
 }
 
-
+void MapsExporter::push_temperature_raw(RegionDetailsBiome& rdb)
+{
+    mtx.lock();
+    temperature_raw_queue.push(rdb);
+    mtx.unlock();
+}
 
 
 
@@ -861,7 +875,15 @@ RegionDetailsBiome MapsExporter::pop_savagery_raw()
     return rdb;
 }
 
+RegionDetailsBiome MapsExporter::pop_temperature_raw()
+{
+    mtx.lock();
+    RegionDetailsBiome rdb = this->temperature_raw_queue.front();
+    this->temperature_raw_queue.pop();
+    mtx.unlock();
 
+    return rdb;
+}
 
 
 

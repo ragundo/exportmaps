@@ -86,7 +86,10 @@ bool temperature_do_work(MapsExporter* maps_exporter) // The coordinator object
     // All the data has been processed. Finish this thread execution
     return true;
   }
-
+  
+  // Get the map where we'll write to
+  ExportedMapBase* temperature_map = maps_exporter->get_temperature_map();
+  
   // Iterate over the 16 subtiles (x) and (y) that a world tile has
   for (auto x=0; x<16; ++x)
     for (auto y=0; y<16; ++y)
@@ -108,7 +111,6 @@ bool temperature_do_work(MapsExporter* maps_exporter) // The coordinator object
       RGB_color rgb_pixel_color = RGB_from_temperature(rme.temperature);
 
       // Write pixels to the bitmap
-      ExportedMapDF* temperature_map = maps_exporter->get_temperature_map();
       temperature_map->write_world_pixel(rdg.get_pos_x(),
                                          rdg.get_pos_y(),
                                          x,

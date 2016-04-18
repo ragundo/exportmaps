@@ -303,6 +303,14 @@ bool MapsExporter::is_savagery_raw_queue_empty()
     return queue_empty;
 }
 
+bool MapsExporter::is_temperature_raw_queue_empty()
+{
+    bool queue_empty;
+    mtx.lock();
+    queue_empty = temperature_raw_queue.empty();
+    mtx.unlock();
+    return queue_empty;
+}
 
 
 //----------------------------------------------------------------------------//

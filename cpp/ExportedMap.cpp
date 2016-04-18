@@ -315,7 +315,7 @@ void ExportedMapDF::write_data(int pos_x,
                                int pos_y,
                                int px,
                                int py,
-                               unsigned int value
+                               int value
                                )
 {
 }
@@ -406,7 +406,7 @@ void ExportedMapRaw::write_data(int pos_x,         // pixel world coordinate x
                                 int pos_y,         // pixel world coordinate y
                                 int px,            // Delta x (0..15)
                                 int py,            // Delta y (0..15)
-                                unsigned int value // value to be written to the file
+                                int value          // value to be written to the file
                                 )
 {
   int index_buffer = pos_y * 16 * _height +
@@ -414,11 +414,18 @@ void ExportedMapRaw::write_data(int pos_x,         // pixel world coordinate x
                      py         * _height +
                      px;
 
-	float f = (float)value/256;
+  if (value < 0)
+  {
+   value = value + 65536;
+  }
+  float f = (float)value/256;
+
+  unsigned char lsb = (value <= 255 ? value : value % 256);
+  unsigned char msb = (value <= 255 ? 0     : (unsigned int)floor(f));
 
   // Use little endian format (LSB first, MSB last)
-  _image[2*index_buffer + 0] = (value <= 255 ? value : value % 256);
-  _image[2*index_buffer + 1] = (value <= 255 ? 0     : (unsigned int)floor(f));
+  _image[2*index_buffer + 0] = lsb;
+  _image[2*index_buffer + 1] = msb;
 }
 
 //----------------------------------------------------------------------------//
@@ -541,7 +548,7 @@ void ExportedMapHM::write_data(int pos_x,
                                int pos_y,
                                int px,
                                int py,
-                               unsigned int value
+                               int value
                                )
 {
 }

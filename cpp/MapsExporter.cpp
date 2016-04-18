@@ -277,6 +277,9 @@ void MapsExporter::write_maps_to_disk()
 
   if (maps_to_generate_raw & MapTypeRaw::SAVAGERY_RAW)
     savagery_raw_map.get()->write_to_disk();
+    
+  if (maps_to_generate_raw & MapTypeRaw::TEMPERATURE_RAW)
+    temperature_raw_map.get()->write_to_disk();    
 
 //----------------------------------------------------------------------------//
 
@@ -293,7 +296,7 @@ void MapsExporter::write_maps_to_disk()
 //----------------------------------------------------------------------------//
 // Methods to return the different maps from its smart pointer
 //----------------------------------------------------------------------------//
-ExportedMapDF* MapsExporter::get_temperature_map()
+ExportedMapBase* MapsExporter::get_temperature_map()
 {
     return temperature_map.get();
 }
@@ -428,6 +431,10 @@ ExportedMapBase* MapsExporter::get_savagery_raw_map()
     return savagery_raw_map.get();
 }
 
+ExportedMapBase* MapsExporter::get_temperature_raw_map()
+{
+    return temperature_raw_map.get();
+}
 
 
 
@@ -499,6 +506,7 @@ void MapsExporter::cleanup()
     while (!rainfall_raw_queue.empty())        rainfall_raw_queue.pop();
     while (!salinity_raw_queue.empty())        salinity_raw_queue.pop();
     while (!savagery_raw_queue.empty())        savagery_raw_queue.pop();
+    while (!temperature_raw_queue.empty())     temperature_raw_queue.pop();    
 
     while (!elevation_hm_queue.empty())        elevation_hm_queue.pop();
     while (!elevation_water_hm_queue.empty())  elevation_water_hm_queue.pop();
@@ -533,6 +541,7 @@ void MapsExporter::cleanup()
     rainfall_raw_map.reset();
     salinity_raw_map.reset();
     savagery_raw_map.reset();
+    temperature_raw_map.reset();    
 
     elevation_hm_map.reset();
     elevation_water_hm_map.reset();
@@ -566,6 +575,7 @@ void MapsExporter::cleanup()
     rainfall_raw_producer.reset();
     salinity_raw_producer.reset();
     savagery_raw_producer.reset();
+    temperature_raw_producer.reset();    
 
     elevation_hm_producer.reset();
     elevation_water_hm_producer.reset();

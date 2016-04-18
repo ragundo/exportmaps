@@ -567,6 +567,24 @@ void MapsExporter::setup_maps(uint32_t maps,     // Graphical maps to generate
 
       if (!savagery_raw_map) throw std::bad_alloc();
     }
+  
+  //----------------------------------------------------------------------------//
+    
+  if (maps_to_generate_raw & MapTypeRaw::TEMPERATURE_RAW)
+  {
+    // Compose filename
+    std::stringstream file_name;
+    file_name << region_name << current_date << "-temperature.raw";
+
+    temperature_raw_producer.reset(new ProducerTemperatureRaw);
+    if (!temperature_raw_producer) throw std::bad_alloc();
+
+    temperature_raw_map.reset(new ExportedMapRaw(file_name.str(),
+                                            df::global::world->world_data->world_width,
+                                            df::global::world->world_data->world_height,
+                                            MapTypeRaw::TEMPERATURE_RAW));
+    if (!temperature_raw_map) throw std::bad_alloc();
+  }    
 
   //----------------------------------------------------------------------------//
 

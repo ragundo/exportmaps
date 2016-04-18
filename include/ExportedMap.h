@@ -99,7 +99,7 @@ namespace exportmaps_plugin
                             int pos_y,         // y coordinate in world coordinates
                             int px,            // offset 0..15 respect to pos_x = embark coordinate x
                             int py,            // offset 0..15 respect to pos_y = embark coordinate y
-                            unsigned int value // value to be written
+                            int value          // value to be written
                             ) = 0;
 
     //----------------------------------------------------------------------------//
@@ -174,7 +174,7 @@ namespace exportmaps_plugin
                     int pos_y,
                     int px,
                     int py,
-                    unsigned int value
+                    int value
                     );
     //----------------------------------------------------------------------------//
     // Write a map to disk
@@ -232,7 +232,7 @@ namespace exportmaps_plugin
                     int pos_y,         // y coordinate in world coordinates
                     int px,            // offset 0..15 respect to pos_x = embark coordinate x
                     int py,            // offset 0..15 respect to pos_y = embark coordinate y
-                    unsigned int value // value to be written
+                    int value          // value to be written
                     );
     //----------------------------------------------------------------------------//
     // Write a map to disk
@@ -286,7 +286,7 @@ namespace exportmaps_plugin
                     int pos_y,
                     int px,
                     int py,
-                    unsigned int value
+                    int value
                     );
     //----------------------------------------------------------------------------//
     // Write a map to disk
