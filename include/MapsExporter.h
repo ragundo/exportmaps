@@ -82,6 +82,8 @@ namespace exportmaps_plugin
     queue<class RegionDetailsBiome>           salinity_raw_queue;
     queue<class RegionDetailsBiome>           savagery_raw_queue;
     queue<class RegionDetailsBiome>           temperature_raw_queue;    
+    queue<class RegionDetailsBiome>           vegetation_raw_queue;
+    queue<class RegionDetailsBiome>           volcanism_raw_queue;
 
     // Heightmaps
     queue<class RegionDetailsElevation>       elevation_hm_queue;
@@ -123,6 +125,8 @@ namespace exportmaps_plugin
     unique_ptr<class ProducerSalinityRaw>             salinity_raw_producer;
     unique_ptr<class ProducerSavageryRaw>             savagery_raw_producer;
     unique_ptr<class ProducerTemperatureRaw>          temperature_raw_producer;    
+    unique_ptr<class ProducerVegetationRaw>           vegetation_raw_producer;
+    unique_ptr<class ProducerVolcanismRaw>            volcanism_raw_producer;
 
     unique_ptr<class ProducerElevationHeightMap>      elevation_hm_producer;
     unique_ptr<class ProducerElevationWaterHeightMap> elevation_water_hm_producer;    
@@ -143,8 +147,8 @@ namespace exportmaps_plugin
     unique_ptr<class ExportedMapDF>             sites_map;
     unique_ptr<class ExportedMapBase>           temperature_map;
     unique_ptr<class ExportedMapDF>             trading_map;
-    unique_ptr<class ExportedMapDF>             volcanism_map;
-    unique_ptr<class ExportedMapDF>             vegetation_map;
+    unique_ptr<class ExportedMapBase>           volcanism_map;
+    unique_ptr<class ExportedMapBase>           vegetation_map;
 
     unique_ptr<class ExportedMapBase>           biome_type_raw_map;
     unique_ptr<class ExportedMapBase>           biome_region_raw_map;
@@ -157,6 +161,8 @@ namespace exportmaps_plugin
     unique_ptr<class ExportedMapBase>           salinity_raw_map;
     unique_ptr<class ExportedMapBase>           savagery_raw_map;
     unique_ptr<class ExportedMapBase>           temperature_raw_map;    
+    unique_ptr<class ExportedMapBase>           volcanism_raw_map;
+    unique_ptr<class ExportedMapBase>           vegetation_raw_map;
 
     unique_ptr<class ExportedMapBase>           elevation_hm_map;
     unique_ptr<class ExportedMapBase>           elevation_water_hm_map;    
@@ -222,7 +228,9 @@ namespace exportmaps_plugin
     void push_rainfall_raw       (RegionDetailsBiome&          rdg);
     void push_salinity_raw       (RegionDetailsBiome&          rdg);
     void push_savagery_raw       (RegionDetailsBiome&          rdg);
-    void push_temperature_raw    (RegionDetailsBiome&          rdg);    
+    void push_temperature_raw    (RegionDetailsBiome&          rdg);
+    void push_vegetation_raw     (RegionDetailsBiome&          rdg);
+    void push_volcanism_raw      (RegionDetailsBiome&          rdg);
 
     void push_elevation_hm       (RegionDetailsElevation&      rde);
     void push_elevation_water_hm (RegionDetailsElevationWater& rdew);    
@@ -258,6 +266,8 @@ namespace exportmaps_plugin
     RegionDetailsBiome          pop_salinity_raw();
     RegionDetailsBiome          pop_savagery_raw();
     RegionDetailsBiome          pop_temperature_raw();    
+    RegionDetailsBiome          pop_vegetation_raw();
+    RegionDetailsBiome          pop_volcanism_raw();
 
     RegionDetailsElevation      pop_elevation_hm();
     RegionDetailsElevationWater pop_elevation_water_hm();    
@@ -279,8 +289,8 @@ namespace exportmaps_plugin
     ExportedMapDF*   get_sites_map();
     ExportedMapBase* get_temperature_map();
     ExportedMapDF*   get_trading_map();
-    ExportedMapDF*   get_vegetation_map();
-    ExportedMapDF*   get_volcanism_map();
+    ExportedMapBase* get_vegetation_map();
+    ExportedMapBase* get_volcanism_map();
 
     ExportedMapBase* get_biome_type_raw_map();
     ExportedMapBase* get_biome_region_raw_map();
@@ -293,6 +303,8 @@ namespace exportmaps_plugin
     ExportedMapBase* get_salinity_raw_map();
     ExportedMapBase* get_savagery_raw_map();
     ExportedMapBase* get_temperature_raw_map();    
+    ExportedMapBase* get_vegetation_raw_map();
+    ExportedMapBase* get_volcanism_raw_map();
 
     ExportedMapBase* get_elevation_hm_map();
     ExportedMapBase* get_elevation_water_hm_map();    
@@ -328,6 +340,8 @@ namespace exportmaps_plugin
     bool is_salinity_raw_queue_empty();
     bool is_savagery_raw_queue_empty();
     bool is_temperature_raw_queue_empty();    
+    bool is_vegetation_raw_queue_empty();
+    bool is_volcanism_raw_queue_empty();
 
     bool is_elevation_hm_queue_empty();
     bool is_elevation_water_hm_queue_empty();    

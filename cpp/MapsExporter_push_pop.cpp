@@ -120,6 +120,12 @@ void MapsExporter::push_end()
     
   if (maps_to_generate_raw & MapTypeRaw::TEMPERATURE_RAW)
     temperature_raw_producer->produce_end(*this);
+
+  if (maps_to_generate_raw & MapTypeRaw::VOLCANISM_RAW)
+    volcanism_raw_producer->produce_end(*this);
+
+  if (maps_to_generate_raw & MapTypeRaw::VEGETATION_RAW)
+    vegetation_raw_producer->produce_end(*this);
     
 
 //----------------------------------------------------------------------------//
@@ -258,6 +264,13 @@ void MapsExporter::push_data(df::world_region_details* ptr_rd, // df::world_regi
   if (maps_to_generate_raw & MapTypeRaw::TEMPERATURE_RAW)
     temperature_raw_producer->produce_data(*this,x,y,ptr_rd);
     
+  // Push data for the volcanism raw map
+  if (maps_to_generate_raw & MapTypeRaw::VOLCANISM_RAW)
+    volcanism_raw_producer->produce_data(*this,x,y,ptr_rd);
+
+  // Push data for the vegetation raw map
+  if (maps_to_generate_raw & MapTypeRaw::VEGETATION_RAW)
+    vegetation_raw_producer->produce_data(*this,x,y,ptr_rd);
 
 
 //----------------------------------------------------------------------------//
@@ -525,7 +538,23 @@ void MapsExporter::push_temperature_raw(RegionDetailsBiome& rdb)
     mtx.unlock();
 }
 
+//----------------------------------------------------------------------------//
 
+void MapsExporter::push_volcanism_raw(RegionDetailsBiome& rdb)
+{
+    mtx.lock();
+    volcanism_raw_queue.push(rdb);
+    mtx.unlock();
+}
+
+//----------------------------------------------------------------------------//
+
+void MapsExporter::push_vegetation_raw(RegionDetailsBiome& rdb)
+{
+    mtx.lock();
+    vegetation_raw_queue.push(rdb);
+    mtx.unlock();
+}
 
 
 //----------------------------------------------------------------------------//
@@ -885,6 +914,29 @@ RegionDetailsBiome MapsExporter::pop_temperature_raw()
     return rdb;
 }
 
+//----------------------------------------------------------------------------//
+
+RegionDetailsBiome MapsExporter::pop_volcanism_raw()
+{
+    mtx.lock();
+    RegionDetailsBiome rdb = this->volcanism_raw_queue.front();
+    this->volcanism_raw_queue.pop();
+    mtx.unlock();
+
+    return rdb;
+}
+
+//----------------------------------------------------------------------------//
+
+RegionDetailsBiome MapsExporter::pop_vegetation_raw()
+{
+    mtx.lock();
+    RegionDetailsBiome rdb = this->vegetation_raw_queue.front();
+    this->vegetation_raw_queue.pop();
+    mtx.unlock();
+
+    return rdb;
+}
 
 
 //----------------------------------------------------------------------------//

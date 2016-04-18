@@ -84,6 +84,10 @@ bool volcanism_do_work(MapsExporter* maps_exporter)
     return true;
 
   // There's data to be processed
+
+  // Get the map where we'll write to
+  ExportedMapBase* volcanism_map = maps_exporter->get_volcanism_map();
+
   // Iterate over the 16 subtiles (x) and (y) that a world tile has
   for (auto x=0; x<16; ++x)
     for (auto y=0; y<16; ++y)
@@ -106,7 +110,6 @@ bool volcanism_do_work(MapsExporter* maps_exporter)
       RGB_color rgb_pixel_color = RGB_from_volcanism(rme.volcanism);
 
       // Write pixels to the bitmap
-      ExportedMapDF* volcanism_map = maps_exporter->get_volcanism_map();
       volcanism_map->write_world_pixel(rdg.get_pos_x(),
                                        rdg.get_pos_y(),
                                        x,

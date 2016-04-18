@@ -588,6 +588,48 @@ void MapsExporter::setup_maps(uint32_t maps,     // Graphical maps to generate
 
   //----------------------------------------------------------------------------//
 
+    if (maps_to_generate_raw & MapTypeRaw::VOLCANISM_RAW)
+    {
+      // Compose filename
+      std::stringstream file_name;
+      file_name << region_name << current_date << "-volcanism.raw";
+
+      volcanism_raw_producer.reset(new ProducerVolcanismRaw);
+      if (!volcanism_raw_producer) throw std::bad_alloc();
+
+      volcanism_raw_map.reset(new ExportedMapRaw(file_name.str(),
+                                                 df::global::world->world_data->world_width,
+                                                 df::global::world->world_data->world_height,
+                                                 MapTypeRaw::VOLCANISM_RAW
+                                                 )
+                              );
+
+      if (!volcanism_raw_map) throw std::bad_alloc();
+    }
+
+  //----------------------------------------------------------------------------//
+
+    if (maps_to_generate_raw & MapTypeRaw::VEGETATION_RAW)
+    {
+      // Compose filename
+      std::stringstream file_name;
+      file_name << region_name << current_date << "-vegetation.raw";
+      vegetation_raw_producer.reset(new ProducerVegetationRaw);
+      if (!vegetation_raw_producer) throw std::bad_alloc();
+
+      vegetation_raw_map.reset(new ExportedMapRaw(file_name.str(),
+                                                  df::global::world->world_data->world_width,
+                                                  df::global::world->world_data->world_height,
+                                                  MapTypeRaw::VEGETATION_RAW
+                                                  )
+                               );
+
+      if (!vegetation_raw_map) throw std::bad_alloc();
+    }
+
+
+  //----------------------------------------------------------------------------//
+
     if (maps_to_generate_hm & MapTypeHeightMap::ELEVATION_HM)
     {
       // Compose filename

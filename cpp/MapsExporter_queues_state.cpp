@@ -303,6 +303,8 @@ bool MapsExporter::is_savagery_raw_queue_empty()
     return queue_empty;
 }
 
+//----------------------------------------------------------------------------//
+
 bool MapsExporter::is_temperature_raw_queue_empty()
 {
     bool queue_empty;
@@ -312,6 +314,25 @@ bool MapsExporter::is_temperature_raw_queue_empty()
     return queue_empty;
 }
 
+//----------------------------------------------------------------------------//
+bool MapsExporter::is_volcanism_raw_queue_empty()
+{
+    bool queue_empty;
+    mtx.lock();
+    queue_empty = volcanism_raw_queue.empty();
+    mtx.unlock();
+    return queue_empty;
+}
+
+//----------------------------------------------------------------------------//
+bool MapsExporter::is_vegetation_raw_queue_empty()
+{
+    bool queue_empty;
+    mtx.lock();
+    queue_empty = vegetation_raw_queue.empty();
+    mtx.unlock();
+    return queue_empty;
+}
 
 //----------------------------------------------------------------------------//
 bool MapsExporter::is_elevation_hm_queue_empty()
