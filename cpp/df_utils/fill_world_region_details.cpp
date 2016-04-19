@@ -117,7 +117,14 @@ void fill_region_details_Linux_OSX(unsigned int address_DF_sub,
                                    int          world_pos_y
                                    )
 {
-    #if defined(_LINUX) || defined(_DARWIN)
+  #if defined(_LINUX) || defined(_DARWIN)
+
+
+  if ((world_pos_x != 256) &&
+      (world_pos_y != 256)
+      )
+  {
+    // For all world types except for the large one (size = 257 world coordinates)
 
     // Setup a thiscall arranged as cdecl call for passing the following parameters to the
     // routine (world.world_data.region_details, coord_x, coord_y, 0, 0)
@@ -145,7 +152,107 @@ void fill_region_details_Linux_OSX(unsigned int address_DF_sub,
                     "m" (world_pos_y)       /* input parameters                                                      */
                   : "eax", "ecx", "edx"     /* used registers                                                        */
                   );
-    #endif
+    return;
+  }
+
+  if ((world_pos_x == 256) &&
+      (world_pos_y != 256)
+      )
+  {
+    // Large world. Coordinate X = 256. Coordinate Y in 0..255
+
+    asm volatile ("movl %0     ,%%eax;    "  /* address_DF_sub to eax                                                 */
+                  "movl %1     ,%%ecx;    "  /* address of world.world_data.region_details to ecx                     */
+                  "mov  %2     ,%%dh;     "  /* position_x to dh                                                      */
+                  "mov  %3     ,%%dl;     "  /* position_y to dl                                                      */
+                  "sub  $0x18  ,%%esp;    "  /* make space in the heap for the parameters                             */
+                  "mov  %%ecx  ,(%%esp);  "  /* store param 1                                                         */
+                  "movl $0     ,4(%%esp); "  /* the heap could have any 32bit value and whe use 16bit, so init zero   */
+                  "mov  %%dh   ,4(%%esp); "  /* set param 2 = 256                                                     */
+                  "orl  $0x100 ,4(%%esp); "  /* set param 2 = 256                                                     */
+                  "movl $0     ,8(%%esp); "  /* the heap could have any 32bit value and whe use 16bit, so init zero   */
+                  "mov  %%dl   ,8(%%esp); "  /* set param 3                                                           */
+                  "mov  $0     ,%%ecx;    "  /* the rest of parameters are 0                                          */
+                  "mov  %%ecx  ,12(%%esp);"  /* set param 4                                                           */
+                  "mov  %%ecx  ,16(%%esp);"  /* set param 5                                                           */
+                  "call *%%eax;          "   /* call the DF subroutine                                                */
+                  "add  $0x18  ,%%esp;     " /* release the space used in the heap for the parameters                 */
+                  :
+                  : "m" (address_DF_sub),
+                    "m" (address_world_region_details),
+                    "m" (world_pos_x),
+                    "m" (world_pos_y)       /* input parameters                                                       */
+                  : "eax", "ecx", "edx"     /* used registers                                                         */
+                  );
+    return;
+  }
+
+  if ((world_pos_x != 256) &&
+      (world_pos_y == 256)
+      )
+  {
+    // Large world. Coordinate Y = 256. Coordinate X in 0..255
+
+    asm volatile ("movl %0     ,%%eax;    "  /* address_DF_sub to eax                                                 */
+                  "movl %1     ,%%ecx;    "  /* address of world.world_data.region_details to ecx                     */
+                  "mov  %2     ,%%dh;     "  /* position_x to dh                                                      */
+                  "mov  %3     ,%%dl;     "  /* position_y to dl                                                      */
+                  "sub  $0x18  ,%%esp;    "  /* make space in the heap for the parameters                             */
+                  "mov  %%ecx  ,(%%esp);  "  /* store param 1                                                         */
+                  "movl $0     ,4(%%esp); "  /* the heap could have any 32bit value and whe use 16bit, so init zero   */
+                  "mov  %%dh   ,4(%%esp); "  /* set param 2                                                           */
+                  "movl $0     ,8(%%esp); "  /* the heap could have any 32bit value and whe use 16bit, so init zero   */
+                  "mov  %%dl   ,8(%%esp); "  /* set param 3                                                           */
+                  "orl  $0x100 ,8(%%esp); "  /* set param 3                                                           */
+                  "mov  $0     ,%%ecx;    "  /* the rest of parameters are 0                                          */
+                  "mov  %%ecx  ,12(%%esp);"  /* set param 4                                                           */
+                  "mov  %%ecx  ,16(%%esp);"  /* set param 5                                                           */
+                  "call *%%eax;          "  /* call the DF subroutine                                                 */
+                  "add  $0x18  ,%%esp;   "  /* release the space used in the heap for the parameters                  */
+                  :
+                  : "m" (address_DF_sub),
+                    "m" (address_world_region_details),
+                    "m" (world_pos_x),
+                    "m" (world_pos_y)       /* input parameters                                                       */
+                  : "eax", "ecx", "edx"     /* used registers                                                         */
+                  );
+    return;
+  }
+
+  if ((world_pos_x == 256) &&
+      (world_pos_y == 256)
+      )
+  {
+    // Large world. Coordinate X = 256. Coordinate Y = 256
+
+    asm volatile ("movl %0     ,%%eax;    "  /* address_DF_sub to eax                                                 */
+                  "movl %1     ,%%ecx;    "  /* address of world.world_data.region_details to ecx                     */
+                  "mov  %2     ,%%dh;     "  /* position_x to dh                                                      */
+                  "mov  %3     ,%%dl;     "  /* position_y to dl                                                      */
+                  "sub  $0x18  ,%%esp;    "  /* make space in the heap for the parameters                             */
+                  "mov  %%ecx  ,(%%esp);  "  /* store param 1                                                         */
+                  "movl $0     ,4(%%esp); "  /* the heap could have any 32bit value and whe use 16bit, so init zero   */
+                  "mov  %%dh   ,4(%%esp); "  /* set param 2                                                           */
+                  "orl  $0x100 ,4(%%esp); "  /* set param 2                                                           */
+                  "movl $0     ,8(%%esp); "  /* the heap could have any 32bit value and whe use 16bit, so init zero   */
+                  "mov  %%dl   ,8(%%esp); "  /* set param 3                                                           */
+                  "orl  $0x100 ,8(%%esp); "  /* set param 3                                                           */
+                  "mov  $0     ,%%ecx;    "  /* the rest of parameters are 0                                          */
+                  "mov  %%ecx  ,12(%%esp);"  /* set param 4                                                           */
+                  "mov  %%ecx  ,16(%%esp);"  /* set param 5                                                           */
+                  "call *%%eax;          "  /* call the DF subroutine                                                 */
+                  "add  $0x18  ,%%esp;     "  /* release the space used in the heap for the parameters                */
+                  :
+                  : "m" (address_DF_sub),
+                    "m" (address_world_region_details),
+                    "m" (world_pos_x),
+                    "m" (world_pos_y)       /* input parameters                                                       */
+                  : "eax", "ecx", "edx"     /* used registers                                                         */
+                  );
+    return;
+  }
+
+  #endif
 }
 
 //----------------------------------------------------------------------------//
