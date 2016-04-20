@@ -19,7 +19,7 @@
 // You can always find the latest version of this plugin in Github
 // https://github.com/ragundo/exportmaps  
 
-#include <set>
+#include <list>
 #include <modules/World.h>
 #include "../include/MapsExporter.h"
 #include "../include/RegionDetails.h"
@@ -34,6 +34,7 @@ using namespace DFHack;
  External functions declaration
 *****************************************************************************/
 extern int  fill_world_region_details  (int world_pos_x, int world_pos_y);
+extern void delete_world_region_details_vector();
 
 
 /*****************************************************************************
@@ -59,6 +60,8 @@ bool MapsExporter::generate_maps(Logger& logger)
       )
       return false;   // There's nothing to generate
 
+  // Used for displaying percentages in the DFHack console for
+  // these maps
   this->set_percentage_diplomacy(0);
   this->set_percentage_nobility(0);
   this->set_percentage_sites(0);
@@ -70,13 +73,21 @@ bool MapsExporter::generate_maps(Logger& logger)
   this->setup_threads();
 
   // Store the world coordinates of the current region, as the region_details are already generated
-  std::set<int> current_region_x_coords;
-  std::set<int> current_region_y_coords;
+  std::list<std::pair<int,int> > coordinate_list;
   for (unsigned int u = 0; u < df::global::world->world_data->region_details.size(); ++u)
   {
-      current_region_x_coords.insert(df::global::world->world_data->region_details[u]->pos.x);
-      current_region_y_coords.insert(df::global::world->world_data->region_details[u]->pos.y);
+    std::pair<int,int> position(df::global::world->world_data->region_details[u]->pos.x,
+                                df::global::world->world_data->region_details[u]->pos.y
+                                );
+
+    coordinate_list.insert(coordinate_list.end(),
+                           position
+                           );
   }
+
+  // Delete the world_region_details vector.
+  // Later we'll restore its contents using the previous list
+  delete_world_region_details_vector();
 
   // No error
   bool exit_by_error = false;
@@ -89,49 +100,25 @@ bool MapsExporter::generate_maps(Logger& logger)
       logger.log("]");logger.log_cr();
 
       df::world_region_details* ptr_rd;
-      bool delete_region = true; // New generated region must be deleted after processing it
+      bool delete_region = true;
 
-      // Check if this world coordinate is one from the currente embark
-      if (current_region_x_coords.count(x))
+      // size before inserting the new element
+      int previous = df::global::world->world_data->region_details.size();
+
+      // generate a new region details a push in the vector
+      fill_world_region_details(x,y);
+
+      // Check the new size of the vector
+      int new_size = df::global::world->world_data->region_details.size();
+
+      // The new size must be the original + 1. If not there was an error
+      if ((new_size == 0) || (new_size == previous))
       {
-        if (current_region_y_coords.count(y))
-        {
-          for (unsigned int k = 0;
-               k < df::global::world->world_data->region_details.size();
-               ++k)
-                    if (df::global::world->world_data->region_details[k]->pos.x == x)
-                      if (df::global::world->world_data->region_details[k]->pos.y == y)
-                      {
-                        // For the current embark, the region_details are already present
-                        // in world.world_data.region_details vector, so there's no need
-                        // to generate nor destroy them
-                        ptr_rd = df::global::world->world_data->region_details[k];
-                        delete_region = false;
-                        break;
-                      }
-        }
+        delete_region = false; // don't delete anything
+        exit_by_error = true;  // finish the plugin execution as there were problems
       }
-
-      if (delete_region) // for on-demand generated ones
-      {
-        // size before inserting the new element
-        int previous = df::global::world->world_data->region_details.size();
-
-        // generate a new region details a push in the vector
-        fill_world_region_details(x,y);
-
-        // Check the new size of the vector
-        int new_size = df::global::world->world_data->region_details.size();
-
-        // The new size must be the original + 1. If not there was an error
-        if ((new_size == 0) || (new_size == previous))
-        {
-          delete_region = false; // don't delete anything
-          exit_by_error = true;  // finish the plugin execution as there were problems
-        }
-        else // Everything ok. Use the new generated region details
-          ptr_rd = df::global::world->world_data->region_details[new_size-1];
-      }
+      else // Everything ok. Use the new generated region details
+        ptr_rd = df::global::world->world_data->region_details[new_size-1];
 
       // Push the data into the different queues
       if (!exit_by_error)
@@ -149,45 +136,57 @@ bool MapsExporter::generate_maps(Logger& logger)
       }
     }
 
-    // The whole world has been swept
-    // Signal no more data to the consumer (threads) to finish their execution
-    if (!exit_by_error)
-    {
-      logger.log_endl();
-      logger.log_line("World map visited");
-    }
+  // The whole world has been swept
 
-    // Signal no more data to the threads
-    this->push_end();
+  // Restore the contents of region_details using the list
+  for (auto it = coordinate_list.begin(); it != coordinate_list.end(); ++it)
+  {
+    std::pair<int,int> position = *it;
 
-    // Trading, diplomacy, nobility and specially sites map can be slow to generate
-    // so show a progress counter to inform the user
-    this->display_progress_special_maps(&logger);
+    fill_world_region_details(position.first,
+                              position.second
+                              );
+
+  }
+
+  // Signal no more data to the consumer (threads) to finish their execution
+  if (!exit_by_error)
+  {
+    logger.log_endl();
+    logger.log_line("World map visited");
+  }
+
+  // Signal no more data to the threads
+  this->push_end();
+
+  // Trading, diplomacy, nobility and specially sites map can be slow to generate
+  // so show a progress counter to inform the user
+  this->display_progress_special_maps(&logger);
 
 
-    // Wait for the consumers to finish
-    logger.log_line("Waiting for threads to finish");
-    this->wait_for_threads();
+  // Wait for the consumers to finish
+  logger.log_line("Waiting for threads to finish");
+  this->wait_for_threads();
 
-    // Write the generated maps to disk
-    if (!exit_by_error)
-    {
-      logger.log_line("Writing maps to disk");
-      this->write_maps_to_disk();
-    }
+  // Write the generated maps to disk
+  if (!exit_by_error)
+  {
+    logger.log_line("Writing maps to disk");
+    this->write_maps_to_disk();
+  }
 
-    // Free resources
-    logger.log_line("Clean up resources");
-    this->cleanup();
+  // Free resources
+  logger.log_line("Clean up resources");
+  this->cleanup();
 
-    if (!exit_by_error)
-    {
-      logger.log_line("Done.");
-    }
-    else
-      logger.log_line("ERROR generating maps");
+  if (!exit_by_error)
+  {
+    logger.log_line("Done.");
+  }
+  else
+    logger.log_line("ERROR generating maps");
 
-    return !exit_by_error;
+  return !exit_by_error;
 }
 
 //----------------------------------------------------------------------------//

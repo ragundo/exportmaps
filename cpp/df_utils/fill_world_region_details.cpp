@@ -27,7 +27,7 @@ using namespace std;
 
 static unsigned int address_Windows = 0x0BFC780 ; // Default for DF42.06
 static unsigned int address_Linux   = 0x90B71F0 ; // Default for DF42.06
-static unsigned int address_Mac     = 0 ;          // Default for DF42.06
+static unsigned int address_Mac     = 0 ;         // Default for DF42.06
 
 
 
@@ -175,8 +175,8 @@ void fill_region_details_Linux_OSX(unsigned int address_DF_sub,
                   "mov  $0     ,%%ecx;    "  /* the rest of parameters are 0                                          */
                   "mov  %%ecx  ,12(%%esp);"  /* set param 4                                                           */
                   "mov  %%ecx  ,16(%%esp);"  /* set param 5                                                           */
-                  "call *%%eax;          "   /* call the DF subroutine                                                */
-                  "add  $0x18  ,%%esp;     " /* release the space used in the heap for the parameters                 */
+                  "call *%%eax;           "  /* call the DF subroutine                                                */
+                  "add  $0x18  ,%%esp;    "  /* release the space used in the heap for the parameters                 */
                   :
                   : "m" (address_DF_sub),
                     "m" (address_world_region_details),
@@ -202,13 +202,13 @@ void fill_region_details_Linux_OSX(unsigned int address_DF_sub,
                   "movl $0     ,4(%%esp); "  /* the heap could have any 32bit value and whe use 16bit, so init zero   */
                   "mov  %%dh   ,4(%%esp); "  /* set param 2                                                           */
                   "movl $0     ,8(%%esp); "  /* the heap could have any 32bit value and whe use 16bit, so init zero   */
-                  "mov  %%dl   ,8(%%esp); "  /* set param 3                                                           */
-                  "orl  $0x100 ,8(%%esp); "  /* set param 3                                                           */
+                  "mov  %%dl   ,8(%%esp); "  /* set param 3 = 256                                                     */
+                  "orl  $0x100 ,8(%%esp); "  /* set param 3 = 256                                                     */
                   "mov  $0     ,%%ecx;    "  /* the rest of parameters are 0                                          */
                   "mov  %%ecx  ,12(%%esp);"  /* set param 4                                                           */
                   "mov  %%ecx  ,16(%%esp);"  /* set param 5                                                           */
-                  "call *%%eax;          "  /* call the DF subroutine                                                 */
-                  "add  $0x18  ,%%esp;   "  /* release the space used in the heap for the parameters                  */
+                  "call *%%eax;           "  /* call the DF subroutine                                                */
+                  "add  $0x18  ,%%esp;    "  /* release the space used in the heap for the parameters                 */
                   :
                   : "m" (address_DF_sub),
                     "m" (address_world_region_details),
@@ -232,16 +232,16 @@ void fill_region_details_Linux_OSX(unsigned int address_DF_sub,
                   "sub  $0x18  ,%%esp;    "  /* make space in the heap for the parameters                             */
                   "mov  %%ecx  ,(%%esp);  "  /* store param 1                                                         */
                   "movl $0     ,4(%%esp); "  /* the heap could have any 32bit value and whe use 16bit, so init zero   */
-                  "mov  %%dh   ,4(%%esp); "  /* set param 2                                                           */
-                  "orl  $0x100 ,4(%%esp); "  /* set param 2                                                           */
+                  "mov  %%dh   ,4(%%esp); "  /* set param 2 = 256                                                     */
+                  "orl  $0x100 ,4(%%esp); "  /* set param 2 = 256                                                     */
                   "movl $0     ,8(%%esp); "  /* the heap could have any 32bit value and whe use 16bit, so init zero   */
-                  "mov  %%dl   ,8(%%esp); "  /* set param 3                                                           */
-                  "orl  $0x100 ,8(%%esp); "  /* set param 3                                                           */
+                  "mov  %%dl   ,8(%%esp); "  /* set param 3 = 256                                                     */
+                  "orl  $0x100 ,8(%%esp); "  /* set param 3 = 256                                                     */
                   "mov  $0     ,%%ecx;    "  /* the rest of parameters are 0                                          */
                   "mov  %%ecx  ,12(%%esp);"  /* set param 4                                                           */
                   "mov  %%ecx  ,16(%%esp);"  /* set param 5                                                           */
-                  "call *%%eax;          "  /* call the DF subroutine                                                 */
-                  "add  $0x18  ,%%esp;     "  /* release the space used in the heap for the parameters                */
+                  "call *%%eax;           "  /* call the DF subroutine                                                */
+                  "add  $0x18  ,%%esp;    "  /* release the space used in the heap for the parameters                 */
                   :
                   : "m" (address_DF_sub),
                     "m" (address_world_region_details),
