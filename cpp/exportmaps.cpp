@@ -17,7 +17,7 @@
 */
 
 // You can always find the latest version of this plugin in Github
-// https://github.com/ragundo/exportmaps  
+// https://github.com/ragundo/exportmaps
 
 #include <algorithm>
 #include "../include/ExportMaps.h"
@@ -100,7 +100,7 @@ DFhackCExport command_result exportmaps (color_ostream& con,                   /
 
   // tuple.first is a uint where each bit ON means a graphical map type to be generated
   // tuple.second is a uint ehere each bit ON means a raw map type to be generated
-  // tuple.third is a uint ehere each bit ON means a heightmap type to be generated  
+  // tuple.third is a uint ehere each bit ON means a heightmap type to be generated
   // tuple.fourth is a vector with indexes to wrong arguments in the command line
   command_line = process_command_line(parameters);
 
@@ -156,14 +156,14 @@ returns a tuple, where
  tuple.first is a uint bit each bit meaning a graphical map type to be generated
  tuple.second is a uint bit each bit meaning a raw map type to be generated
  tuple.third is a vector with index to wrong arguments
- 
+
 *****************************************************************************************/
 std::tuple<unsigned int, unsigned int, unsigned int, std::vector<int> >
 process_command_line(std::vector <std::string>& options)
 {
   unsigned int     maps_to_generate     = 0; // Graphical maps to generate
   unsigned int     maps_to_generate_raw = 0; // Raw maps to generate
-  unsigned int     maps_to_generate_hm  = 0; // Heightmaps to generate  
+  unsigned int     maps_to_generate_hm  = 0; // Heightmaps to generate
   std::vector<int> errors(options.size());   // Vector with index to wrong command line options
 
   // Iterate over all the command line options received
@@ -179,13 +179,35 @@ process_command_line(std::vector <std::string>& options)
     errors[argv_iterator] = -1;
 
     // Check command line
-    if (option == "-all")                                          // All maps
+    if (option == "-all-df")                                         // All DF maps
       return std::tuple<unsigned int,
                         unsigned int,
                         unsigned int,
                         std::vector<int>
                        >(    -1, // All graphical maps
+                              0, // All raw maps
+                              0, // All height maps
+                         errors
+                         );
+
+    if (option == "-all-raw")                                       // All raws maps
+      return std::tuple<unsigned int,
+                        unsigned int,
+                        unsigned int,
+                        std::vector<int>
+                       >(     0, // All graphical maps
                              -1, // All raw maps
+                              0, // All height maps
+                         errors
+                         );
+
+    if (option == "-all-hm")                                       // All raws maps
+      return std::tuple<unsigned int,
+                        unsigned int,
+                        unsigned int,
+                        std::vector<int>
+                       >(     0, // All graphical maps
+                              0, // All raw maps
                              -1, // All height maps
                          errors
                          );
@@ -296,7 +318,7 @@ process_command_line(std::vector <std::string>& options)
       maps_to_generate_hm |= MapTypeHeightMap::ELEVATION_HM;
 
     else if (option == "-elevation-water-hm")                      // Heightmap style
-      maps_to_generate_hm |= MapTypeHeightMap::ELEVATION_WATER_HM;    
+      maps_to_generate_hm |= MapTypeHeightMap::ELEVATION_WATER_HM;
 
     else                                                           // ERROR - unknown argument
       errors[argv_iterator] = argv_iterator;

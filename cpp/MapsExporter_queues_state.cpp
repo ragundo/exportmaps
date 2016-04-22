@@ -17,7 +17,7 @@
 */
 
 // You can always find the latest version of this plugin in Github
-// https://github.com/ragundo/exportmaps  
+// https://github.com/ragundo/exportmaps
 
 #include <set>
 #include <modules/World.h>
@@ -197,7 +197,7 @@ bool MapsExporter::is_sites_queue_empty()
 {
     bool queue_empty;
     mtx.lock();
-    queue_empty = biome_raw_type_queue.empty();
+    queue_empty = sites_queue.empty();
     mtx.unlock();
     return queue_empty;
 }
