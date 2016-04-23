@@ -2,7 +2,7 @@
 A DFHack plugin for exporting world maps while in game.
 
 ## What do it does?
-It exports all the world maps while you are playing the game (Fortress or Adventure) and many more. There's no need to enter Legends mode.
+It exports all the world maps (and many more) while you are playing the game (Fortress or Adventure) and many more. There's no need to enter Legends mode.
 
 You can also use it in Legends mode, as it provides a very fast way to exports the maps.
 
@@ -45,6 +45,13 @@ In contrast, DF only allows you to generate them one map each time.
 **NOTE:** Sites/Structures/Roads is, by far, the slowest map to generate as a full realization of each world site needs to be
 generated, added to the map and destroyed. If you want to speed up the generation, export all the maps except this one.
 
+## New maps
+As the plugin gets the data natively from DF, new map types can be generated. The first one is the region map, which shows all the
+world regions colored according to its type: OCEAN, TUNDRA, HILL, etc.
+
+![alt tag](https://github.com/ragundo/exportmaps/blob/master/docs/region_maps.png)
+
+A world region can contain several biomes, but they're removed in this map so it looks like a simplification of the biome one.
 
 ## Raw maps
 Additionally to standard DF image maps, with this plugin you can generate raw maps which are binary files with data extracted directly from DF,
@@ -141,6 +148,7 @@ The availble options are the following:
 | -nobility        | NOBILITY AND HOLDINGS |
 | -diplomacy       | DIPLOMACY |
 | -sites           | SITES / STRUCTURES / ROADS |
+| -region          | WORLD REGIONS **(NEW!)** |
 | -all-df          | ALL DF STYLE MAPS |
 | -all-raw         | ALL RAW STYLE MAPS |
 | -all-hm          | ELEVATION AND ELEVATION RESPECTING WATER HEIGHTMAPS |
@@ -150,7 +158,7 @@ The availble options are the following:
 For next releases, this is what's planned:
 
 #### New map types
-As the plugin get the data natively from DF, new maps can be generated, like geology or region maps.
+More maps are planned, like geology ones.
 
 #### RPC interface
 For generating maps on demand without needing to use the DFHack console. Just connect to DF and request a map using Google's protocol buffers.

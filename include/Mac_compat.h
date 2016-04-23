@@ -19,21 +19,12 @@
 // You can always find the latest version of this plugin in Github
 // https://github.com/ragundo/exportmaps
 
-#ifndef EXPORTMAPS_H
-#define EXPORTMAPS_H
+#ifndef MAC_COMPAT_H
+#define MAC_COMPAT_H
 
-#include <typeinfo>
-#include <tinythread.h>
-//#include <mutex>
-//#include <thread>
-#include <queue>
-//#include <chrono>
-#include <memory>
+// OSX uses gcc 4.8 which don't support C++ nullptr keyword
+#ifndef HAVE_NULLPTR
+#define nullptr 0L
+#endif
 
-#include "dfhack.h"
-
-#include "ExportedMap.h"
-#include "Producer.h"
-#include "RegionDetails.h"
-
-#endif // EXPORTMAPS_H
+#endif // MAC_COMPAT_H
