@@ -195,7 +195,8 @@ namespace exportmaps_plugin
 
     bool generate_maps(Logger& logger);
 
-    void write_maps_to_disk();
+    int  get_num_maps_to_write_to_disk();
+    void write_maps_to_disk(Logger& logger);
 
     void push_data(df::world_region_details* ptr_rd, int x, int y);
 

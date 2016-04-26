@@ -171,8 +171,8 @@ bool MapsExporter::generate_maps(Logger& logger)
   // Write the generated maps to disk
   if (!exit_by_error)
   {
-    logger.log_line("Writing maps to disk");
-    this->write_maps_to_disk();
+    logger.log_line("Writing maps to disk: ");
+    this->write_maps_to_disk(logger);
   }
 
   // Free resources
@@ -188,119 +188,6 @@ bool MapsExporter::generate_maps(Logger& logger)
 
   return !exit_by_error;
 }
-
-//----------------------------------------------------------------------------//
-// Write the generated maps to disk
-//----------------------------------------------------------------------------//
-void MapsExporter::write_maps_to_disk()
-{
-  if (maps_to_generate & MapType::TEMPERATURE)
-    temperature_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::RAINFALL)
-    rainfall_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::REGION)
-    region_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::DRAINAGE)
-    drainage_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::SAVAGERY)
-    savagery_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::VOLCANISM)
-    volcanism_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::VEGETATION)
-    vegetation_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::EVILNESS)
-    evilness_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::SALINITY)
-    salinity_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::HYDROSPHERE)
-    hydro_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::ELEVATION)
-    elevation_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::ELEVATION_WATER)
-    elevation_water_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::BIOME)
-    biome_map.get()->write_to_disk();
-
-//    if (maps_to_generate & MapType::GEOLOGY)
-//        geology_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::TRADING)
-    trading_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::NOBILITY)
-    nobility_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::DIPLOMACY)
-    diplomacy_map.get()->write_to_disk();
-
-  if (maps_to_generate & MapType::SITES)
-    sites_map.get()->write_to_disk();
-
-//----------------------------------------------------------------------------//
-
-  if (maps_to_generate_raw & MapTypeRaw::BIOME_TYPE_RAW)
-    biome_type_raw_map.get()->write_to_disk();
-
-  if (maps_to_generate_raw & MapTypeRaw::BIOME_REGION_RAW)
-    biome_region_raw_map.get()->write_to_disk();
-
-  if (maps_to_generate_raw & MapTypeRaw::DRAINAGE_RAW)
-    drainage_raw_map.get()->write_to_disk();
-
-  if (maps_to_generate_raw & MapTypeRaw::ELEVATION_RAW)
-    elevation_raw_map.get()->write_to_disk();
-
-  if (maps_to_generate_raw & MapTypeRaw::ELEVATION_WATER_RAW)
-    elevation_water_raw_map.get()->write_to_disk();
-
-  if (maps_to_generate_raw & MapTypeRaw::EVILNESS_RAW)
-    evilness_raw_map.get()->write_to_disk();
-
-  if (maps_to_generate_raw & MapTypeRaw::HYDROSPHERE_RAW)
-    hydro_raw_map.get()->write_to_disk();
-
-  if (maps_to_generate_raw & MapTypeRaw::RAINFALL_RAW)
-    rainfall_raw_map.get()->write_to_disk();
-
-  if (maps_to_generate_raw & MapTypeRaw::SALINITY_RAW)
-    salinity_raw_map.get()->write_to_disk();
-
-  if (maps_to_generate_raw & MapTypeRaw::SAVAGERY_RAW)
-    savagery_raw_map.get()->write_to_disk();
-
-  if (maps_to_generate_raw & MapTypeRaw::TEMPERATURE_RAW)
-    temperature_raw_map.get()->write_to_disk();
-
-  if (maps_to_generate_raw & MapTypeRaw::VOLCANISM_RAW)
-    volcanism_raw_map.get()->write_to_disk();
-
-  if (maps_to_generate_raw & MapTypeRaw::VEGETATION_RAW)
-    vegetation_raw_map.get()->write_to_disk();
-
-
-//----------------------------------------------------------------------------//
-
-  if (maps_to_generate_hm & MapTypeHeightMap::ELEVATION_HM)
-    elevation_hm_map.get()->write_to_disk();
-
-  if (maps_to_generate_hm & MapTypeHeightMap::ELEVATION_WATER_HM)
-    elevation_water_hm_map.get()->write_to_disk();
-
-}
-
-
 
 //----------------------------------------------------------------------------//
 // Methods to return the different maps from its smart pointer

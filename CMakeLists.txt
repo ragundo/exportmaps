@@ -65,6 +65,7 @@ SET(PROJECT_SRCS
   ./cpp/MapsExporter_queues_state.cpp
   ./cpp/MapsExporter_push_pop.cpp
   ./cpp/MapsExporter_setup_maps.cpp
+  ./cpp/MapsExporter_write_maps.cpp
   ./cpp/MapsExporter_threads.cpp
 
   # JSON support
