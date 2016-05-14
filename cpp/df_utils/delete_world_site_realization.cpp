@@ -58,7 +58,7 @@ void delete_world_site_realization(df::world_site* world_site)
                                            );
     #endif // Linux or Mac
 
-    #if defined(WIN32)
+    #if defined(_WIN32)
     delete_world_site_realization_Windows(world_site
                                          );
     #endif // WINDOWS
@@ -107,7 +107,7 @@ void delete_world_site_realization_Windows(df::world_site* world_site)
     // Corrected subroutine address
     unsigned int address_DF_sub_Win = delete_world_site_realization_address + delta;
 
-    #if defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
+    #if defined(_WIN32)
 
     __asm push world_site                        /* 1st parameter to the stack = df_world_site*   */
     __asm mov  eax, address_DF_sub_Win           /* eax = address DF subroutine                   */

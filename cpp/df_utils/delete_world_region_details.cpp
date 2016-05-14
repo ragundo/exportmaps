@@ -60,7 +60,7 @@ void delete_world_region_details_Linux_OSX(df::world_region_details* ptr_world_r
 
 void delete_world_region_details(df::world_region_details* ptr_world_region_details)
 {
-    #if defined(WIN32)
+    #if defined(_WIN32)
     delete_world_region_details_Windows(ptr_world_region_details);
     #endif // Windows
 
@@ -76,7 +76,7 @@ void delete_world_region_details(df::world_region_details* ptr_world_region_deta
 //----------------------------------------------------------------------------//
 void delete_world_region_details_Windows(df::world_region_details* ptr_world_region_details)
 {
-    #if defined(WIN32)
+    #if defined(_WIN32)
 
     // Adjust the real address
     unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
