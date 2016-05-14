@@ -1,7 +1,7 @@
 # **exportmaps**
 A DFHack plugin for exporting world maps while in game.
 
-## What do it does?
+## What does it do?
 It exports all the world maps (and many more) while you are playing the game (Fortress or Adventure) and many more. There's no need to enter Legends mode.
 
 You can also use it in Legends mode, as it provides a very fast way to exports the maps.
