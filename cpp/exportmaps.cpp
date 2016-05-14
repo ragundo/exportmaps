@@ -24,37 +24,54 @@
 #include "../include/ExportMaps.h"
 #include "../include/Logger.h"
 #include "modules/Filesystem.h"
+#include "../../../library/include/DFHackVersion.h"
+#include "../../../library/include/Core.h"
+
+#include "../../../depends/tinyxml/tinyxml.h"
 
 using namespace std;
 using namespace DFHack;
 
 using df::global::world;
 
+static string PLUGIN_VERSION = "0.43.02";
+
+
 DFHACK_PLUGIN("exportmaps");
 DFHACK_PLUGIN_IS_ENABLED(s_enabled);
 
 using namespace exportmaps_plugin;
 
-/*****************************************************************************
-Local function definitions
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// External variables
+//----------------------------------------------------------------------------//
+extern unsigned int fill_world_region_details_address;
+extern unsigned int delete_world_region_details_address;
+extern unsigned int delete_world_region_details_vector_address;
+
+extern unsigned int init_world_site_realization_address;
+extern unsigned int delete_world_site_realization_address;
+
+//----------------------------------------------------------------------------//
+//Local function definitions
+//----------------------------------------------------------------------------//
 std::tuple<unsigned int,
            unsigned int,
            unsigned int,
            std::vector<int>
           >process_command_line(std::vector <std::string>& options);
 
-/*****************************************************************************
-Plugin global variables
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Plugin global variables
+//----------------------------------------------------------------------------//
 MapsExporter maps_exporter;
 
 
-/*****************************************************************************
-Here go all the command declarations...
-Mostly to allow having the mandatory stuff on top of the file and commands on
-the bottom
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Here go all the command declarations...
+// Mostly to allow having the mandatory stuff on top of the file and commands on
+// the bottom
+//----------------------------------------------------------------------------//
 
 
 //----------------------------------------------------------------------------//
@@ -82,9 +99,9 @@ DFhackCExport command_result plugin_onupdate ( color_ostream& out )
 }
 
 
-/*****************************************************************************
-Plugin main function
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// Plugin main function
+//----------------------------------------------------------------------------//
 DFhackCExport command_result exportmaps (color_ostream& con,                   // DFHack console
                                          std::vector <std::string>& parameters // Parameters received by the console
                                         )
@@ -134,13 +151,33 @@ DFhackCExport command_result exportmaps (color_ostream& con,                   /
   return CR_OK;
 }
 
-/*****************************************************************************
-[Mandatory] init function. If you have some global state, create it here.
-*****************************************************************************/
+//----------------------------------------------------------------------------//
+// [Mandatory] init function. If you have some global state, create it here.
+//----------------------------------------------------------------------------//
 DFhackCExport command_result plugin_init (color_ostream& con,                   // DFHack console
                                           std::vector <PluginCommand>& commands // Parameters received by the console
                                           )
 {
+    uint32_t addr;
+
+    addr = Core::getInstance().vinfo->getAddress("fill_world_region_details");
+    fill_world_region_details_address = addr;
+
+    addr = Core::getInstance().vinfo->getAddress("delete_world_region_details");
+    delete_world_region_details_address = addr;
+
+    addr = Core::getInstance().vinfo->getAddress("delete_world_region_details_vector");
+    delete_world_region_details_vector_address = addr;
+
+
+    addr = Core::getInstance().vinfo->getAddress("init_world_site_realization");
+    init_world_site_realization_address = addr;
+
+    addr = Core::getInstance().vinfo->getAddress("delete_world_site_realization");
+    delete_world_site_realization_address = addr;
+
+
+
     // Fill the command list with your commands.
     commands.push_back(PluginCommand("exportmaps",                                                                        // Plugin name
                                      "Export world maps in different formats to disk in Fortress/Adventure/Legends Mode", // Plugin brief description
@@ -148,17 +185,36 @@ DFhackCExport command_result plugin_init (color_ostream& con,                   
                                      /*,
                                      true or false - true means that the command can't be used from non-interactive user interface'*/
                                      ));
+
+
+
+    // Check if the DF version matches the plugin one and load xml config
+    // file if necessary
+    string df_version = DFHack::Version::df_version();
+    if (df_version.compare(PLUGIN_VERSION) != 0)
+    {
+        // This DF version is different
+        // Load the xml config file for finding the correct addresses
+        string dfhack_path = Core::getInstance().p->getPath();
+        dfhack_path.append("/dfhack-config/exportmaps-config.xml");
+        TiXmlDocument config;
+        config.LoadFile(dfhack_path.c_str());
+        auto hijo = config.FirstChildElement();
+        if (hijo)
+            con.print(hijo->Value());
+
+    }
+
     return CR_OK;
 }
 
-/*****************************************************************************************
-Process the command line arguments
-returns a tuple, where
- tuple.first is a uint bit each bit meaning a graphical map type to be generated
- tuple.second is a uint bit each bit meaning a raw map type to be generated
- tuple.third is a vector with index to wrong arguments
-
-*****************************************************************************************/
+//----------------------------------------------------------------------------//
+// Process the command line arguments
+// returns a tuple, where
+// tuple.first is a uint bit each bit meaning a graphical map type to be generated
+// tuple.second is a uint bit each bit meaning a raw map type to be generated
+// tuple.third is a vector with index to wrong arguments
+//----------------------------------------------------------------------------//
 std::tuple<unsigned int, unsigned int, unsigned int, std::vector<int> >
 process_command_line(std::vector <std::string>& options)
 {

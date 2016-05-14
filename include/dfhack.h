@@ -365,7 +365,7 @@
 #include <df/viewscreen_layer_unit_actionst.h>
 #include <df/viewscreen_layer_unit_healthst.h>
 #include <df/viewscreen_layer_unit_relationshipst.h>
-#include <df/viewscreen_layer_workshop_profilest.h>
+#include <df/viewscreen_workshop_profilest.h>
 #include <df/viewscreen_layer_world_gen_param_presetst.h>
 #include <df/viewscreen_layer_world_gen_paramst.h>
 #include <df/viewscreen_legendsst.h>
