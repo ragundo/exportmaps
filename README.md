@@ -2,7 +2,7 @@
 A DFHack plugin for exporting world maps while in game.
 
 ## What does it do?
-It exports all the world maps (and many more) while you are playing the game (Fortress or Adventure) and many more. There's no need to enter Legends mode.
+It exports all the world maps (and many more) while you are playing the game (Fortress or Adventure). There's no need to enter Legends mode.
 
 You can also use it in Legends mode, as it provides a very fast way to exports the maps.
 
@@ -24,6 +24,7 @@ The following standard DF maps can be generated:
 * Trade
 * Nobility/holdings
 * Diplomacy
+* Region **NEW!**
 
 Only enhanced biome map is not generated, as I consider it confusing and useless.
 
