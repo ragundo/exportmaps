@@ -75,7 +75,7 @@ int fill_world_region_details(int world_pos_x,
                                  );
     #endif // Linux & Mac
 
-    #if defined(_WIN32)
+    #if defined(WIN32)
     fill_region_details_Windows(pv,
                                 world_pos_x,
                                 world_pos_y
@@ -250,7 +250,7 @@ void fill_region_details_Windows(void*        address_world_region_details,
     // Corrected subroutine address
     unsigned int address_DF_sub = fill_world_region_details_address + delta;
 
-    #if defined(_WIN32)
+    #if defined(WIN32)
     // setup a __fastcall for passing the following parameters to the
     // routine(world.world_data.region_details, coord_x, coord_y, 0, 0)
     // Then call DF routine

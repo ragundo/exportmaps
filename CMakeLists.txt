@@ -93,6 +93,7 @@ IF(UNIX)
         # add any extra linux libs here
         dfhack-tinythread
         dfhack-tinyxml
+		PROTOBUFS
         ${PROJECT_LIBS}
     )
 # windows
@@ -101,6 +102,7 @@ ELSE(UNIX)
         # add any extra windows libs here
         dfhack-tinythread
         dfhack-tinyxml
+		PROTOBUFS
         ${PROJECT_LIBS}
         $(NOINHERIT)
     )

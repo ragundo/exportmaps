@@ -267,7 +267,7 @@ RGB_color RGB_from_elevation_water(RegionDetailsElevationWater& rdew,
 //----------------------------------------------------------------------------//
 std::pair<df::world_river*, int> get_world_river(int x, int y)
 {
-    std::pair<df::world_river*, int> NO_RIVER(nullptr,-1);
+    std::pair<df::world_river*, int> NO_RIVER((df::world_river*)nullptr,-1);
 
     // Out of bounds check
     if ((x < 0) || (x >= df::global::world->world_data->world_width) ||
