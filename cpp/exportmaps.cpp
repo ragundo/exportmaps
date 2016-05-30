@@ -158,29 +158,22 @@ DFhackCExport command_result plugin_init (color_ostream& con,                   
                                           std::vector <PluginCommand>& commands // Parameters received by the console
                                           )
 {
-    uint32_t addr_1;
-    uint32_t addr_2;
-    uint32_t addr_3;
-    uint32_t addr_4;
-    uint32_t addr_5;
 
-    addr_1 = Core::getInstance().vinfo->getAddress("fill_world_region_details");
-    fill_world_region_details_address = addr_1;
-
-    addr_2 = Core::getInstance().vinfo->getAddress("delete_world_region_details");
-    delete_world_region_details_address = addr_2;
-
-    addr_3 = Core::getInstance().vinfo->getAddress("delete_world_region_details_vector");
-    delete_world_region_details_vector_address = addr_3;
+    fill_world_region_details_address          = Core::getInstance().vinfo->getAddress("fill_world_region_details");
+    delete_world_region_details_address        = Core::getInstance().vinfo->getAddress("delete_world_region_details");
+    delete_world_region_details_vector_address = Core::getInstance().vinfo->getAddress("delete_world_region_details_vector");
+    init_world_site_realization_address        = Core::getInstance().vinfo->getAddress("init_world_site_realization");
+    delete_world_site_realization_address      = Core::getInstance().vinfo->getAddress("delete_world_site_realization");
 
 
-    addr_4 = Core::getInstance().vinfo->getAddress("init_world_site_realization");
-    init_world_site_realization_address = addr_4;
-
-    addr_5 = Core::getInstance().vinfo->getAddress("delete_world_site_realization");
-    delete_world_site_realization_address = addr_5;
-
-    if (!addr_1 || !addr_2 || !addr_4 || !addr_5)
+    if (!fill_world_region_details_address ||
+        !delete_world_region_details_address ||
+        #ifdef WIN32
+        !delete_world_region_details_vector_address ||
+        #endif
+        !init_world_site_realization_address ||
+        !delete_world_site_realization_address
+       )
     {
         // The addresses are not in global.xml
         con.print("ERROR: addresses are not present in globals.xml");
@@ -246,37 +239,14 @@ process_command_line(std::vector <std::string>& options)
 
     // Check command line
     if (option == "-all-df")                                         // All DF maps
-      return std::tuple<unsigned int,
-                        unsigned int,
-                        unsigned int,
-                        std::vector<int>
-                       >(    -1, // All graphical maps
-                              0, // All raw maps
-                              0, // All height maps
-                         errors
-                         );
+        maps_to_generate = -1;
+
 
     if (option == "-all-raw")                                       // All raws maps
-      return std::tuple<unsigned int,
-                        unsigned int,
-                        unsigned int,
-                        std::vector<int>
-                       >(     0, // All graphical maps
-                             -1, // All raw maps
-                              0, // All height maps
-                         errors
-                         );
+        maps_to_generate_raw = -1;
 
     if (option == "-all-hm")                                       // All raws maps
-      return std::tuple<unsigned int,
-                        unsigned int,
-                        unsigned int,
-                        std::vector<int>
-                       >(     0, // All graphical maps
-                              0, // All raw maps
-                             -1, // All height maps
-                         errors
-                         );
+        maps_to_generate_hm = -1;
 
     if (option == "-temperature")                                  // map DF style
       maps_to_generate |= MapType::TEMPERATURE;
