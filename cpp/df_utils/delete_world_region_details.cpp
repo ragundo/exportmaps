@@ -96,7 +96,7 @@ void delete_world_region_details_Windows(df::world_region_details* ptr_world_reg
 //----------------------------------------------------------------------------//
 void delete_world_region_details_Linux_OSX(df::world_region_details* ptr_world_region_details)
 {
-    #ifdef _LINUX
+    #if defined (_LINUX) || defined (_DARWIN)
 
 
     asm volatile("movl %0    ,%%eax;    "                     /* address_DF_sub to eax                                 */
@@ -108,23 +108,6 @@ void delete_world_region_details_Linux_OSX(df::world_region_details* ptr_world_r
                  :                                            /* no output parameters                                  */
                  : "m"(delete_world_region_details_address),  /* input parameter                                       */
                    "m"(ptr_world_region_details)              /* input parameter                                       */
-                 : "eax", "ecx"                               /* used registers                                        */
-                );
-
-    #endif
-
-    #ifdef _DARWIN
-
-
-    asm volatile("movl %0    ,%%eax;    "                     /* address_DF_sub to eax                                 */
-                 "movl %1    ,%%ecx;    "                     /* address of world.world_data.region_details to ecx     */
-                 "sub  $0x10 ,%%esp;    "                     /* make space in the heap for the parameters             */
-                 "mov  %%ecx ,(%%esp);  "                     /* store param 1                                         */
-                 "call *%%eax;          "                     /* call the DF subroutine                                */
-                 "add  $0x10  ,%%esp;   "                     /* release the space used in the heap for the parameters */
-                 :                                            /* no output parameters                                  */
-                 : "m"(address_Mac),                          /* input parameter                                       */
-                   "m"(delete_world_region_details_address)   /* input parameter                                       */
                  : "eax", "ecx"                               /* used registers                                        */
                 );
 
