@@ -158,25 +158,34 @@ DFhackCExport command_result plugin_init (color_ostream& con,                   
                                           std::vector <PluginCommand>& commands // Parameters received by the console
                                           )
 {
-    uint32_t addr;
+    uint32_t addr_1;
+    uint32_t addr_2;
+    uint32_t addr_3;
+    uint32_t addr_4;
+    uint32_t addr_5;
 
-    addr = Core::getInstance().vinfo->getAddress("fill_world_region_details");
-    fill_world_region_details_address = addr;
+    addr_1 = Core::getInstance().vinfo->getAddress("fill_world_region_details");
+    fill_world_region_details_address = addr_1;
 
-    addr = Core::getInstance().vinfo->getAddress("delete_world_region_details");
-    delete_world_region_details_address = addr;
+    addr_2 = Core::getInstance().vinfo->getAddress("delete_world_region_details");
+    delete_world_region_details_address = addr_2;
 
-    addr = Core::getInstance().vinfo->getAddress("delete_world_region_details_vector");
-    delete_world_region_details_vector_address = addr;
-
-
-    addr = Core::getInstance().vinfo->getAddress("init_world_site_realization");
-    init_world_site_realization_address = addr;
-
-    addr = Core::getInstance().vinfo->getAddress("delete_world_site_realization");
-    delete_world_site_realization_address = addr;
+    addr_3 = Core::getInstance().vinfo->getAddress("delete_world_region_details_vector");
+    delete_world_region_details_vector_address = addr_3;
 
 
+    addr_4 = Core::getInstance().vinfo->getAddress("init_world_site_realization");
+    init_world_site_realization_address = addr_4;
+
+    addr_5 = Core::getInstance().vinfo->getAddress("delete_world_site_realization");
+    delete_world_site_realization_address = addr_5;
+
+    if (!addr_1 || !addr_2 || !addr_4 || !addr_5)
+    {
+        // The addresses are not in global.xml
+        con.print("ERROR: addresses are not present in globals.xml");
+        return CR_FAILURE;
+    }
 
     // Fill the command list with your commands.
     commands.push_back(PluginCommand("exportmaps",                                                                        // Plugin name
