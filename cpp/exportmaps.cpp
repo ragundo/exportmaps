@@ -106,6 +106,9 @@ DFhackCExport command_result exportmaps (color_ostream& con,                   /
                                          std::vector <std::string>& parameters // Parameters received by the console
                                         )
 {
+    // Pause DF or it will crash for sure
+    CoreSuspender pause;
+
   // Init the loger object
   Logger logger(con);
 
