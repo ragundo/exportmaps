@@ -1,19 +1,19 @@
 /*
-  This software is provided 'as-is', without any express or implied
-  warranty.  In no event will the authors be held liable for any damages
-  arising from the use of this software.
+    This software is provided 'as-is', without any express or implied
+    warranty.  In no event will the authors be held liable for any damages
+    arising from the use of this software.
 
-  Permission is granted to anyone to use this software for any purpose,
-  including commercial applications, and to alter it and redistribute it
-  freely, subject to the following restrictions:
+    Permission is granted to anyone to use this software for any purpose,
+    including commercial applications, and to alter it and redistribute it
+    freely, subject to the following restrictions:
 
-  1. The origin of this software must not be misrepresented; you must not
+    1. The origin of this software must not be misrepresented; you must not
      claim that you wrote the original software. If you use this software
      in a product, an acknowledgment in the product documentation would be
      appreciated but is not required.
-  2. Altered source versions must be plainly marked as such, and must not be
+    2. Altered source versions must be plainly marked as such, and must not be
      misrepresented as being the original software.
-  3. This notice may not be removed or altered from any source distribution.
+    3. This notice may not be removed or altered from any source distribution.
 */
 
 // You can always find the latest version of this plugin in Github
@@ -31,162 +31,170 @@ using namespace DFHack;
 
 
 /*****************************************************************************
- External functions declaration
+    External functions declaration
 *****************************************************************************/
-extern int  fill_world_region_details  (int world_pos_x, int world_pos_y);
+extern int  fill_world_region_details(int world_pos_x, int world_pos_y);
 extern void delete_world_region_details_vector();
 
 
 /*****************************************************************************
- Class methods
+    Class methods
 *****************************************************************************/
 
 
 /*****************************************************************************
- Main method.
- This is the method that manages all the process.
- It visits all the world coordinates generating the region_details needed
- to get from DF the data needed for each different map.
- That data is put in one queue for each map type to be generated (producer)
- When the world has been visited completely, it puts a special marker in each
- queue to signal the consumers (threads) that there's no data left and that
- they must end its execution
+    Main method.
+    This is the method that manages all the process.
+    It visits all the world coordinates generating the region_details needed
+    to get from DF the data needed for each different map.
+    That data is put in one queue for each map type to be generated (producer)
+    When the world has been visited completely, it puts a special marker in each
+    queue to signal the consumers (threads) that there's no data left and that
+    they must end its execution
 *****************************************************************************/
 bool MapsExporter::generate_maps(Logger& logger)
 {
-  if ((maps_to_generate     == 0) &&
-      (maps_to_generate_raw == 0) &&
-      (maps_to_generate_hm  == 0)
-      )
-      return false;   // There's nothing to generate
+    if ((maps_to_generate     == 0) &&
+            (maps_to_generate_raw == 0) &&
+            (maps_to_generate_hm  == 0)
+       )
+        return false;   // There's nothing to generate
 
-  // Used for displaying percentages in the DFHack console for
-  // these maps
-  this->set_percentage_diplomacy(0);
-  this->set_percentage_nobility(0);
-  this->set_percentage_sites(0);
-  this->set_percentage_trade(0);
+    // Used for displaying percentages in the DFHack console for
+    // these maps
+    this->set_percentage_diplomacy(0);
+    this->set_percentage_nobility(0);
+    this->set_percentage_sites(0);
+    this->set_percentage_trade(0);
 
-  logger.log_line("Starting threads");
+    logger.log_line("Starting threads");
 
-  // start the threads, one for each map to generate
-  this->setup_threads();
+    // start the threads, one for each map to generate
+    this->setup_threads();
 
-  // Store the world coordinates of the current region, as the region_details are already generated
-  std::list<std::pair<int,int> > coordinate_list;
-  for (unsigned int u = 0; u < df::global::world->world_data->region_details.size(); ++u)
-  {
-    std::pair<int,int> position(df::global::world->world_data->region_details[u]->pos.x,
-                                df::global::world->world_data->region_details[u]->pos.y
-                                );
+    // Store the world coordinates of the current region, as the region_details are already generated
+    std::set<int> current_region_x_coords;
+    std::set<int> current_region_y_coords;
 
-    coordinate_list.insert(coordinate_list.end(),
-                           position
-                           );
-  }
-
-  // Delete the world_region_details vector.
-  // Later we'll restore its contents using the previous list
-  delete_world_region_details_vector();
-
-  // No error
-  bool exit_by_error = false;
-
-  // Iterate over the whole world
-  for (int y = 0; y < df::global::world->world_data->world_height; ++y)
-    for (int x = 0; x < df::global::world->world_data->world_width; ++x)
+    for (unsigned int u = 0; u < df::global::world->world_data->region_details.size(); ++u)
     {
-      logger.log("Processing world coordinates:[");logger.log_number(x,3);logger.log(",");logger.log_number(y,3);
-      logger.log("]");logger.log_cr();
-
-      df::world_region_details* ptr_rd;
-      bool delete_region = true;
-
-      // size before inserting the new element
-      int previous = df::global::world->world_data->region_details.size();
-
-      // generate a new region details a push in the vector
-      fill_world_region_details(x,y);
-
-      // Check the new size of the vector
-      int new_size = df::global::world->world_data->region_details.size();
-
-      // The new size must be the original + 1. If not there was an error
-      if ((new_size == 0) || (new_size == previous))
-      {
-        delete_region = false; // don't delete anything
-        exit_by_error = true;  // finish the plugin execution as there were problems
-      }
-      else // Everything ok. Use the new generated region details
-        ptr_rd = df::global::world->world_data->region_details[new_size-1];
-
-      // Push the data into the different queues
-      if (!exit_by_error)
-        this->push_data(ptr_rd, x, y);
-
-      // Remove the generated region details
-      if (delete_region)
-      {
-        // delete_world_region_details(ptr_rd);
-        delete ptr_rd;
-
-        // Remove also the entry in the vector
-        df::global::world->world_data->region_details.erase(df::global::world->world_data->region_details.begin() +
-                                                            df::global::world->world_data->region_details.size()-1);
-      }
+        current_region_x_coords.insert(df::global::world->world_data->region_details[u]->pos.x);
+        current_region_y_coords.insert(df::global::world->world_data->region_details[u]->pos.y);
     }
 
-  // The whole world has been swept
+    // No error
+    bool exit_by_error = false;
 
-  // Restore the contents of region_details using the list
-  for (auto it = coordinate_list.begin(); it != coordinate_list.end(); ++it)
-  {
-    std::pair<int,int> position = *it;
+    // Iterate over the whole world
+    for (int y = 0; y < df::global::world->world_data->world_height; ++y)
+    {
+        for (int x = 0; x < df::global::world->world_data->world_width; ++x)
+        {
+            logger.log("Processing world coordinates:["); logger.log_number(x, 3); logger.log(","); logger.log_number(y, 3);
+            logger.log("]"); logger.log_cr();
 
-    fill_world_region_details(position.first,
-                              position.second
-                              );
+            df::world_region_details* ptr_rd;
+            bool delete_region = true; // New generated region must be deleted after processing it
 
-  }
+            // Check if this world coordinate is one from the currente embark
+            if (current_region_x_coords.count(x))
+            {
+                if (current_region_y_coords.count(y))
+                {
+                    for (unsigned int k = 0;
+                            k < df::global::world->world_data->region_details.size();
+                            ++k
+                        )
+                        if (df::global::world->world_data->region_details[k]->pos.x == x)
+                            if (df::global::world->world_data->region_details[k]->pos.y == y)
+                            {
+                                // For the current embark, the region_details are already present
+                                // in world.world_data.region_details vector, so there's no need
+                                // to generate nor destroy them
+                                ptr_rd = df::global::world->world_data->region_details[k];
+                                delete_region = false;
+                                break;
+                            }
+                }
+            }
 
-  // Signal no more data to the consumer (threads) to finish their execution
-  if (!exit_by_error)
-  {
-    logger.log_endl();
-    logger.log_line("World map visited");
-  }
+            if (delete_region) // for on-demand generated ones
+            {
+                // size before inserting the new element
+                int previous = df::global::world->world_data->region_details.size();
 
-  // Signal no more data to the threads
-  this->push_end();
+                // generate a new region details a push in the vector
+                fill_world_region_details(x, y);
 
-  // Trading, diplomacy, nobility and specially sites map can be slow to generate
-  // so show a progress counter to inform the user
-  this->display_progress_special_maps(&logger);
+                // Check the new size of the vector
+                int new_size = df::global::world->world_data->region_details.size();
+
+                // The new size must be the original + 1. If not there was an error
+                if ((new_size == 0) || (new_size == previous))
+                {
+                    delete_region = false; // don't delete anything
+                    exit_by_error = true;  // finish the plugin execution as there were problems
+                }
+                else // Everything ok. Use the new generated region details
+                    ptr_rd = df::global::world->world_data->region_details[new_size - 1];
+
+                // Push the data into the different queues
+                if (!exit_by_error)
+                    this->push_data(ptr_rd, x, y);
+
+                // Remove the generated region details
+                if (delete_region)
+                {
+                    // delete_world_region_details(ptr_rd);
+                    delete ptr_rd;
+
+                    // Remove also the entry in the vector
+                    df::global::world->world_data->region_details.erase(df::global::world->world_data->region_details.begin() +
+                                                                        df::global::world->world_data->region_details.size() - 1);
+                }
+            }
+        }
+    }
+
+    // The whole world has been swept
+    // Signal no more data to the consumer (threads) to finish their execution
+    if (!exit_by_error)
+    {
+        logger.log_endl();
+        logger.log_line("World map visited");
+    }
+
+    // Signal no more data to the threads
+    this->push_end();
+
+    // Trading, diplomacy, nobility and specially sites map can be slow to generate
+    // so show a progress counter to inform the user
+    this->display_progress_special_maps(&logger);
 
 
-  // Wait for the consumers to finish
-  logger.log_line("Waiting for threads to finish");
-  this->wait_for_threads();
+    // Wait for the consumers to finish
+    logger.log_line("Waiting for threads to finish");
+    this->wait_for_threads();
 
-  // Write the generated maps to disk
-  if (!exit_by_error)
-  {
-    logger.log_line("Writing maps to disk: ");
-    this->write_maps_to_disk(logger);
-  }
+    // Write the generated maps to disk
+    if (!exit_by_error)
+    {
+        logger.log_line("Writing maps to disk: ");
+        this->write_maps_to_disk(logger);
+    }
 
-  // Free resources
-  logger.log_line("Clean up resources");
-  this->cleanup();
+    // Free resources
+    logger.log_line("Clean up resources");
+    this->cleanup();
 
-  if (!exit_by_error)
-  {
-    logger.log_line("Done.");
-  }
-  else
-    logger.log_line("ERROR generating maps");
+    if (!exit_by_error)
+    {
+        logger.log_line("Done.");
+    }
+    else
+        logger.log_line("ERROR generating maps");
 
-  return !exit_by_error;
+    return !exit_by_error;
 }
 
 //----------------------------------------------------------------------------//
@@ -362,22 +370,22 @@ ExportedMapBase* MapsExporter::get_elevation_water_hm_map()
 //----------------------------------------------------------------------------//
 void MapsExporter::set_percentage_sites(int percentage)
 {
-  this->percentage_sites = percentage;
+    this->percentage_sites = percentage;
 }
 
 void MapsExporter::set_percentage_trade(int percentage)
 {
-  this->percentage_trade = percentage;
+    this->percentage_trade = percentage;
 }
 
 void MapsExporter::set_percentage_nobility(int percentage)
 {
-  this->percentage_nobility = percentage;
+    this->percentage_nobility = percentage;
 }
 
 void MapsExporter::set_percentage_diplomacy(int percentage)
 {
-  this->percentage_diplomacy = percentage;
+    this->percentage_diplomacy = percentage;
 }
 
 //----------------------------------------------------------------------------//
@@ -505,77 +513,77 @@ void MapsExporter::cleanup()
 //----------------------------------------------------------------------------//
 void MapsExporter::display_progress_special_maps(Logger* logger)
 {
-  if ((maps_to_generate & MapType::TRADING) ||
-      (maps_to_generate & MapType::NOBILITY) ||
-      (maps_to_generate & MapType::DIPLOMACY) ||
-      (maps_to_generate & MapType::SITES)
-     )
-  {
-    while (((this->percentage_trade     != -1) && (maps_to_generate & MapType::TRADING))   ||
-           ((this->percentage_sites     != -1) && (maps_to_generate & MapType::SITES))     ||
-           ((this->percentage_diplomacy != -1) && (maps_to_generate & MapType::DIPLOMACY)) ||
-           ((this->percentage_nobility  != -1) && (maps_to_generate & MapType::NOBILITY))
-          )
+    if ((maps_to_generate & MapType::TRADING) ||
+            (maps_to_generate & MapType::NOBILITY) ||
+            (maps_to_generate & MapType::DIPLOMACY) ||
+            (maps_to_generate & MapType::SITES)
+       )
     {
-      if (maps_to_generate & MapType::TRADING)
-      {
-        if (this->percentage_trade == -1)
+        while (((this->percentage_trade     != -1) && (maps_to_generate & MapType::TRADING))   ||
+                ((this->percentage_sites     != -1) && (maps_to_generate & MapType::SITES))     ||
+                ((this->percentage_diplomacy != -1) && (maps_to_generate & MapType::DIPLOMACY)) ||
+                ((this->percentage_nobility  != -1) && (maps_to_generate & MapType::NOBILITY))
+              )
         {
-          logger->log("Trading map:100% - ");
-        }
-        else
-        {
-          logger->log("Trading map:");
-          logger->log_number(this->percentage_trade,3);
-          logger->log("% - ");
-        }
-      }
+            if (maps_to_generate & MapType::TRADING)
+            {
+                if (this->percentage_trade == -1)
+                {
+                    logger->log("Trading map:100% - ");
+                }
+                else
+                {
+                    logger->log("Trading map:");
+                    logger->log_number(this->percentage_trade, 3);
+                    logger->log("% - ");
+                }
+            }
 
-      if (maps_to_generate & MapType::NOBILITY)
-      {
-        if (this->percentage_nobility == -1)
-        {
-          logger->log("Nobility map:100% - ");
-        }
-        else
-        {
-          logger->log("Nobility map:");
-          logger->log_number(this->percentage_nobility,3);
-          logger->log("% - ");
-        }
-      }
+            if (maps_to_generate & MapType::NOBILITY)
+            {
+                if (this->percentage_nobility == -1)
+                {
+                    logger->log("Nobility map:100% - ");
+                }
+                else
+                {
+                    logger->log("Nobility map:");
+                    logger->log_number(this->percentage_nobility, 3);
+                    logger->log("% - ");
+                }
+            }
 
-      if (maps_to_generate & MapType::SITES)
-      {
-        if (this->percentage_sites == -1)
-        {
-          logger->log("Sites map:100% - ");
-        }
-        else
-        {
-          logger->log("Sites map:");
-          logger->log_number(this->percentage_sites,3);
-          logger->log("% - ");
-        }
-      }
+            if (maps_to_generate & MapType::SITES)
+            {
+                if (this->percentage_sites == -1)
+                {
+                    logger->log("Sites map:100% - ");
+                }
+                else
+                {
+                    logger->log("Sites map:");
+                    logger->log_number(this->percentage_sites, 3);
+                    logger->log("% - ");
+                }
+            }
 
-      if (maps_to_generate & MapType::DIPLOMACY)
-      {
-        if (this->percentage_diplomacy == -1)
-        {
-          logger->log("Diplomacy map:100% - ");
-        }
-        else
-        {
-          logger->log("Diplomacy map:");
-          logger->log_number(this->percentage_diplomacy,3);
-          logger->log("% - ");
-        }
-      }
+            if (maps_to_generate & MapType::DIPLOMACY)
+            {
+                if (this->percentage_diplomacy == -1)
+                {
+                    logger->log("Diplomacy map:100% - ");
+                }
+                else
+                {
+                    logger->log("Diplomacy map:");
+                    logger->log_number(this->percentage_diplomacy, 3);
+                    logger->log("% - ");
+                }
+            }
 
-      logger->log_cr();
+            logger->log_cr();
+        }
+        logger->log_endl();
     }
-    logger->log_endl();
-  }
 
 }

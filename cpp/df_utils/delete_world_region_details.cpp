@@ -79,7 +79,10 @@ void delete_world_region_details_Windows(df::world_region_details* ptr_world_reg
     #if defined(WIN32)
 
     // Adjust the real address
-    unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
+    // Not needed anymore as getting the address from symbols.xml
+    // returns the address already ready
+    // unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
+    unsigned int delta = 0;
     unsigned int address_DF_sub = delete_world_region_details_address + delta;
 
     // Call DF function
@@ -96,7 +99,7 @@ void delete_world_region_details_Windows(df::world_region_details* ptr_world_reg
 //----------------------------------------------------------------------------//
 void delete_world_region_details_Linux_OSX(df::world_region_details* ptr_world_region_details)
 {
-    #if defined (_LINUX) || defined (_DARWIN)
+    #if defined(_LINUX) || defined(_DARWIN)
 
 
     asm volatile("movl %0    ,%%eax;    "                     /* address_DF_sub to eax                                 */

@@ -67,7 +67,10 @@ void delete_world_region_details_vector()
 void delete_world_region_details_vector_Windows()
 {
     // Adjust the real address
-    unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
+    // Not needed anymore as getting the address from symbols.xml
+    // returns the address already ready
+    // unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
+    unsigned int delta = 0;
     unsigned int address_DF_sub = delete_world_region_details_vector_address + delta;
 
     #if defined(_WIN32)

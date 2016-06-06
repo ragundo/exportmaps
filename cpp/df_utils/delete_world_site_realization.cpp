@@ -98,7 +98,10 @@ void delete_world_site_realization_Windows(df::world_site* world_site)
     // Windows DF has Address Space Randomization active, so the virtual address
     // doesn't have to be the same every time DF is running.
     // DFHack solves this for us
-    unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
+    // Not needed anymore as gettint the address from symbols.xml
+    // returns the address already ready
+    // unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
+    unsigned int delta = 0;
 
     // Corrected subroutine address
     unsigned int address_DF_sub_Win = delete_world_site_realization_address + delta;

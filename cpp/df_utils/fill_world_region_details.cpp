@@ -245,7 +245,10 @@ void fill_region_details_Windows(void*        address_world_region_details,
     // Windows DF has Address Space Randomization active, so the virtual address
     // doesn't have to be the same every time DF is running.
     // DFHack solves this for us
-    unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
+    // Not needed anymore as gettint the address from symbols.xml
+    // returns the address already ready
+    // unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
+    unsigned int delta = 0;
 
     // Corrected subroutine address
     unsigned int address_DF_sub = fill_world_region_details_address + delta;
