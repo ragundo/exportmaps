@@ -160,12 +160,6 @@ DFhackCExport command_result plugin_init (color_ostream& con,                   
                                           std::vector <PluginCommand>& commands // Parameters received by the console
                                           )
 {
-    uint32_t addr_1;
-    uint32_t addr_2;
-    uint32_t addr_3;
-    uint32_t addr_4;
-    uint32_t addr_5;
-
     fill_world_region_details_address          = Core::getInstance().vinfo->getAddress("fill_world_region_details");
     delete_world_region_details_address        = Core::getInstance().vinfo->getAddress("delete_world_region_details");
     delete_world_region_details_vector_address = Core::getInstance().vinfo->getAddress("delete_world_region_details_vector");
@@ -176,7 +170,7 @@ DFhackCExport command_result plugin_init (color_ostream& con,                   
     if (!fill_world_region_details_address ||
         !delete_world_region_details_address ||
 #ifdef WIN32
-        !delete_world_region_details_vector_address
+        !delete_world_region_details_vector_address ||
 #endif
         !init_world_site_realization_address ||
         !delete_world_site_realization_address)
