@@ -111,6 +111,9 @@ DFhackCExport command_result exportmaps (color_ostream& con,                   /
   // Init the loger object
   Logger logger(con);
 
+  // And associate it with the map exportes
+  maps_exporter.set_logger(&logger);
+
   // Process command line arguments
   std::tuple<unsigned int,
              unsigned int,

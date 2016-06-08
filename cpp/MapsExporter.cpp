@@ -513,6 +513,8 @@ void MapsExporter::cleanup()
 //----------------------------------------------------------------------------//
 void MapsExporter::display_progress_special_maps(Logger* logger)
 {
+    return;
+    
     if ((maps_to_generate & MapType::TRADING) ||
             (maps_to_generate & MapType::NOBILITY) ||
             (maps_to_generate & MapType::DIPLOMACY) ||
@@ -586,4 +588,14 @@ void MapsExporter::display_progress_special_maps(Logger* logger)
         logger->log_endl();
     }
 
+}
+
+void MapsExporter::set_logger(Logger* logger)
+{
+    m_logger = logger;
+}
+
+Logger* MapsExporter::get_logger()
+{
+    return m_logger;
 }

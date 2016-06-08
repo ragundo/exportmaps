@@ -73,9 +73,9 @@ int get_historical_entity_id_from_world_site(df::world_site* site);
 /*****************************************************************************
 Local functions forward declaration
 *****************************************************************************/
-int draw_sites_map(MapsExporter* map_exporter);
+int draw_sites_map(MapsExporter* map_exporter, Logger* logger);
 
-bool sites_do_work(MapsExporter* maps_exporter);
+bool sites_do_work(MapsExporter* maps_exporter, Logger* logger);
 
 void process_nob_dip_trad_common(ExportedMapBase* map,
                                  RegionDetailsElevationWater& rdew,
@@ -154,6 +154,7 @@ void consumer_sites(void* arg)
 {
   bool             finish        = false;
   MapsExporter*    maps_exporter = (MapsExporter*)arg;
+  Logger*          logger        = maps_exporter->get_logger();
 
   if (arg != nullptr)
   {
@@ -164,7 +165,7 @@ void consumer_sites(void* arg)
         tthread::this_thread::yield();
 
       else // There's data in the queue
-        finish = sites_do_work(maps_exporter);
+        finish = sites_do_work(maps_exporter, logger);
     }
   }
   // Function finish -> Thread finish
@@ -177,7 +178,7 @@ Get the data from the queue.
 If is the end marker, the queue is empty and no more work needs to be done.Return
 If it's actual data process it and update the corresponding map
 *****************************************************************************/
-bool sites_do_work(MapsExporter*    maps_exporter)
+bool sites_do_work(MapsExporter*    maps_exporter, Logger* logger)
 {
   // Get the data from the queue
   RegionDetailsElevationWater rdew = maps_exporter->pop_sites();
@@ -190,7 +191,7 @@ bool sites_do_work(MapsExporter*    maps_exporter)
     // All the terrain data has been processed.
     // Now draw world sites over this base map
     process_world_structures(sites_map);
-    draw_sites_map(maps_exporter);
+    draw_sites_map(maps_exporter, logger);
 
     return true;
   }
@@ -324,17 +325,22 @@ bool process_nob_dip_trad_sites_common(ExportedMapBase*             map,
 // Utility function
 //
 //----------------------------------------------------------------------------//
-int draw_sites_map(MapsExporter* map_exporter)
+int draw_sites_map(MapsExporter* map_exporter, Logger* logger)
 {
   ExportedMapBase* map = map_exporter->get_sites_map();
   int result = 0;
   for (int i = df::global::world->world_data->sites.size() - 1; i >= 0; i-- )
   {
+    logger->log("Processing site #"); logger->log_number(i);
     df::world_site* world_site = df::global::world->world_data->sites[i];
     if (world_site == nullptr) continue;
 
     // Check if the site has a previous realization active
     bool site_has_realization = world_site->realization != nullptr;
+
+    if (site_has_realization)
+      logger->log(" has_realization");
+    logger->log_endl();
 
     // Do DF initalize the site realization as this is a VERY complex task
     if (!site_has_realization)

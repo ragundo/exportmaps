@@ -360,6 +360,11 @@ namespace exportmaps_plugin
     void            setup_threads();
     void            wait_for_threads();
 
+    // Logger object for writing to the console
+    Logger*          m_logger;
+    void             set_logger(Logger* logger);
+    Logger*          get_logger();
+
     //
     void set_percentage_sites    (int percentage);
     void set_percentage_trade    (int percentage);
