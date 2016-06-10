@@ -22,6 +22,16 @@
 #include "../../../include/Mac_compat.h"
 #include "../../../include/ExportMaps.h"
 #include "../../../include/util/ofsub.h"
+#include <df/region_map_entry.h>
+#include <df/world.h>
+#include <df/world_data.h>
+#include <df/world_region_details.h>
+#include <df/world_site.h>
+#include <df/entity_site_link.h>
+#include <df/historical_entity.h>
+#include <df/creature_raw.h>
+#include <df/history_event.h>
+#include <df/history_event_collection.h>
 
 using namespace exportmaps_plugin;
 

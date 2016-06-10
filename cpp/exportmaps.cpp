@@ -26,6 +26,7 @@
 #include "modules/Filesystem.h"
 #include "../../../library/include/DFHackVersion.h"
 #include "../../../library/include/Core.h"
+#include <df/world.h>
 
 
 using namespace std;

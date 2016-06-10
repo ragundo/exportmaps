@@ -24,6 +24,8 @@
 #include "../include/MapsExporter.h"
 #include "../include/RegionDetails.h"
 #include "../include/ExportedMap.h"
+#include <df/world.h>
+#include <df/world_data.h>
 
 using namespace DFHack;
 using namespace exportmaps_plugin;

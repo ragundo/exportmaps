@@ -21,6 +21,9 @@
 
 #include "../../include/Mac_compat.h"
 #include "../../include/dfhack.h"
+#include <df/world.h>
+#include <df/world_data.h>
+#include <df/world_region_details.h>
 
 
 using namespace std;

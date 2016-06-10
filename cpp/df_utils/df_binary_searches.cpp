@@ -21,6 +21,19 @@
 
 #include "../../include/Mac_compat.h"
 #include "../../include/dfhack.h"
+#include <df/world.h>
+#include <df/world_site.h>
+#include <df/world_data.h>
+#include <df/historical_entity.h>
+#include <df/entity_position.h>
+#include <df/entity_position_assignment.h>
+#include <df/entity_entity_link.h>
+#include <df/entity_site_link.h>
+#include <df/history_event.h>
+#include <df/history_event_collection.h>
+#include <df/world_construction.h>
+#include <df/world_region.h>
+#include <df/world_site_realization.h>
 
 using namespace std;
 using namespace DFHack;

@@ -22,6 +22,8 @@
 #include "../../include/dfhack.h"
 #include "DFHackVersion.h"
 #include "modules/Filesystem.h"
+#include <df/world.h>
+#include <df/world_data.h>
 
 using namespace std;
 

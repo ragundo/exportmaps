@@ -33,6 +33,13 @@
 #include "../../../include/Mac_compat.h"
 #include "../../../include/ExportMaps.h"
 #include "../../../include/util/ofsub.h"
+#include <df/region_map_entry.h>
+#include <df/world.h>
+#include <df/world_data.h>
+#include <df/world_region_details.h>
+#include <df/world_geo_biome.h>
+#include <df/world_geo_layer.h>
+#include <df/geo_layer_type.h>
 
 using namespace DFHack;
 using namespace exportmaps_plugin;

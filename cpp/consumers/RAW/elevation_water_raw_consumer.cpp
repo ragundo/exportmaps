@@ -21,6 +21,11 @@
 
 #include "../../../include/Mac_compat.h"
 #include "../../../include/ExportMaps.h"
+#include <df/region_map_entry.h>
+#include <df/world.h>
+#include <df/world_data.h>
+#include <df/world_region.h>
+#include <df/world_region_details.h>
 
 using namespace exportmaps_plugin;
 

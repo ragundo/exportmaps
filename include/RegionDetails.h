@@ -23,6 +23,7 @@
 #define REGION_DETAILS_H
 
 #include "dfhack.h"
+#include <df/world_region_details.h>
 
 class RegionDetailsBase
 {

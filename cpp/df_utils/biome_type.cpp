@@ -21,6 +21,10 @@
 
 #include "../../include/dfhack.h"
 #include "../../include/util/ofsub.h"
+#include <df/region_map_entry.h>
+#include <df/world.h>
+#include <df/world_data.h>
+#include <df/biome_type.h>
 
 
 /*****************************************************************************
@@ -189,8 +193,8 @@ std::pair<bool,bool> check_tropicality_no_poles_world(df::region_map_entry& regi
                                                       int y_pos
                                                       )
 {
-    int is_possible_tropical_area_by_latitude = 0;
-    int is_tropical_area_by_latitude = 0;
+    bool is_possible_tropical_area_by_latitude = false;
+    bool is_tropical_area_by_latitude = false;
 
     // If there're no poles, tropical area is determined by temperature
     if (region.temperature >= 75)
@@ -214,8 +218,8 @@ std::pair<bool,bool> check_tropicality_north_pole_only_world(df::region_map_entr
                                                              )
 {
     int v6;
-    int is_possible_tropical_area_by_latitude = 0;
-    int is_tropical_area_by_latitude = 0;
+    bool is_possible_tropical_area_by_latitude = false;
+    bool is_tropical_area_by_latitude = false;
     df::world_data* wdata = df::global::world->world_data;
 
     // Scale the smaller worlds to the big one
@@ -250,8 +254,8 @@ std::pair<bool,bool> check_tropicality_south_pole_only_world(df::region_map_entr
                                                              )
 {
     int v6 = df::global::world->world_data->world_height - y_pos - 1;
-    int is_possible_tropical_area_by_latitude = 0;
-    int is_tropical_area_by_latitude = 0;
+    bool is_possible_tropical_area_by_latitude = false;
+    bool is_tropical_area_by_latitude = false;
     df::world_data* wdata = df::global::world->world_data;
 
     if ( wdata->world_height == 17)
@@ -287,8 +291,8 @@ std::pair<bool,bool> check_tropicality_both_poles_world(df::region_map_entry& re
                                                         )
 {
     int v6;
-    int is_possible_tropical_area_by_latitude = 0;
-    int is_tropical_area_by_latitude = 0;
+    bool is_possible_tropical_area_by_latitude = false;
+    bool is_tropical_area_by_latitude = false;
     df::world_data* wdata = df::global::world->world_data;
 
     if (y_pos < wdata->world_height/2)

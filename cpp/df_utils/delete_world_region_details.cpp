@@ -20,6 +20,7 @@
 // https://github.com/ragundo/exportmaps
 
 #include "../../include/dfhack.h"
+#include <df/world_region_details.h>
 
 
 using namespace std;

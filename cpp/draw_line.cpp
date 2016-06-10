@@ -23,6 +23,7 @@
 #include "../include/MapsExporter.h"
 #include "../include/RegionDetails.h"
 #include "../include/ExportedMap.h"
+#include <df/world_site.h>
 
 using namespace std;
 using namespace DFHack;
