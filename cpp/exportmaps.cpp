@@ -180,7 +180,7 @@ DFhackCExport command_result plugin_init (color_ostream& con,                   
         !delete_world_site_realization_address)
     {
         // The addresses are not in global.xml
-        con.print("ERROR: addresses are not present in globals.xml");
+        con.printerr("ERROR: addresses are not present in symbols.xml");
         return CR_FAILURE;
     }
 
@@ -235,126 +235,207 @@ process_command_line(std::vector <std::string>& options)
 
     // Check command line
     if (option == "-all-df")                                       // All DF maps
-    {maps_to_generate = -1; continue;}
+    {
+		maps_to_generate = -1; continue;
+	}
 
     if (option == "-all-raw")                                 // All raws maps
-    {maps_to_generate_raw = -1; continue;}
+    {
+		maps_to_generate_raw = -1; continue;
+	}
 
     if (option == "-all-hm")                                  // All raws maps
-    {maps_to_generate_hm = -1; continue;}
+    {
+		maps_to_generate_hm = -1; continue;
+	}
 
     if (option == "-temperature")                                  // map DF style
-      {maps_to_generate |= MapType::TEMPERATURE; continue;}
+    {
+		maps_to_generate |= MapType::TEMPERATURE; continue;
+	}
 
     if (option == "-rainfall")                                // map DF style
-      {maps_to_generate |= MapType::RAINFALL; continue;}
+    {
+		maps_to_generate |= MapType::RAINFALL; continue;
+	}
 
     if (option == "-region")                                  // map DF style
-      {maps_to_generate |= MapType::REGION; continue;}
+    {
+		maps_to_generate |= MapType::REGION; continue;
+	}
 
     if (option == "-drainage")                                // map DF style
-      {maps_to_generate |= MapType::DRAINAGE; continue;}
+    {
+		maps_to_generate |= MapType::DRAINAGE; continue;
+	}
 
     if (option == "-savagery")                                // map DF style
-      {maps_to_generate |= MapType::SAVAGERY; continue;}
+    {
+		maps_to_generate |= MapType::SAVAGERY; continue;
+	}
 
     if (option == "-volcanism")                               // map DF style
-      {maps_to_generate |= MapType::VOLCANISM; continue;}
+    {
+		maps_to_generate |= MapType::VOLCANISM; continue;
+	}
 
     if (option == "-vegetation")                              // map DF style
-      {maps_to_generate |= MapType::VEGETATION; continue;}
+    {
+		maps_to_generate |= MapType::VEGETATION; continue;
+	}
 
     if (option == "-evilness")                                // map DF style
-      {maps_to_generate |= MapType::EVILNESS; continue;}
+    {
+		maps_to_generate |= MapType::EVILNESS; continue;
+	}
 
     if (option == "-salinity")                                // map DF style
-      {maps_to_generate |= MapType::SALINITY; continue;}
+    {
+		maps_to_generate |= MapType::SALINITY; continue;
+	}
 
     if (option == "-hydrosphere")                             // map DF style
-      {maps_to_generate |= MapType::HYDROSPHERE; continue;}
+    {
+		maps_to_generate |= MapType::HYDROSPHERE; continue;
+	}
 
     if (option == "-elevation")                               // map DF style
-      {maps_to_generate |= MapType::ELEVATION; continue;}
+    {
+		maps_to_generate |= MapType::ELEVATION; continue;
+	}
 
     if (option == "-elevation-water")                         // map DF style
-      {maps_to_generate |= MapType::ELEVATION_WATER; continue;}
+    {
+		maps_to_generate |= MapType::ELEVATION_WATER; continue;
+	}
 
     if (option == "-biome")                                   // map DF style
-      {maps_to_generate |= MapType::BIOME; continue;}
+    {
+		maps_to_generate |= MapType::BIOME; continue;
+	}
 
     if (option == "-trading")                                 // map DF style
-     { maps_to_generate |= MapType::TRADING; continue;}
+    {
+		maps_to_generate |= MapType::TRADING; continue;
+	}
 
     if (option == "-nobility")                                // map DF style
-      {maps_to_generate |= MapType::NOBILITY; continue;}
+     {
+		 maps_to_generate |= MapType::NOBILITY; continue;
+	}
 
     if (option == "-diplomacy")                               // map DF style
-      {maps_to_generate |= MapType::DIPLOMACY; continue;}
+    {
+		 maps_to_generate |= MapType::DIPLOMACY; continue;
+	}
 
     if (option == "-sites")                                   // map DF style
-      {maps_to_generate |= MapType::SITES; continue;}
+    {
+#ifndef _DARWIN
+		maps_to_generate |= MapType::SITES; 
+#endif
+	
+		continue;
+	}
 
 
     // Raw maps
 
     if (option == "-temperature-raw")                         // map raw data file
-      {maps_to_generate_raw |= MapTypeRaw::TEMPERATURE_RAW; continue;}
+    {
+		maps_to_generate_raw |= MapTypeRaw::TEMPERATURE_RAW; continue;
+	}
 
     if (option == "-rainfall-raw")                            // map raw data file
-      {maps_to_generate_raw |= MapTypeRaw::RAINFALL_RAW; continue;}
+    {
+		maps_to_generate_raw |= MapTypeRaw::RAINFALL_RAW; continue;
+	}
 
     if (option == "-drainage-raw")                            // map raw data file
-      {maps_to_generate_raw |= MapTypeRaw::DRAINAGE_RAW; continue;}
+    {
+		maps_to_generate_raw |= MapTypeRaw::DRAINAGE_RAW; continue;
+	}
 
     if (option == "-savagery-raw")                            // map raw data file
-      {maps_to_generate_raw |= MapTypeRaw::SAVAGERY_RAW; continue;}
+    {
+		maps_to_generate_raw |= MapTypeRaw::SAVAGERY_RAW; continue;
+	}
 
     if (option == "-volcanism-raw")                           // map raw data file
-      {maps_to_generate_raw |= MapTypeRaw::VOLCANISM_RAW; continue;}
+    {
+		maps_to_generate_raw |= MapTypeRaw::VOLCANISM_RAW; continue;
+	}
 
     if (option == "-vegetation-raw")                          // map raw data file
-      {maps_to_generate_raw |= MapTypeRaw::VEGETATION_RAW; continue;}
+    {
+		maps_to_generate_raw |= MapTypeRaw::VEGETATION_RAW; continue;
+	}
 
     if (option == "-evilness-raw")                            // map raw data file
-      {maps_to_generate_raw |= MapTypeRaw::EVILNESS_RAW; continue;}
+    {
+		maps_to_generate_raw |= MapTypeRaw::EVILNESS_RAW; continue;
+	}
 
     if (option == "-salinity-raw")                            // map raw data file
-      {maps_to_generate_raw |= MapTypeRaw::SALINITY_RAW; continue;}
+    {
+		maps_to_generate_raw |= MapTypeRaw::SALINITY_RAW; continue;
+	}
 
     if (option == "-hydrosphere-raw")                         // map raw data file
-      {maps_to_generate_raw |= MapTypeRaw::HYDROSPHERE_RAW; continue;}
+    {
+		maps_to_generate_raw |= MapTypeRaw::HYDROSPHERE_RAW; continue;
+	}
 
     if (option == "-elevation-raw")                           // map raw data file
-      {maps_to_generate_raw |= MapTypeRaw::ELEVATION_RAW; continue;}
+    {
+		maps_to_generate_raw |= MapTypeRaw::ELEVATION_RAW; continue;
+	}
 
     if (option == "-elevation-water-raw")                     // map raw data file
-      {maps_to_generate_raw |= MapTypeRaw::ELEVATION_WATER_RAW; continue;}
+    {
+		maps_to_generate_raw |= MapTypeRaw::ELEVATION_WATER_RAW; continue;
+	}
 
     if (option == "-biome-raw")                               // map raw data file
     {
       maps_to_generate_raw |= MapTypeRaw::BIOME_TYPE_RAW;
-      maps_to_generate_raw |= MapTypeRaw::BIOME_REGION_RAW; continue;
+      maps_to_generate_raw |= MapTypeRaw::BIOME_REGION_RAW; 
+	  continue;
     }
 
     if (option == "-trading-raw")                             // map raw data file
-      {maps_to_generate_raw |= MapTypeRaw::TRADING_RAW; continue;}
+    {
+		maps_to_generate_raw |= MapTypeRaw::TRADING_RAW; continue;
+	}
 
     if (option == "-nobility-raw")                            // map raw data file
-      {maps_to_generate_raw |= MapTypeRaw::NOBILITY_RAW; continue;}
+    {
+		maps_to_generate_raw |= MapTypeRaw::NOBILITY_RAW; continue;
+	}
 
     if (option == "-diplomacy-raw")                           // map raw data file
-      {maps_to_generate_raw |= MapTypeRaw::DIPLOMACY_RAW; continue;}
+    {
+		maps_to_generate_raw |= MapTypeRaw::DIPLOMACY_RAW; continue;
+	}
 
     if (option == "-sites-raw")                               // map raw data file
-      {maps_to_generate_raw |= MapTypeRaw::SITES_RAW; continue;}
+    {
+#ifndef _DARWIN
+		maps_to_generate_raw |= MapTypeRaw::SITES_RAW; continue;
+#endif
+	}
 
     // Heightmaps
 
     if (option == "-elevation-hm")                            // Heighmap style
-      {maps_to_generate_hm |= MapTypeHeightMap::ELEVATION_HM; continue;}
+    {
+		maps_to_generate_hm |= MapTypeHeightMap::ELEVATION_HM; continue;
+	}
 
     if (option == "-elevation-water-hm")                      // Heightmap style
-      {maps_to_generate_hm |= MapTypeHeightMap::ELEVATION_WATER_HM; continue;}
+    {
+		maps_to_generate_hm |= MapTypeHeightMap::ELEVATION_WATER_HM; continue;
+	}
 
     // ERROR - unknown argument
       errors[argv_iterator] = argv_iterator;

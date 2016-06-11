@@ -2,7 +2,7 @@
 A DFHack plugin for exporting world maps while in game.
 
 ## What does it do?
-It exports all the world maps (and many more) while you are playing the game (Fortress or Adventure). There's no need to enter Legends mode.
+It exports almost all the world maps (and many more) while you are playing the game (Fortress or Adventure). There's no need to enter Legends mode.
 
 You can also use it in Legends mode, as it provides a very fast way to exports the maps.
 
@@ -20,7 +20,7 @@ The following standard DF maps can be generated:
 * Current Vegetation
 * Evil
 * Salinity
-* Structures/fields/roads/etc
+* Structures/fields/roads/etc (disabled in Mac)
 * Trade
 * Nobility/holdings
 * Diplomacy
@@ -117,7 +117,7 @@ For the impatient, load a game and type in the DFHack console:
 
 `exportmaps -all-df`
 
-This will generate all the legends mode maps and write them to disk. This is the prefered way to do it as it's more efficient than generating them
+This will generate most of the legends mode maps and write them to disk. This is the prefered way to do it as it's more efficient than generating them
 one by one.
 
 If you want to generate only a specific map, you can provide the map type that you want using a command line option:
@@ -149,7 +149,7 @@ The availble options are the following:
 | -trading         | TRADING |
 | -nobility        | NOBILITY AND HOLDINGS |
 | -diplomacy       | DIPLOMACY |
-| -sites           | SITES / STRUCTURES / ROADS |
+| -sites           | SITES / STRUCTURES / ROADS (Not working in Mac)|
 | -region          | WORLD REGIONS **(NEW!)** |
 | -all-df          | ALL DF STYLE MAPS |
 | -all-raw         | ALL RAW STYLE MAPS |
