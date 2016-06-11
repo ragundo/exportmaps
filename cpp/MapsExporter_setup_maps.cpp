@@ -19,6 +19,7 @@
 // You can always find the latest version of this plugin in Github
 // https://github.com/ragundo/exportmaps
 
+#include <iomanip>
 #include <set>
 #include <modules/World.h>
 #include "../include/MapsExporter.h"
@@ -47,13 +48,13 @@ void MapsExporter::setup_maps(uint32_t maps,     // Graphical maps to generate
 
   // Get the date elements
   int year  = World::ReadCurrentYear();
-  int month = World::ReadCurrentMonth();
+  int month = World::ReadCurrentMonth() + 1;
   int day   = World::ReadCurrentDay();
 
 
   // Compose date
   std::stringstream ss_date;
-  ss_date << "-" << year << "-" << month << "-" << day;
+  ss_date << "-" << std::setfill('0') << std::setw(5) << year << "-" << std::setw(2) << month << "-" << std::setw(2) << day;
   std::string current_date = ss_date.str();
   std::string region_name = World::ReadWorldFolder();
 
