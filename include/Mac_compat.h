@@ -19,12 +19,14 @@
 // You can always find the latest version of this plugin in Github
 // https://github.com/ragundo/exportmaps
 
-#ifndef MAC_COMPAT_H
-#define MAC_COMPAT_H
+#ifndef _WIN32
+   #ifndef MAC_COMPAT_H
+   #define MAC_COMPAT_H
 
 // OSX uses gcc 4.8 which don't support C++ nullptr keyword
-#ifndef HAVE_NULLPTR
-#define nullptr 0L
-#endif
+      #ifndef HAVE_NULLPTR
+      #define nullptr 0L
+   #endif
 
-#endif // MAC_COMPAT_H
+   #endif // MAC_COMPAT_H
+#endif

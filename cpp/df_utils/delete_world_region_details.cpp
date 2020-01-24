@@ -22,7 +22,6 @@
 #include "../../include/dfhack.h"
 #include <df/world_region_details.h>
 
-
 using namespace std;
 
 /*****************************************************************************
@@ -37,7 +36,6 @@ unsigned int delete_world_region_details_address = 0;
 
 void delete_world_region_details_Windows(df::world_region_details* ptr_world_region_details);
 void delete_world_region_details_Linux_OSX(df::world_region_details* ptr_world_region_details);
-
 
 /**************************************************************************
     Main function
@@ -61,15 +59,14 @@ void delete_world_region_details_Linux_OSX(df::world_region_details* ptr_world_r
 
 void delete_world_region_details(df::world_region_details* ptr_world_region_details)
 {
-    #if defined(WIN32)
+#if defined(WIN32)
     delete_world_region_details_Windows(ptr_world_region_details);
-    #endif // Windows
+#endif // Windows
 
-    #if defined (_LINUX) || defined (_DARWIN)
+#if defined(_LINUX) || defined(_DARWIN)
     delete_world_region_details_Linux_OSX(ptr_world_region_details);
-    #endif // Linux
+#endif // Linux
 }
-
 
 //----------------------------------------------------------------------------//
 // Utility function
@@ -77,22 +74,21 @@ void delete_world_region_details(df::world_region_details* ptr_world_region_deta
 //----------------------------------------------------------------------------//
 void delete_world_region_details_Windows(df::world_region_details* ptr_world_region_details)
 {
-    #if defined(WIN32)
+#if defined(WIN32)
 
     // Adjust the real address
     // Not needed anymore as getting the address from symbols.xml
     // returns the address already ready
     // unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
-    unsigned int delta = 0;
-    unsigned int address_DF_sub = delete_world_region_details_address + delta;
+    //unsigned int delta = 0;
+    //unsigned int address_DF_sub = delete_world_region_details_address + delta;
 
     // Call DF function
-    __asm mov  eax, ptr_world_region_details
-    __asm call address_DF_sub                    /* call the DF subroutine */
+    //__asm mov  eax, ptr_world_region_details
+    //__asm call address_DF_sub                    /* call the DF subroutine */
 
-    #endif
+#endif
 }
-
 
 //----------------------------------------------------------------------------//
 // Utility function
@@ -100,22 +96,19 @@ void delete_world_region_details_Windows(df::world_region_details* ptr_world_reg
 //----------------------------------------------------------------------------//
 void delete_world_region_details_Linux_OSX(df::world_region_details* ptr_world_region_details)
 {
-    #if defined(_LINUX) || defined(_DARWIN)
+#if defined(_LINUX) || defined(_DARWIN)
 
+    asm volatile("movl %0    ,%%eax;    " /* address_DF_sub to eax                                 */
+                 "movl %1    ,%%ecx;    " /* address of world.world_data.region_details to ecx     */
+                 "sub  $0x10 ,%%esp;    " /* make space in the heap for the parameters             */
+                 "mov  %%ecx ,(%%esp);  " /* store param 1                                         */
+                 "call *%%eax;          " /* call the DF subroutine                                */
+                 "add  $0x10  ,%%esp;   " /* release the space used in the heap for the parameters */
+                 : /* no output parameters                                  */
+                 : "m"(delete_world_region_details_address), /* input parameter                                       */
+                   "m"(ptr_world_region_details) /* input parameter                                       */
+                 : "eax", "ecx" /* used registers                                        */
+    );
 
-    asm volatile("movl %0    ,%%eax;    "                     /* address_DF_sub to eax                                 */
-                 "movl %1    ,%%ecx;    "                     /* address of world.world_data.region_details to ecx     */
-                 "sub  $0x10 ,%%esp;    "                     /* make space in the heap for the parameters             */
-                 "mov  %%ecx ,(%%esp);  "                     /* store param 1                                         */
-                 "call *%%eax;          "                     /* call the DF subroutine                                */
-                 "add  $0x10  ,%%esp;   "                     /* release the space used in the heap for the parameters */
-                 :                                            /* no output parameters                                  */
-                 : "m"(delete_world_region_details_address),  /* input parameter                                       */
-                   "m"(ptr_world_region_details)              /* input parameter                                       */
-                 : "eax", "ecx"                               /* used registers                                        */
-                );
-
-    #endif
+#endif
 }
-
-

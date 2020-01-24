@@ -19,7 +19,7 @@
 // You can always find the latest version of this plugin in Github
 // https://github.com/ragundo/exportmaps
 
-#include "../../../include/Mac_compat.h"
+//#include "../../../include/Mac_compat.h"
 #include "../../../include/ExportMaps.h"
 #include <df/region_map_entry.h>
 #include <df/world.h>

@@ -21,7 +21,7 @@
 
 #include <utility>
 #include <BitArray.h>
-#include "../../../include/Mac_compat.h"
+//#include "../../../include/Mac_compat.h"
 #include "../../../include/ExportMaps.h"
 #include "../../../include/util/ofsub.h"
 #include <df/region_map_entry.h>
@@ -254,7 +254,7 @@ RGB_color RGB_from_elevation_water(RegionDetailsElevationWater& rdew,
     if (ptr_world_river == nullptr)
         return RGB_color(0x00,0x70,0xff); // Sea or lake shore
 
-    int value = ptr_world_river->unk_8c[river_index];
+    int value = ptr_world_river->flow[river_index];
     if (value >= 20000)
         return RGB_color(0x00,0x80,0xff); // Major river
 
@@ -302,5 +302,3 @@ std::pair<df::world_river*, int> get_world_river(int x, int y)
 
     return NO_RIVER;
 }
-
-

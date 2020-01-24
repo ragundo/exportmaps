@@ -30,7 +30,6 @@ using namespace std;
 *****************************************************************************/
 unsigned int delete_world_site_realization_address = 0;
 
-
 /*****************************************************************************
     Local functions forward declaration
 *****************************************************************************/
@@ -50,18 +49,14 @@ void delete_world_site_realization_Windows(df::world_site* world_site);
 **************************************************************************/
 void delete_world_site_realization(df::world_site* world_site)
 {
-
-    #if defined(_LINUX) || defined(_DARWIN)
+#if defined(_LINUX) || defined(_DARWIN)
     delete_world_site_realization_Linux_OSX(world_site);
-    #endif // Linux or Mac
+#endif // Linux or Mac
 
-    #if defined(WIN32)
+#if defined(WIN32)
     delete_world_site_realization_Windows(world_site);
-    #endif // WINDOWS
-
+#endif // WINDOWS
 }
-
-
 
 //----------------------------------------------------------------------------//
 // Utility function
@@ -69,25 +64,24 @@ void delete_world_site_realization(df::world_site* world_site)
 //----------------------------------------------------------------------------//
 void delete_world_site_realization_Linux_OSX(df::world_site* world_site)
 {
-    #if defined(_LINUX) || defined(_DARWIN)
+#if defined(_LINUX) || defined(_DARWIN)
 
     // Setup the stack and then call DF routine
 
-    asm volatile("movl %0    ,%%eax;    "                      /* address_DF_sub to eax                                  */
-                 "movl %1    ,%%ecx;    "                      /* pointer to world_site to ecx                           */
-                 "sub  $0x10 ,%%esp;    "                      /* make space in the stack for the parameters             */
-                 "mov  %%ecx ,0(%%esp); "                      /* store param 1                                          */
-                 "call *%%eax;          "                      /* call the DF subroutine                                 */
-                 "add  $0x10 ,%%esp;    "                      /* release the space used in the stack for the parameters */
+    asm volatile("movl %0    ,%%eax;    " /* address_DF_sub to eax                                  */
+                 "movl %1    ,%%ecx;    " /* pointer to world_site to ecx                           */
+                 "sub  $0x10 ,%%esp;    " /* make space in the stack for the parameters             */
+                 "mov  %%ecx ,0(%%esp); " /* store param 1                                          */
+                 "call *%%eax;          " /* call the DF subroutine                                 */
+                 "add  $0x10 ,%%esp;    " /* release the space used in the stack for the parameters */
                  :
                  : "m"(delete_world_site_realization_address), /* input parameter to inline assembly                     */
-                   "m"(world_site)                             /* input parameter to inline assembly                     */
-                 : "eax", "ecx"                                /* used registers                                         */
-                );
+                   "m"(world_site) /* input parameter to inline assembly                     */
+                 : "eax", "ecx" /* used registers                                         */
+    );
 
-    #endif
+#endif
 }
-
 
 //----------------------------------------------------------------------------//
 // Utility function
@@ -104,13 +98,18 @@ void delete_world_site_realization_Windows(df::world_site* world_site)
     unsigned int delta = 0;
 
     // Corrected subroutine address
-    unsigned int address_DF_sub_Win = delete_world_site_realization_address + delta;
+    //unsigned int address_DF_sub_Win = delete_world_site_realization_address + delta;
 
-    #if defined(WIN32)
+#if defined(WIN32)
 
-    __asm push world_site                        /* 1st parameter to the stack = df_world_site*   */
-    __asm mov  eax, address_DF_sub_Win           /* eax = address DF subroutine                   */
-    __asm call address_DF_sub_Win                /* call DF subroutine                            */
+    typedef void (*df_delete_world_site_realization_fn)(df::world_site*);
+    static df_delete_world_site_realization_fn df_dwsr_fn = reinterpret_cast<df_delete_world_site_realization_fn>(0x000140AD4F90);
 
-    #endif // WINDOWS
+    df_dwsr_fn(world_site);
+
+    //__asm push world_site                        /* 1st parameter to the stack = df_world_site*   */
+    //__asm mov  eax, address_DF_sub_Win           /* eax = address DF subroutine                   */
+    //__asm call address_DF_sub_Win                /* call DF subroutine                            */
+
+#endif // WINDOWS
 }

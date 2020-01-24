@@ -31,17 +31,13 @@ using namespace std;
 *****************************************************************************/
 unsigned int init_world_site_realization_address = 0;
 
-
 /*****************************************************************************
     Local functions forward declaration
 *****************************************************************************/
 
-void init_world_site_realization_Linux_OSX(df::world_site* world_site
-                                          );
+void init_world_site_realization_Linux_OSX(df::world_site* world_site);
 
-
-void init_world_site_realization_Windows(df::world_site* world_site
-                                        );
+void init_world_site_realization_Windows(df::world_site* world_site);
 
 /**************************************************************************
     Main function
@@ -55,21 +51,18 @@ void init_world_site_realization_Windows(df::world_site* world_site
 
 void init_world_site_realization(df::world_site* world_site)
 {
-
-    #if defined(_DARWIN) // Mac
+#if defined(_DARWIN) // Mac
     init_world_site_realization_Linux_OSX(world_site);
-    #endif // Mac
+#endif // Mac
 
-    #if defined(_LINUX) // Linux
+#if defined(_LINUX) // Linux
     init_world_site_realization_Linux_OSX(world_site);
-    #endif // Linux
+#endif // Linux
 
-    #if defined(_WIN32)
+#if defined(_WIN32)
     init_world_site_realization_Windows(world_site);
-    #endif // WINDOWS
-
+#endif // WINDOWS
 }
-
 
 //----------------------------------------------------------------------------//
 // Utility function
@@ -77,7 +70,7 @@ void init_world_site_realization(df::world_site* world_site)
 //----------------------------------------------------------------------------//
 void init_world_site_realization_Linux_OSX(df::world_site* world_site)
 {
-    #if defined(_LINUX) || defined(_DARWIN)
+#if defined(_LINUX) || defined(_DARWIN)
 
     // Setup the stack and then call DF routine
 
@@ -86,20 +79,20 @@ void init_world_site_realization_Linux_OSX(df::world_site* world_site)
     // must be aligned to a 16 byte frame.  If not, the call
     // to DF crashes inside a MOVAPS assembly instruction
 
-    asm volatile("movl %0    ,%%eax;    "                      /* address_DF_sub to eax                                  */
-                 "movl %1    ,%%ecx;    "                     /* pointer to world_site to ecx                           */
-                 "sub  $0x18 ,%%esp;    "                     /* make space in the stack for the parameters             */
-                 "mov  %%ecx ,0(%%esp); "                     /* store param 1                                          */
-                 "movl $0    ,4(%%esp); "                     /* store param 2                                          */
-                 "call *%%eax;          "                     /* call the DF subroutine                                 */
-                 "add  $0x18 ,%%esp;    "                     /* release the space used in the stack for the parameters */
+    asm volatile("movl %0    ,%%eax;    " /* address_DF_sub to eax                                  */
+                 "movl %1    ,%%ecx;    " /* pointer to world_site to ecx                           */
+                 "sub  $0x18 ,%%esp;    " /* make space in the stack for the parameters             */
+                 "mov  %%ecx ,0(%%esp); " /* store param 1                                          */
+                 "movl $0    ,4(%%esp); " /* store param 2                                          */
+                 "call *%%eax;          " /* call the DF subroutine                                 */
+                 "add  $0x18 ,%%esp;    " /* release the space used in the stack for the parameters */
                  :
-                 : "m"(init_world_site_realization_address),  /* input parameter                                         */
-                   "m"(world_site)                            /* input parameter                                         */
-                 : "eax", "ecx"                               /* used registers                                          */
-                );
+                 : "m"(init_world_site_realization_address), /* input parameter                                         */
+                   "m"(world_site) /* input parameter                                         */
+                 : "eax", "ecx" /* used registers                                          */
+    );
 
-    #endif
+#endif
 }
 
 //----------------------------------------------------------------------------//
@@ -117,15 +110,20 @@ void init_world_site_realization_Windows(df::world_site* world_site)
     unsigned int delta = 0;
 
     // Corrected subroutine address
-    unsigned int address_DF_sub_Win = init_world_site_realization_address + delta;
+    //unsigned int address_DF_sub_Win = init_world_site_realization_address + delta;
 
-    #if defined(_WIN32)
+#if defined(_WIN32)
 
-    __asm xor  eax, eax                /* eax = 0                                       */
-    __asm push eax                     /* 2nd parameter to the stack = 0                */
-    __asm push world_site              /* 1st parameter to the stack = df_world_site*   */
-    __asm mov  eax, address_DF_sub_Win /* eax = address DF subroutine                   */
-    __asm call address_DF_sub_Win      /* call DF subroutine                            */
+    typedef int (*df_init_world_site_realization_fn)(df::world_site*);
+    static df_init_world_site_realization_fn df_iwsr_fn = reinterpret_cast<df_init_world_site_realization_fn>(0x00140AB9BD0);
 
-    #endif // WINDOWS
+    df_iwsr_fn(world_site);
+
+    //__asm xor  eax, eax                /* eax = 0                                       */
+    //__asm push eax                     /* 2nd parameter to the stack = 0                */
+    //__asm push world_site              /* 1st parameter to the stack = df_world_site*   */
+    //__asm mov  eax, address_DF_sub_Win /* eax = address DF subroutine                   */
+    //__asm call address_DF_sub_Win      /* call DF subroutine                            */
+
+#endif // WINDOWS
 }

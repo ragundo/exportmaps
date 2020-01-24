@@ -16,7 +16,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "../../../include/Mac_compat.h"
+//#include "../../../include/Mac_compat.h"
 #include "../../../include/ExportMaps.h"
 #include <df/region_map_entry.h>
 #include <df/world.h>

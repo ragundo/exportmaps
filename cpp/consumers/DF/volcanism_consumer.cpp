@@ -19,8 +19,8 @@
 // You can always find the latest version of this plugin in Github
 // https://github.com/ragundo/exportmaps
 
-#include "../../../include/Mac_compat.h"
 #include "../../../include/ExportMaps.h"
+#include "../../../include/Mac_compat.h"
 #include <df/region_map_entry.h>
 #include <df/world.h>
 #include <df/world_data.h>
@@ -31,14 +31,13 @@ using namespace exportmaps_plugin;
 /*****************************************************************************
 External functions
 *****************************************************************************/
-extern std::pair<int,int> adjust_coordinates_to_region(int x,
-                                                       int y,
-                                                       int delta,
-                                                       int pos_x,
-                                                       int pos_y,
-                                                       int world_width,
-                                                       int world_height);
-
+extern std::pair<int, int> adjust_coordinates_to_region(int x,
+                                                        int y,
+                                                        int delta,
+                                                        int pos_x,
+                                                        int pos_y,
+                                                        int world_width,
+                                                        int world_height);
 
 /*****************************************************************************
 Local functions forward declaration
@@ -46,29 +45,28 @@ Local functions forward declaration
 RGB_color RGB_from_volcanism(int volcanism);
 bool      volcanism_do_work(MapsExporter* maps_exporter);
 
-
 /*****************************************************************************
 Module main function.
 This is the function that the thread executes
 *****************************************************************************/
 void consumer_volcanism(void* arg)
 {
-  bool                finish  = false;
-  MapsExporter* maps_exporter = (MapsExporter*)arg;
+    bool          finish        = false;
+    MapsExporter* maps_exporter = (MapsExporter*)arg;
 
-  if (arg != nullptr)
-  {
-    while(!finish)
+    if (arg != nullptr)
     {
-      if (maps_exporter->is_volcanism_queue_empty())
-        // No data on the queue. Try again later
-        tthread::this_thread::yield();
+        while (!finish)
+        {
+            if (maps_exporter->is_volcanism_queue_empty())
+                // No data on the queue. Try again later
+                tthread::this_thread::yield();
 
-      else // There's data in the queue
-        finish = volcanism_do_work(maps_exporter);
+            else // There's data in the queue
+                finish = volcanism_do_work(maps_exporter);
+        }
     }
-  }
-  // Function finish -> Thread finish
+    // Function finish -> Thread finish
 }
 
 //----------------------------------------------------------------------------//
@@ -80,49 +78,47 @@ void consumer_volcanism(void* arg)
 //----------------------------------------------------------------------------//
 bool volcanism_do_work(MapsExporter* maps_exporter)
 {
-  // Get the data from the queue
-  RegionDetailsBiome rdg = maps_exporter->pop_volcanism();
+    // Get the data from the queue
+    RegionDetailsBiome rdg = maps_exporter->pop_volcanism();
 
-  // Check if is the marker for no more data from the producer
-  if (rdg.is_end_marker())
-    // All the data has been processed. Done
-    return true;
+    // Check if is the marker for no more data from the producer
+    if (rdg.is_end_marker())
+        // All the data has been processed. Done
+        return true;
 
-  // There's data to be processed
+    // There's data to be processed
 
-  // Get the map where we'll write to
-  ExportedMapBase* volcanism_map = maps_exporter->get_volcanism_map();
+    // Get the map where we'll write to
+    ExportedMapBase* volcanism_map = maps_exporter->get_volcanism_map();
 
-  // Iterate over the 16 subtiles (x) and (y) that a world tile has
-  for (auto x=0; x<16; ++x)
-    for (auto y=0; y<16; ++y)
-    {
-      // Each position of the array is a value that tells us if the local tile
-      // belongs to the NW,N,NE,W,center,E,SW,S,SE world region.
-      // Returns a world coordinate adjusted from the original one
-      std::pair<int,int> adjusted_tile_coordinates = adjust_coordinates_to_region(x,
-                                                                                  y,
-                                                                                  rdg.get_biome_index(x,y),
-                                                                                  rdg.get_pos_x(),
-                                                                                  rdg.get_pos_y(),
-                                                                                  df::global::world->world_data->world_width,
-                                                                                  df::global::world->world_data->world_height
-                                                                                  );
-      // Get the proper df::region_entry
-      df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first][adjusted_tile_coordinates.second];
+    // Iterate over the 16 subtiles (x) and (y) that a world tile has
+    for (auto x = 0; x < 16; ++x)
+        for (auto y = 0; y < 16; ++y)
+        {
+            // Each position of the array is a value that tells us if the local tile
+            // belongs to the NW,N,NE,W,center,E,SW,S,SE world region.
+            // Returns a world coordinate adjusted from the original one
+            std::pair<int, int> adjusted_tile_coordinates = adjust_coordinates_to_region(x,
+                                                                                         y,
+                                                                                         rdg.get_biome_index(x, y),
+                                                                                         rdg.get_pos_x(),
+                                                                                         rdg.get_pos_y(),
+                                                                                         df::global::world->world_data->world_width,
+                                                                                         df::global::world->world_data->world_height);
+            // Get the proper df::region_entry
+            df::region_map_entry& rme = df::global::world->world_data->region_map[adjusted_tile_coordinates.first][adjusted_tile_coordinates.second];
 
-      // Get the RGB values associated to this volcanism
-      RGB_color rgb_pixel_color = RGB_from_volcanism(rme.volcanism);
+            // Get the RGB values associated to this volcanism
+            RGB_color rgb_pixel_color = RGB_from_volcanism(rme.volcanism);
 
-      // Write pixels to the bitmap
-      volcanism_map->write_world_pixel(rdg.get_pos_x(),
-                                       rdg.get_pos_y(),
-                                       x,
-                                       y,
-                                       rgb_pixel_color
-                                       );
-    }
-  return false; // Continue working
+            // Write pixels to the bitmap
+            volcanism_map->write_world_pixel(rdg.get_pos_x(),
+                                             rdg.get_pos_y(),
+                                             x,
+                                             y,
+                                             rgb_pixel_color);
+        }
+    return false; // Continue working
 }
 
 //----------------------------------------------------------------------------//
@@ -131,6 +127,6 @@ bool volcanism_do_work(MapsExporter* maps_exporter)
 //----------------------------------------------------------------------------//
 RGB_color RGB_from_volcanism(int volcanism)
 {
-  unsigned char p =(unsigned char)((((350469331425 * volcanism) >> 32) >> 5));
-  return RGB_color(p,p,p);
+    unsigned char p = (unsigned char)((((350469331425 * volcanism) >> 32) >> 5));
+    return RGB_color(p, p, p);
 }

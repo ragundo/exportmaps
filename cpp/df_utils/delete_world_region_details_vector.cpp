@@ -25,7 +25,6 @@
 #include <df/world_data.h>
 #include <df/world_region_details.h>
 
-
 using namespace std;
 
 /*****************************************************************************
@@ -33,7 +32,6 @@ using namespace std;
 
 *****************************************************************************/
 unsigned int delete_world_region_details_vector_address = 0;
-
 
 /*****************************************************************************
     External functions
@@ -46,22 +44,20 @@ extern void delete_world_region_details(df::world_region_details*);
 void delete_world_region_details_vector_Windows();
 void delete_world_region_details_vector_Linux_OSX();
 
-
 /**************************************************************************
     Main function
 
 **************************************************************************/
 void delete_world_region_details_vector()
 {
-    #if defined(_WIN32)
+#if defined(_WIN32)
     delete_world_region_details_vector_Windows();
-    #endif // Windows
+#endif // Windows
 
-    #if defined(_LINUX) || defined(_DARWIN)
+#if defined(_LINUX) || defined(_DARWIN)
     delete_world_region_details_vector_Linux_OSX();
-    #endif // Linux and Mac
+#endif // Linux and Mac
 }
-
 
 //----------------------------------------------------------------------------//
 // Utility function
@@ -73,16 +69,22 @@ void delete_world_region_details_vector_Windows()
     // Not needed anymore as getting the address from symbols.xml
     // returns the address already ready
     // unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
-    unsigned int delta = 0;
-    unsigned int address_DF_sub = delete_world_region_details_vector_address + delta;
+    //unsigned int delta          = 0;
+    //unsigned int address_DF_sub = delete_world_region_details_vector_address + delta;
 
-    #if defined(_WIN32)
+#if defined(_WIN32)
     // Call DF function
-    unsigned int vector_address = (unsigned int) & (df::global::world->world_data->region_details);
-    __asm mov  ebx, vector_address
-    __asm call address_DF_sub       /* call the DF subroutine */
+    //unsigned int vector_address = (unsigned int) & (df::global::world->world_data->region_details);
 
-    #endif
+    typedef void (*df_delete_world_region_details_fn)(void);
+    static df_delete_world_region_details_fn df_dwrd_fn = reinterpret_cast<df_delete_world_region_details_fn>(0x001403BAB70);
+
+    df_dwrd_fn();
+
+    //__asm mov  ebx, vector_address
+    //__asm call address_DF_sub       /* call the DF subroutine */
+
+#endif
 }
 
 //----------------------------------------------------------------------------//
@@ -94,7 +96,7 @@ void delete_world_region_details_vector_Linux_OSX()
     // There is not a DF sub for that, so we need to do ourselves
 
     int num_elements_vector = df::global::world->world_data->region_details.size();
-    for (int l = num_elements_vector - 1; l >= 0 ; l--)
+    for (int l = num_elements_vector - 1; l >= 0; l--)
     {
         df::world_region_details* rd = df::global::world->world_data->region_details[l];
         if (rd != nullptr)
@@ -105,5 +107,3 @@ void delete_world_region_details_vector_Linux_OSX()
     df::global::world->world_data->region_details.erase(df::global::world->world_data->region_details.begin(),
                                                         df::global::world->world_data->region_details.end());
 }
-
-

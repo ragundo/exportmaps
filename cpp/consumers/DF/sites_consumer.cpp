@@ -19,7 +19,7 @@
 // You can always find the latest version of this plugin in Github
 // https://github.com/ragundo/exportmaps
 
-#include "../../../include/Mac_compat.h"
+//#include "../../../include/Mac_compat.h"
 #include "../../../include/ExportMaps.h"
 #include "../../../include/util/ofsub.h"
 #include <df/region_map_entry.h>
@@ -979,12 +979,12 @@ void delete_site_realization(df::world_site* world_site)
 
 
 
-    if (world_site->animals.size() > 0)
+    if (world_site->unk_1.animals.size() > 0)
     {
       bool found_animal = false;
-      for (unsigned int k = 0; k < world_site->animals.size(); k++)
+      for (unsigned int k = 0; k < world_site->unk_1.animals.size(); k++)
       {
-        df::world_population* animal_population = world_site->animals[k];
+        df::world_population* animal_population = world_site->unk_1.animals[k];
         if (animal_population == nullptr) continue;
 
         if ((historical_entity_id           == animal_population->owner)  &&
@@ -1057,11 +1057,11 @@ bool update_inhabitant_count(df::world_site* world_site,
           if ((creature_raw->flags.size <= 14) ||
               !(*(creature_raw->flags.bits+14) & 0x10))
           {
-            if (world_site->inhabitants.size() > 0)
+            if (world_site->unk_1.inhabitants.size() > 0)
             {
-              for (unsigned int k = 0; k < world_site->inhabitants.size(); k++)
+              for (unsigned int k = 0; k < world_site->unk_1.inhabitants.size(); k++)
               {
-                df::world_site_inhabitant* site_inhabitant = world_site->inhabitants[k];
+                df::world_site_inhabitant* site_inhabitant = world_site->unk_1.inhabitants[k];
                 if (site_inhabitant == nullptr) continue;
 
                 if ((inhabitant_in_building->race == site_inhabitant->race) &&

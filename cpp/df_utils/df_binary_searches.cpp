@@ -19,8 +19,9 @@
 // You can always find the latest version of this plugin in Github
 // https://github.com/ragundo/exportmaps
 
-#include "../../include/Mac_compat.h"
-#include "../../include/dfhack.h"
+//#include "../../include/Mac_compat.h"
+//#include "../../include/dfhack.h"
+#include "DataDefs.h"
 #include <df/world.h>
 #include <df/world_site.h>
 #include <df/world_data.h>
