@@ -22,6 +22,7 @@
 #include "../../include/dfhack.h"
 #include "DFHackVersion.h"
 #include "modules/Filesystem.h"
+#include <cstdint>
 
 using namespace std;
 
@@ -68,17 +69,17 @@ void delete_world_site_realization_Linux_OSX(df::world_site* world_site)
 
     // Setup the stack and then call DF routine
 
-    asm volatile("movl %0    ,%%eax;    " /* address_DF_sub to eax                                  */
-                 "movl %1    ,%%ecx;    " /* pointer to world_site to ecx                           */
-                 "sub  $0x10 ,%%esp;    " /* make space in the stack for the parameters             */
-                 "mov  %%ecx ,0(%%esp); " /* store param 1                                          */
-                 "call *%%eax;          " /* call the DF subroutine                                 */
-                 "add  $0x10 ,%%esp;    " /* release the space used in the stack for the parameters */
-                 :
-                 : "m"(delete_world_site_realization_address), /* input parameter to inline assembly                     */
-                   "m"(world_site) /* input parameter to inline assembly                     */
-                 : "eax", "ecx" /* used registers                                         */
-    );
+//    asm volatile("movl %0    ,%%eax;    " /* address_DF_sub to eax                                  */
+//                 "movl %1    ,%%ecx;    " /* pointer to world_site to ecx                           */
+//                 "sub  $0x10 ,%%esp;    " /* make space in the stack for the parameters             */
+//                 "mov  %%ecx ,0(%%esp); " /* store param 1                                          */
+//                 "call *%%eax;          " /* call the DF subroutine                                 */
+//                 "add  $0x10 ,%%esp;    " /* release the space used in the stack for the parameters */
+//                 :
+//                 : "m"(delete_world_site_realization_address), /* input parameter to inline assembly                     */
+//                   "m"(world_site) /* input parameter to inline assembly                     */
+//                 : "eax", "ecx" /* used registers                                         */
+//    );
 
 #endif
 }
@@ -94,16 +95,15 @@ void delete_world_site_realization_Windows(df::world_site* world_site)
     // DFHack solves this for us
     // Not needed anymore as gettint the address from symbols.xml
     // returns the address already ready
-    // unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
-    unsigned int delta = 0;
+    uint64_t delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
 
     // Corrected subroutine address
-    //unsigned int address_DF_sub_Win = delete_world_site_realization_address + delta;
+    uint64_t address_DF_sub_Win = 0x000140AD4F90 + delta;
 
 #if defined(WIN32)
 
     typedef void (*df_delete_world_site_realization_fn)(df::world_site*);
-    static df_delete_world_site_realization_fn df_dwsr_fn = reinterpret_cast<df_delete_world_site_realization_fn>(0x000140AD4F90);
+    static df_delete_world_site_realization_fn df_dwsr_fn = reinterpret_cast<df_delete_world_site_realization_fn>(address_DF_sub_Win);
 
     df_dwsr_fn(world_site);
 

@@ -22,6 +22,7 @@
 #include "../../include/dfhack.h"
 #include "DFHackVersion.h"
 #include "modules/Filesystem.h"
+#include <cstdint>
 
 using namespace std;
 
@@ -79,18 +80,18 @@ void init_world_site_realization_Linux_OSX(df::world_site* world_site)
     // must be aligned to a 16 byte frame.  If not, the call
     // to DF crashes inside a MOVAPS assembly instruction
 
-    asm volatile("movl %0    ,%%eax;    " /* address_DF_sub to eax                                  */
-                 "movl %1    ,%%ecx;    " /* pointer to world_site to ecx                           */
-                 "sub  $0x18 ,%%esp;    " /* make space in the stack for the parameters             */
-                 "mov  %%ecx ,0(%%esp); " /* store param 1                                          */
-                 "movl $0    ,4(%%esp); " /* store param 2                                          */
-                 "call *%%eax;          " /* call the DF subroutine                                 */
-                 "add  $0x18 ,%%esp;    " /* release the space used in the stack for the parameters */
-                 :
-                 : "m"(init_world_site_realization_address), /* input parameter                                         */
-                   "m"(world_site) /* input parameter                                         */
-                 : "eax", "ecx" /* used registers                                          */
-    );
+    //    asm volatile("movl %0    ,%%eax;    " /* address_DF_sub to eax                                  */
+    //                 "movl %1    ,%%ecx;    " /* pointer to world_site to ecx                           */
+    //                 "sub  $0x18 ,%%esp;    " /* make space in the stack for the parameters             */
+    //                 "mov  %%ecx ,0(%%esp); " /* store param 1                                          */
+    //                 "movl $0    ,4(%%esp); " /* store param 2                                          */
+    //                 "call *%%eax;          " /* call the DF subroutine                                 */
+    //                 "add  $0x18 ,%%esp;    " /* release the space used in the stack for the parameters */
+    //                 :
+    //                 : "m"(init_world_site_realization_address), /* input parameter                                         */
+    //                   "m"(world_site) /* input parameter                                         */
+    //                 : "eax", "ecx" /* used registers                                          */
+    //);
 
 #endif
 }
@@ -106,18 +107,17 @@ void init_world_site_realization_Windows(df::world_site* world_site)
     // DFHack solves this for us
     // Not needed anymore as gettint the address from symbols.xml
     // returns the address already ready
-    //unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
-    unsigned int delta = 0;
+    uint64_t delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
 
     // Corrected subroutine address
-    //unsigned int address_DF_sub_Win = init_world_site_realization_address + delta;
+    uint64_t address_DF_sub_Win = 0x0140AB9BD0 + delta;
 
 #if defined(_WIN32)
 
-    typedef int (*df_init_world_site_realization_fn)(df::world_site*);
-    static df_init_world_site_realization_fn df_iwsr_fn = reinterpret_cast<df_init_world_site_realization_fn>(0x00140AB9BD0);
+    typedef void (*df_init_world_site_realization_fn)(df::world_site*, uint8_t);
+    static df_init_world_site_realization_fn df_iwsr_fn = reinterpret_cast<df_init_world_site_realization_fn>(address_DF_sub_Win);
 
-    df_iwsr_fn(world_site);
+    df_iwsr_fn(world_site, 0);
 
     //__asm xor  eax, eax                /* eax = 0                                       */
     //__asm push eax                     /* 2nd parameter to the stack = 0                */

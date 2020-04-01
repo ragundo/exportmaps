@@ -68,16 +68,15 @@ void delete_world_region_details_vector_Windows()
     // Adjust the real address
     // Not needed anymore as getting the address from symbols.xml
     // returns the address already ready
-    // unsigned int delta = DFHack::Core::getInstance().vinfo->getRebaseDelta();
-    //unsigned int delta          = 0;
-    //unsigned int address_DF_sub = delete_world_region_details_vector_address + delta;
+    uint64_t delta          = DFHack::Core::getInstance().vinfo->getRebaseDelta();
+    uint64_t address_DF_sub = 0x001403BAB70 + delta;
 
 #if defined(_WIN32)
     // Call DF function
     //unsigned int vector_address = (unsigned int) & (df::global::world->world_data->region_details);
 
     typedef void (*df_delete_world_region_details_fn)(void);
-    static df_delete_world_region_details_fn df_dwrd_fn = reinterpret_cast<df_delete_world_region_details_fn>(0x001403BAB70);
+    static df_delete_world_region_details_fn df_dwrd_fn = reinterpret_cast<df_delete_world_region_details_fn>(address_DF_sub);
 
     df_dwrd_fn();
 
